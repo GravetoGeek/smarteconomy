@@ -1,10 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const authRouter = require('./auth')
-const usersRouter = require('./users')
+const usersRouter = require('./user')
 
-router.use('/', authRouter)
-router.use('/users', usersRouter)
+router.use('/user', usersRouter)
+router.use('/auth', authRouter)
+
 
 router.get('/', (req, res, next)=>{
   res.send('Rota index')
