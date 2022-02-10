@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const authController = require('../controllers/auth.js')
+const authController = require('../controllers/authController.js')
 
 router.get('/',(req, res, next)=>{
   res.send('Rota auth')
