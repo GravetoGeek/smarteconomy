@@ -1,0 +1,40 @@
+{
+  "name": "gestao-financas-pessoais",
+  "version": "1.0.0",
+  "description": "Trabalho de conclusao de curso (Eduardo Sa Ribeiro de Moraes - Leonardo Aparecido Cardoso Villaslobo)",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "nodemon ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GravetoGeek/gestao-financas-pessoais.git"
+  },
+  "keywords": [
+    "FinTech",
+    "Gestao",
+    "Finanças"
+  ],
+  "author": "Eduardo Sa Ribeiro de Moraes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GravetoGeek/gestao-financas-pessoais/issues"
+  },
+  "homepage": "https://github.com/GravetoGeek/gestao-financas-pessoais#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "jest": "^27.2.1",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^0.95.11",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.13"
+  }
+}
