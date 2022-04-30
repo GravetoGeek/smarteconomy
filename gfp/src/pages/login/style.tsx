@@ -31,6 +31,7 @@ export const styles = StyleSheet.create({
     borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
+    margin: 10,
   },
   txtWhite:{
     color:'white',
