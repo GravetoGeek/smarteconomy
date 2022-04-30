@@ -6,10 +6,10 @@ router.get('/',(req, res, next)=>{
   res.send('Rota auth')
 })
 
-router.get('/login',authController.login)
+router.post('/login',authController.login)
 
 router.get('/logout',authController.logout)
 
-router.get('/signup',authController.signup)
+router.post('/signup',authController.signup)
 
 module.exports = router

@@ -1,21 +1,22 @@
 const express = require('express')
+const authController = require('../controllers/authController')
 const router = express.Router()
 
 const userController = require('../controllers/userController')
 
-router.get('/',(req, res, next)=>{
-  res.send('Rota user')
-})
+// router.get('/',(req, res, next)=>{
+//   res.send('Rota user')
+// })
 
-router.post('/', userController.user_create)
+router.post('/',authController.verifyJWT, userController.user_create)
 
-router.get('/:id',userController.user_read)
+router.get('/:id',authController.verifyJWT,userController.user_read)
 
-router.put('/:id',userController.user_update)
+router.put('/:id',authController.verifyJWT,userController.user_update)
 
-router.delete('/:id',userController.user_delete)
+router.delete('/:id',authController.verifyJWT,userController.user_delete)
 
-router.get('/',userController.user_list)
+router.get('/',authController.verifyJWT,userController.user_list)
 
 
 module.exports = router
