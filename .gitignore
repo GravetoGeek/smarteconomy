@@ -22,4 +22,5 @@ doc/api/
 node_modules
 package-lock.json
 .env
-
+.expo-shared
+.vscode
