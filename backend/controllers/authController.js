@@ -1,5 +1,6 @@
 const { connection } = require('../dao/connection')
 const authDAO = require('../dao/authDAO')
+const userDAO = require('../dao/userDAO')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
@@ -40,7 +41,34 @@ const logout = async (req, res)=>{
 }
 
 const signup = async (req, res)=>{
-  res.send('Rota signup')
+  console.log(req.body)
+  let {username, email,password,phone} = req.body.user
+  
+  password = bcrypt.hashSync(password,10)
+
+  let result = await userDAO.user_create({username,email,password,phone})
+  .then((res)=>res)
+  .catch((error)=>error)
+  if(result.code == "ER_DUP_ENTRY"){
+    return res.status(409).send({
+      message:'Usuário já existe',
+      auth:false,
+      token:null
+    })
+  }
+  
+  let login = await authDAO.login(email)
+  console.log(login)
+  const token = jwt.sign({id:login.id},process.env.SECRET_KEY,{
+    expiresIn: 3000
+  })
+
+  return res.status(200).json({
+    message:'Usuário criado com sucesso',
+    auth:true,
+    token
+  })
+
 }
 
 const verifyJWT = async (req, res, next)=>{

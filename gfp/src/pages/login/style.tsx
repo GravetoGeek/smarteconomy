@@ -8,11 +8,6 @@ export const styles = StyleSheet.create({
     backgroundColor:'white',
     padding:10,
   },
-  title:{
-    fontSize:45,
-    color:'#636b6f',
-    fontWeight:'100',
-  },
   input:{
     width: '100%',
     height: 50,

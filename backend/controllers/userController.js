@@ -2,6 +2,7 @@ const { connection } = require('../dao/connection')
 const userDAO = require('../dao/userDAO')
 const bcrypt = require('bcryptjs')
 
+
 const user_create = async(req, res)=>{
   let {username, email,password,phone} = req.body.user
   password = bcrypt.hashSync(password,10)

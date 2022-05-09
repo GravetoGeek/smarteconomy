@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { styles } from "./style";
 import { useNavigation } from "@react-navigation/native";
+import { BACKEND_HOST, BACKEND_PORT } from "react-native-dotenv";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -11,13 +12,11 @@ export default function Login() {
     navigation.navigate("Home");
   }
   const submit = () => {
-    const signData = JSON.stringify( { email, password } );
+    const signData = JSON.stringify({ email, password });
     if (email === "" || password === "") {
       alert("Preencha todos os campos");
     } else {
-      console.log(email, password);
-
-      fetch("http://192.168.1.11:8000/auth/login", {
+      fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,7 +29,7 @@ export default function Login() {
             alert(responseJson.error);
           } else {
             console.log(responseJson);
-            if(responseJson.auth) {
+            if (responseJson.auth) {
               alert("Login realizado com sucesso");
               handleHome();
             }
@@ -40,10 +39,9 @@ export default function Login() {
         })
         .catch((error) => {
           console.error(error);
-        }
-        );
+        });
     }
-  }
+  };
   return (
     <View style={styles.container}>
       <TextInput
@@ -51,7 +49,6 @@ export default function Login() {
         placeholder="Email"
         onChangeText={(text) => setEmail(text)}
         value={email}
-
       />
       <TextInput
         style={styles.input}
@@ -60,16 +57,10 @@ export default function Login() {
         value={password}
         secureTextEntry={true}
       />
-      <TouchableOpacity
-        style={styles.btnLogin}
-        onPress={handleHome}
-      >
+      {/*<TouchableOpacity style={styles.btnLogin} onPress={handleHome}>
         <Text style={styles.txtWhite}>Home</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.btnLogin}
-        onPress={submit}
-      >
+  </TouchableOpacity>*/}
+      <TouchableOpacity style={styles.btnLogin} onPress={submit}>
         <Text style={styles.txtWhite}>Enviar</Text>
       </TouchableOpacity>
     </View>

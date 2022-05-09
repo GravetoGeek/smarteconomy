@@ -6,19 +6,21 @@ export const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    padding:10,
   },
   title: {
     fontSize: 84,
     color: '#636b6f',
     fontWeight: '100',
   },
-  btnLogin:{
+  btnDefault:{
     width: '100%',
     height: 40,
     backgroundColor:'#bc14ff',
     borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 10,
   },
   txtWhite:{
     color:'white',
