@@ -4,10 +4,10 @@ const bcrypt = require('bcryptjs')
 
 
 const user_create = async(req, res)=>{
-  let {username, email,password,phone} = req.body.user
-  password = bcrypt.hashSync(password,10)
+  let {email,password} = req.body
+  let password_hash = bcrypt.hashSync(password,10)
 
-  let result = await userDAO.user_create({username,email,password,phone})
+  let result = await userDAO.user_create({email,password_hash})
   .then((res)=>res)
   .catch((error)=>error)
   if(result){
@@ -40,10 +40,10 @@ const user_read = async(req, res)=>{
 
 const user_update = async(req, res)=>{
   let {id} = req.params
-  let {user} = req.body
-  user?.password ? user['password'] = bcrypt.hashSync(password,10) : null
+  let {password} = req.body
+  let password_hash = bcrypt.hashSync(password,10)
 
-  let result = await userDAO.user_update(id,user)
+  let result = await userDAO.user_update(id,{email,password_hash})
   .then((res)=>res)
   .catch((error)=>error)
   if(result){
