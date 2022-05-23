@@ -42,11 +42,11 @@ const logout = async (req, res)=>{
 
 const signup = async (req, res)=>{
   console.log(req.body)
-  let {username, email,password,phone} = req.body.user
+  let {email,password} = req.body
   
   password = bcrypt.hashSync(password,10)
 
-  let result = await userDAO.user_create({username,email,password,phone})
+  let result = await userDAO.user_create({email,password})
   .then((res)=>res)
   .catch((error)=>error)
   if(result.code == "ER_DUP_ENTRY"){

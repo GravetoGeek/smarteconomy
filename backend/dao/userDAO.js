@@ -1,7 +1,7 @@
 const {connection} = require('./connection')
 
 const user_create = async (user)=>{
-  const result = await connection('user').insert(user)
+  const result = await connection('users').insert(user)
   if(result){
     return {
       ...user,
@@ -14,7 +14,7 @@ const user_create = async (user)=>{
 }
 
 const user_read = async (id) => {
-  const result = await connection('user').where({id})
+  const result = await connection('users').where({id})
   if(result){
     return result
   }
@@ -25,7 +25,7 @@ const user_read = async (id) => {
 
 
 const user_list = async () =>{
-  const result = await connection('user').select('*')
+  const result = await connection('users').select('*')
   if(result){
     return result
   }
@@ -35,14 +35,14 @@ const user_list = async () =>{
 }
 
 const user_update = async (id,user)=>{
-  const result = await connection('user').where({id}).update(user)
+  const result = await connection('users').where({id}).update(user)
   .then((res)=>res)
   .catch((error)=>error)
   return result
 }
 
 const user_delete = async(id)=>{
-  const result = await connection('user').where({id}).del()
+  const result = await connection('users').where({id}).del()
   .then((res)=>res)
   .catch((error)=>error)
   return result

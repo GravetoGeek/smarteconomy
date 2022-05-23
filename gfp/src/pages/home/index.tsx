@@ -1,13 +1,6 @@
 import React from "react";
-import {
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
-import { styles } from "./style";
 import { useNavigation } from "@react-navigation/native";
+import { Box, Button, Center, Checkbox, Heading, HStack, VStack,Text } from "native-base";
 
 export default function Home() {
   const navigation = useNavigation();
@@ -20,14 +13,26 @@ export default function Home() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {/*<Text style={styles.title}>Home</Text>*/}
-      <TouchableOpacity style={styles.btnDefault} onPress={handleLogin}>
-        <Text style={styles.txtWhite}>Entrar</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.btnDefault} onPress={handleRegister}>
-        <Text style={styles.txtWhite}>Registrar</Text>
-      </TouchableOpacity>
-    </ScrollView>
-  );
+    <Center height="full">
+      <VStack width={"full"} p="5">
+        <Box width="full">
+          <Heading color="coolGray.700">Home</Heading>
+
+        
+          <Button mt="7" colorScheme="purple" onPress={handleLogin}>
+            Entrar
+          </Button>
+          <HStack mt="5">
+
+          
+        </HStack>
+          <Button mt="7" colorScheme="purple" onPress={handleRegister}>
+            Registrar
+          </Button>
+        </Box>
+        
+      </VStack>
+    </Center>
+
+  )
 }
