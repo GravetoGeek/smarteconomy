@@ -21,8 +21,8 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
-  function handleHome() {
-    navigation.navigate("Home");
+  function handleDashboard() {
+    navigation.navigate("Dashboard");
   }
   const submit = () => {
     const signData = JSON.stringify({ email, password });
@@ -44,7 +44,7 @@ export default function Login() {
             console.log(responseJson);
             if (responseJson.auth) {
               alert("Login realizado com sucesso");
-              handleHome();
+              handleDashboard();
             }
             // setEmail("");
             // setPassword("");
