@@ -8,8 +8,8 @@ exports.up = function (knex) {
         table.decimal('total_income', { precision: 2 }).notNullable()
         table.decimal('total_expense', { precision: 2 }).notNullable()
         table.datetime('date', { precision: 6 }).defaultTo(knex.fn.now(6))
-        table.integer('user_id').unsigned()
-        table.foreign('user_id').references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE')
+        table.integer('profile_id').unsigned()
+        table.foreign('profile_id').references('id').inTable('profiles').onDelete('CASCADE').onUpdate('CASCADE')
         table.timestamps(true, true)
       }
       )

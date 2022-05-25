@@ -1,8 +1,8 @@
 
 exports.up = function (knex) {
-  return knex.schema.hasTable('profile').then(async (exists) => {
+  return knex.schema.hasTable('profiles').then(async (exists) => {
     if (!exists) {
-      return await knex.schema.createTable('profile', (table) => {
+      return await knex.schema.createTable('profiles', (table) => {
         table.increments('id').primary();
         table.string('name', 255).notNullable()
         table.string('lastname', 255).notNullable()
@@ -18,9 +18,9 @@ exports.up = function (knex) {
   })
 }
 exports.down = function (knex) {
-  return knex.schema.hasTable('profile').then(async (exists) => {
+  return knex.schema.hasTable('profiles').then(async (exists) => {
     if (exists) {
-      return await knex.schema.dropTable('profile')
+      return await knex.schema.dropTable('profiles')
     }
   }
   )
