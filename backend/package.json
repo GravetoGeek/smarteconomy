@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "npx knex migrate:latest && nodemon ."
+    "start": "concurrently \"npm run watch\" \"npx knex migrate:latest && nodemon ./dist\"",
+    "compile": "tsc",
+    "watch": "tsc --w"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,7 @@
   "homepage": "https://github.com/GravetoGeek/gestao-financas-pessoais#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "concurrently": "^7.2.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",

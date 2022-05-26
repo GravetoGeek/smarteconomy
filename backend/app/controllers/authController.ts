@@ -1,13 +1,9 @@
-const { connection } = require('../dao/connection')
-const authDAO = require('../dao/authDAO')
-const userDAO = require('../dao/userDAO')
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
+import { User } from "../models/User"
 
-const login = async (req, res)=>{
-  let {email, password} = req.body
-  let result = await authDAO.login(email)
 
+
+const login = async (req:Request, res:Response)=>{
+  let user:User = new User(req.body?.email,req.body?.password)
     if(result == undefined){
       return res.status(404).send({
         message:'Usuário não encontrado',
