@@ -1,4 +1,3 @@
-const {connection} = require('./connection')
 
 const user_create = async (user)=>{
   const result = await connection('users').insert(user)

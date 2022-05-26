@@ -1,9 +1,6 @@
-const {connection} = require('./connection')
 
-
-const login = async (email) => {
+const loginDAO = async (email:string) => {
   const result = await connection('users').where({email})
-  console.log("deubosta",result[0])
   if(result.length > 0){
     return result[0]
   }
@@ -14,5 +11,5 @@ const login = async (email) => {
 
 
 module.exports = {
-  login,
+  loginDAO,
 }

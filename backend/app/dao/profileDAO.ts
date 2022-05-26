@@ -1,4 +1,4 @@
-const {connection} = require('./connection')
+
 
 const profile_create = async (profile)=>{
   const result = await connection('profiles').insert(profile)

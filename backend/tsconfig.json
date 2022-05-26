@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+      "target": "ES6",
+      "outDir": "dist/",
+      "noEmitOnError": true,
+      "noImplicitAny": true,
+  },
+  "include": [
+      "app/**/*"
+  ]
+}
