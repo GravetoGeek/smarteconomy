@@ -1,92 +1,73 @@
-const { connection } = require('../dao/connection')
-const userDAO = require('../dao/userDAO')
-const bcrypt = require('bcryptjs')
+import User from "../models/User";
+import bcrypt from "bcrypt";
+import {Request, Response} from 'express';
+import * as userDAO from "../database/userDAO";
 
+export const user_create = async(req:Request, res:Response) => {
+    try{
+        let secret:string = process.env.JWT_SECRET || 'jabulani';
+        if(!req?.body?.email || !req?.body?.password) throw {statusCode:400,message: 'Email e/ou senha não informados'}
+        const user:User = req.body;
+        user.password = bcrypt.hashSync(user.password,10)
 
-const user_create = async(req, res)=>{
-  let {email,password} = req.body
-  let password_hash = bcrypt.hashSync(password,10)
-
-  let result = await userDAO.user_create({email,password_hash})
-  .then((res)=>res)
-  .catch((error)=>error)
-  if(result){
-    return res.status(200).json({
-      message:'Usuário criado com sucesso',
-      user:result[0]
-    })
-  }
-  return res.status(500).json({
-    message:'Erro ao criar usuário',
-    user:null
-  })
+        let result = await userDAO.user_create(user)
+        console.log(result);
+        return res.status(200).json(result)
+    }
+    catch(error:any){
+        console.log(error);
+        return res.status(error.statusCode || 500).json({message: error.message || 'Erro no servidor'});
+    }
 }
 
-const user_read = async(req, res)=>{
-  let {id} = req.params
-
-  let result = await userDAO.user_read(id)
-  .then((res)=>res)
-  .catch((error)=>error)
-  if(result){
-    return res.status(200).json(result[0])
-  }
-  return res.status(500).json({
-    message:'Erro ao buscar usuário',
-    user:null
-  })
-}
-
-
-const user_update = async(req, res)=>{
-  let {id} = req.params
-  let {password} = req.body
-  let password_hash = bcrypt.hashSync(password,10)
-
-  let result = await userDAO.user_update(id,{email,password_hash})
-  .then((res)=>res)
-  .catch((error)=>error)
-  if(result){
+export const user_read = async(req:Request, res:Response) => {
+  try{
+    let {id} = req.params;
+    let result = await userDAO.user_read(Number(id));
+    if(result.length === 0) throw {statusCode:404,message: 'Usuário não encontrado'}
     return res.status(200).json(result)
   }
-  return res.status(500).json({
-    message:'Erro ao atualizar usuário',
-    user:null
-  })
+  catch(error:any){
+    console.log(error);
+    return res.status(error.statusCode || 500).json({message: error.message || 'Erro no servidor'});
+  }
 }
 
-const user_delete = async(req, res)=>{
-  let {id} = req.params
-
-  let result = await userDAO.user_delete(id)
-  .then((res)=>res)
-  .catch((error)=>error)
-  if(result){
+export const user_update = async(req:Request, res:Response) => {
+  try{
+    let {id} = req.params;
+    let user:User = req.body;
+    if(user.password) user.password = bcrypt.hashSync(user.password,10)
+    let result = await userDAO.user_update(Number(id), user);
+    if(result.length === 0) throw {statusCode:404,message: 'Usuário não encontrado'}
     return res.status(200).json(result)
   }
-  return res.status(500).json({
-    message:'Erro ao deletar usuário',
-    user:null
-  })
+  catch(error:any){
+    console.log(error);
+    return res.status(error.statusCode || 500).json({message: error.message || 'Erro no servidor'});
+  }
 }
 
-const user_list = async(req, res, next)=>{
-  let result = await userDAO.user_list()
-  .then((res)=>res)
-  .catch((error)=>error)
-  if(result){
+export const user_delete = async(req:Request, res:Response) => {
+  try{
+    let {id} = req.params;
+    let result = await userDAO.user_delete(Number(id));
+    if(result.length === 0) throw {statusCode:404,message: 'Usuário não encontrado'}
     return res.status(200).json(result)
   }
-  return res.status(500).json({
-    message:'Erro ao listar usuários',
-    user:null
-  })  
+  catch(error:any){
+    console.log(error);
+    return res.status(error.statusCode || 500).json({message: error.message || 'Erro no servidor'});
+  }
 }
 
-module.exports = {
-  user_create,
-  user_read,
-  user_update,
-  user_delete,
-  user_list
+export const user_list = async(req:Request, res:Response) => {
+  try{
+    let result = await userDAO.user_list();
+    return res.status(200).json(result)
+  }
+  catch(error:any){
+    console.log(error);
+    return res.status(error.statusCode || 500).json({message: error.message || 'Erro no servidor'});
+  }
 }

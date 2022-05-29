@@ -1,8 +1,8 @@
 
-exports.up = function (knex) {
-  return knex.schema.hasTable('balance').then(async (exists) => {
+exports.up = async function (knex:any) {
+  await knex.schema.hasTable('balance').then(async (exists:any) => {
     if (!exists) {
-      return await knex.schema.createTable('balance', (table) => {
+      await knex.schema.createTable('balance', (table:any) => {
         table.increments('id').primary();
         table.decimal('total_balance', { precision: 2 }).notNullable()
         table.decimal('total_income', { precision: 2 }).notNullable()
@@ -17,10 +17,10 @@ exports.up = function (knex) {
   })
 };
 
-exports.down = function (knex) {
-  return knex.schema.hasTable('balance').then(async (exists) => {
+exports.down = async function (knex:any) {
+  await knex.schema.hasTable('balance').then(async (exists:any) => {
     if (exists) {
-      return await knex.schema.dropTable('balance')
+      await knex.schema.dropTable('balance')
     }
   }
   )

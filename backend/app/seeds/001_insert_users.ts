@@ -1,7 +1,10 @@
-const faker = require('faker');
-const bcrypt = require('bcryptjs')
+import bcrypt from 'bcrypt';
+import { Knex } from 'knex';
+import User from '../models/User';
+import {faker} from '@faker-js/faker';
 
-let users = [];
+
+let users: User[] = []
 for(let i = 0; i < 100; i++){
   users.push({
     email: faker.internet.email(),
@@ -12,7 +15,7 @@ for(let i = 0; i < 100; i++){
 
 
 
-exports.seed = function(knex) {
+exports.seed = function(knex: Knex) {
   // Deletes ALL existing entries
   return knex('users').del()
     .then(function () {

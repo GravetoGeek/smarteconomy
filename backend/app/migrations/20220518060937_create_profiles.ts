@@ -1,15 +1,16 @@
 
-exports.up = function (knex) {
-  return knex.schema.hasTable('profiles').then(async (exists) => {
+exports.up = async function (knex:any) {
+  await knex.schema.hasTable('profiles').then(async (exists:any) => {
     if (!exists) {
-      return await knex.schema.createTable('profiles', (table) => {
+      await await knex.schema.createTable('profiles', (table:any) => {
         table.increments('id').primary();
         table.string('name', 255).notNullable()
         table.string('lastname', 255).notNullable()
-        table.string('birth', 255).notNullable().unique()
+        table.string('birthday', 255).notNullable().unique()
         table.string('monthly_income', 255).notNullable()
         table.string('profession', 255).notNullable()
         table.string('gender').notNullable()
+        table.string('email', 255).notNullable().unique()
         table.integer('user_id').unique().unsigned()
         table.foreign('user_id').references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE')
         table.timestamps(true, true)
@@ -17,10 +18,10 @@ exports.up = function (knex) {
     }
   })
 }
-exports.down = function (knex) {
-  return knex.schema.hasTable('profiles').then(async (exists) => {
+exports.down = async function (knex:any) {
+  await knex.schema.hasTable('profiles').then(async (exists:any) => {
     if (exists) {
-      return await knex.schema.dropTable('profiles')
+      await knex.schema.dropTable('profiles')
     }
   }
   )
