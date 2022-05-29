@@ -1,8 +1,8 @@
 
-exports.up = function (knex) {
-  return knex.schema.hasTable('account').then(async (exists) => {
+exports.up = function (knex:any) {
+  return knex.schema.hasTable('account').then(async (exists:any) => {
     if (!exists) {
-      return knex.schema.createTable('account', (table) => {
+      return knex.schema.createTable('account', (table:any) => {
         table.increments('id').primary()
         table.decimal('partial_balance', { precision: 2 }).notNullable()
         table.decimal('partial_income', { precision: 2 }).notNullable()
@@ -13,6 +13,11 @@ exports.up = function (knex) {
   })
 }
 
-exports.down = function (knex) {
-
+exports.down = function (knex:any) {
+  return knex.schema.hasTable('account').then(async (exists:any) => {
+    if (exists) {
+      return knex.schema.dropTable('account')
+    }
+  }
+  ) 
 };

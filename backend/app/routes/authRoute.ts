@@ -1,15 +1,13 @@
-const express = require('express')
-const router = express.Router()
-const authController = require('../controllers/authController.js')
+import { Router } from "express";
+import { login, logout, signup } from "../controllers/authController";
+import { Request, Response } from "express";
 
-router.get('/',(req, res, next)=>{
-  res.send('Rota auth')
-})
+const authRoute = Router();
+authRoute.get("/", (req: Request, res: Response) => {
+  res.send("Rota auth");
+});
+authRoute.post("/login", login);
+authRoute.get("/logout", logout);
+authRoute.post("/signup", signup);
 
-router.post('/login',authController.login)
-
-router.get('/logout',authController.logout)
-
-router.post('/signup',authController.signup)
-
-module.exports = router
+export default authRoute;

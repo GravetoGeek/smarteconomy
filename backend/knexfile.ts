@@ -1,7 +1,13 @@
 // Update with your config settings.
-require('dotenv').config()
-const {resolve} = require('path')
-module.exports = {
+import dotenv from 'dotenv';
+import { resolve } from 'path';
+dotenv.config();
+
+/**
+ * @type { Object.<string, import("knex").Knex.Config> }
+ */
+
+ module.exports = {
 
   development: {
     client: `${process.env.DB_CLIENT}`,
@@ -13,10 +19,12 @@ module.exports = {
     },
     migrations: {
       tableName: 'knex_migrations',
-      directory: resolve(__dirname,'migrations')
+      extension: 'ts',
+      directory: resolve(__dirname,'app/migrations')
     },
     seeds: {
-      directory: resolve(__dirname,'seeds'),
+      extension: 'ts',
+      directory: resolve(__dirname,'app/seeds'),
     }
   },
 
@@ -33,10 +41,10 @@ module.exports = {
     },
     migrations: {
       tableName: 'knex_migrations',
-      directory: resolve(__dirname,'migrations')
+      directory: resolve(__dirname,'app/migrations')
     },
     seeds: {
-      directory: resolve(__dirname,'seeds'),
+      directory: resolve(__dirname,'app/seeds'),
     }
   },
 
@@ -53,11 +61,11 @@ module.exports = {
     },
     migrations: {
       tableName: 'knex_migrations',
-      directory: resolve(__dirname,'migrations')
+      directory: resolve(__dirname,'app/migrations')
     },
     seeds: {
-      directory: resolve(__dirname,'seeds'),
+      directory: resolve(__dirname,'app/seeds'),
     }
   }
 
-};
+}

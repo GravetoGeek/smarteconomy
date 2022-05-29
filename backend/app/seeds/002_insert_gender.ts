@@ -1,5 +1,6 @@
+import { Knex } from "knex";
 
-exports.seed = function(knex) {
+exports.seed = function(knex: Knex) {
   // Deletes ALL existing entries
   return knex('gender').del()
     .then(function () {

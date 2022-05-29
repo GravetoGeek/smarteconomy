@@ -1,22 +1,13 @@
-const express = require('express')
-const authController = require('../controllers/authController')
-const router = express.Router()
-
-const userController = require('../controllers/userController')
-
-// router.get('/',(req, res, next)=>{
-//   res.send('Rota user')
-// })
-
-router.post('/',authController.verifyJWT, userController.user_create)
-
-router.get('/:id',authController.verifyJWT,userController.user_read)
-
-router.put('/:id',authController.verifyJWT,userController.user_update)
-
-router.delete('/:id',authController.verifyJWT,userController.user_delete)
-
-router.get('/',authController.verifyJWT,userController.user_list)
+import { Router } from "express";
+import { verifyJWT } from "../controllers/authController";
+import { user_create, user_read, user_update, user_delete, user_list } from "../controllers/userController";
 
 
-module.exports = router
+const userRoute = Router();
+userRoute.post("/",verifyJWT, user_create);
+userRoute.get("/:id", verifyJWT, user_read);
+userRoute.put("/:id", verifyJWT, user_update);
+userRoute.post("/:id", verifyJWT, user_delete);
+userRoute.get('/', verifyJWT, user_list)
+
+export default userRoute;

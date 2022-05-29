@@ -1,8 +1,8 @@
 
-exports.up = function (knex) {
-  return knex.schema.hasTable('gender').then(async (exists) => {
+exports.up = async function (knex:any) {
+  await knex.schema.hasTable('gender').then(async (exists:any) => {
     if (!exists) {
-      return await knex.schema.createTable('gender', (table) => {
+      await knex.schema.createTable('gender', (table:any) => {
         table.increments('id').primary();
         table.string('gender', 255).notNullable().unique()
         table.timestamps(true, true)
@@ -11,10 +11,10 @@ exports.up = function (knex) {
   })
 };
 
-exports.down = function (knex) {
-  return knex.schema.hasTable('gender').then(async (exists) => {
+exports.down = async function (knex:any) {
+  await knex.schema.hasTable('gender').then(async (exists:any) => {
     if (exists) {
-      return await knex.schema.dropTable('gender')
+      await knex.schema.dropTable('gender')
     }
   })
 };
