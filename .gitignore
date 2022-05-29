@@ -28,4 +28,6 @@ Untitled.mdj
 insumos
 uml.mdj
 .expo
-backend/dist/*
+backend/dist
+backend/dir
+# backend/.env.example

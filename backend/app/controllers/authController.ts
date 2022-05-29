@@ -11,10 +11,10 @@ import jwt from 'jsonwebtoken';
 export const login = async (req:Request, res:Response) => {
     try{
         let secret:string = process.env.JWT_SECRET || 'jabulani';
-        if(!req?.body?.email || !req?.body?.password) throw {statusCode:400,message: 'Email e/ou senha não informados'}
+        if(!req?.body?.email || !req?.body?.password) throw {statusCode:400,message: 'Email e/ou senha não informados',auth:false}
         const user:User = req.body;
         const result:User[] = await loginDAO(user.email);
-        if(result.length === 0) throw {statusCode:404,message: 'Usuário não encontrado'}
+        if(result.length === 0) throw {statusCode:404,message: 'Usuário não encontrado',auth:false}
         console.log(result);
         if(bcrypt.compareSync(user.password, result[0].password)){
             const token = jwt.sign({
@@ -23,14 +23,15 @@ export const login = async (req:Request, res:Response) => {
             }, secret, {expiresIn: '1h'});
             return res.status(200).json({
                 message: 'Login realizado com sucesso',
-                token: token
+                token: token,
+                auth:true
             });
         }
-        throw {statusCode:401,message: 'Email e/ou senha inválidos'}
+        throw {statusCode:401,message: 'Email e/ou senha inválidos',auth:false}
     }
     catch(error:any){
         console.log(error);
-        return res.status(error.statusCode || 500).json({message: error.message || 'Erro no servidor'});
+        return res.status(error.statusCode || 500).json({message: error || 'Erro no servidor'});
     }
 }
 
@@ -45,17 +46,26 @@ export const logout = async (req:Request, res:Response) => {
 export const signup = async (req:Request, res:Response) => {
     try{
         let secret:string = process.env.JWT_SECRET || 'jabulani';
-        if(!req?.body?.email || !req?.body?.password) throw {statusCode:400,message: 'Email e/ou senha não informados'}
+        if(!req?.body?.email || !req?.body?.password) throw {statusCode:400,message: 'Email e/ou senha não informados',auth:false}
         const user:User = req.body;
         user.password = bcrypt.hashSync(user.password,10)
 
         let result = await userDAO.user_create(user)
         console.log(result);
-        return res.status(200).json(result)
+        if(result.affectedRows === 0) throw {statusCode:400,message: 'Usuário já existe',auth:false}
+        const token = jwt.sign({
+            id: result.insertId,
+            email: user.email,
+        }, secret, {expiresIn: '1h'});
+        return res.status(200).json({
+            message: 'Usuário criado com sucesso',
+            token: token,
+            auth:true
+        });
     }
     catch(error:any){
         console.log(error);
-        return res.status(error.statusCode || 500).json({message: error.message || 'Erro no servidor'});
+        return res.status(error.statusCode || 500).json({message: error || 'Erro no servidor'});
     }
 }
 
