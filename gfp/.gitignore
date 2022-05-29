@@ -1,5 +1,5 @@
 .expo/
-.expo-shared/
+.expo-shared
 .vscode/
 node_modules/
 .expo/

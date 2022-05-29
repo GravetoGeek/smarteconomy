@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { Knex } from "knex";
 import Balance from "../models/Balance";
 
@@ -11,7 +12,7 @@ for(let i = 0; i < 100; i++){
     total_balance: Number((Math.random()*(20000-1200)+1200).toFixed(2)),
     total_income: Number((Math.random()*(20000-1200)+1200).toFixed(2)),
     total_expense: Number((Math.random()*(20000-1200)+1200).toFixed(2)),
-    date: new Date(),
+    date: faker.date.recent(60),
     profile_id: Number(Math.round(Math.random() * (max - min) + min))
   })
 }
