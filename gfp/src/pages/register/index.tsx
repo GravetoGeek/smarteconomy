@@ -65,7 +65,7 @@ export default function Register() {
     }
     if (formData?.password != formData?.confirm_password) {
       console.log("deu certo");
-      setErrors({ ...errors, diferent: "Senhas não conferem" });
+      setErrors({ ...errors, different: "Senhas não conferem" });
       return false;
     }
     return true;
@@ -78,7 +78,7 @@ export default function Register() {
     delete errors?.password_length;
     delete errors?.confirm_password;
     delete errors?.confirm_password_length;
-    delete errors?.diferent;
+    delete errors?.different;
 
     if (validate()) {
       delete formData.confirm_password;
@@ -235,17 +235,17 @@ export default function Register() {
           />
           {"confirm_password" in errors ? (
             <FormControl.ErrorMessage>
-              {errors?.confirm_password}
+              {errors.confirm_password}
             </FormControl.ErrorMessage>
           ) : null}
           {"confirm_password_length" in errors ? (
             <FormControl.ErrorMessage>
-              {errors?.confirm_password_length}
+              {errors.confirm_password_length}
             </FormControl.ErrorMessage>
           ) : null}
-          {"diferent" in errors ? (
+          {"different" in errors ? (
             <FormControl.ErrorMessage>
-              {errors?.diferent}
+              {errors.different}
             </FormControl.ErrorMessage>
           ) : null}
         </FormControl>

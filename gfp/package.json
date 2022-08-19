@@ -4,7 +4,7 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start --dev --port=8080",
-    "android": "expo start --android --dev --port=8080",
+    "android": "expo start --android --port=8080",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject"
@@ -30,7 +30,8 @@
     "react-native-screens": "^3.13.1",
     "react-native-svg": "^12.3.0",
     "react-native-web": "0.17.1",
-    "victory": "^36.4.0"
+    "victory": "^36.4.0",
+    "expo-network": "~4.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

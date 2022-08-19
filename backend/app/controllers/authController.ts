@@ -2,9 +2,11 @@ import 'dotenv/config'
 import User from '../models/User';
 import {Request, Response} from 'express';
 import {loginDAO} from '../database/authDAO';
+import { profile_create } from '../database/profileDAO';
 import * as userDAO from '../database/userDAO';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import Profile from '../models/Profile';
 
 
 
@@ -50,13 +52,30 @@ export const signup = async (req:Request, res:Response) => {
         const user:User = req.body;
         user.password = bcrypt.hashSync(user.password,10)
 
-        let result = await userDAO.user_create(user)
-        console.log(result);
-        if(result.affectedRows === 0) throw {statusCode:400,message: 'Usuário já existe',auth:false}
+       
+        
+
+        let user_created = await userDAO.user_create(user)
+        console.log('user_created',user_created);
+        if(user_created.affectedRows === 0) throw {statusCode:400,message: 'Usuário já existe',auth:false}
+
+        let profile:Profile = {
+          email: user.email,
+          user_id: user_created[0]
+      }
+      console.log('profile',profile);
+
+        let profile_created = await profile_create(profile)
+        console.log('profile_created',profile_created);
+        if(profile_created.affectedRows === 0) throw {statusCode:400,message: 'Usuário já existe',auth:false}
+
         const token = jwt.sign({
-            id: result.insertId,
+            id: user_created[0],
             email: user.email,
         }, secret, {expiresIn: '1h'});
+
+
+
         return res.status(200).json({
             message: 'Usuário criado com sucesso',
             token: token,

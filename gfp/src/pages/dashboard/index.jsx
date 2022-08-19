@@ -98,7 +98,7 @@ export default function Dashboard(){
   const height=200;
   const bezier = true
   return(
-    <Box height="full">
+    <Box height="full" background="white">
       <VStack width="full">
         <Button onPress={showDatepicker} color="white" title="Show date picker!"/>
         <Button onPress={showTimepicker} title="Show time picker!"/>
