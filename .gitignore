@@ -21,7 +21,7 @@ doc/api/
 *.js.map
 node_modules
 package-lock.json
-.env
+# .env
 .expo-shared
 .vscode
 Untitled.mdj

@@ -3,7 +3,7 @@ import User from '../models/User';
 import {Request, Response} from 'express';
 import {loginDAO} from '../database/authDAO';
 import * as userDAO from '../database/userDAO';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import * as profileDAO from '../database/profileDAO';
 import Profile from '../models/Profile';
