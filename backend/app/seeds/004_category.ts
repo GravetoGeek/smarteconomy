@@ -2,12 +2,12 @@ import { Knex } from "knex";
 
 export async function seed(knex: Knex): Promise<void> {
     // Deletes ALL existing entries
-    await knex("table_name").del();
+    await knex("category").del();
 
     // Inserts seed entries
-    await knex("table_name").insert([
-        { id: 1, colName: "rowValue1" },
-        { id: 2, colName: "rowValue2" },
-        { id: 3, colName: "rowValue3" }
+    await knex("category").insert([
+        { id: 1, name: "rowValue1" ,description: "rowValue1"},
+        { id: 2, name: "rowValue2" ,description: "rowValue2"},
+        { id: 3, name: "rowValue3",description: "rowValue3"}
     ]);
 };
