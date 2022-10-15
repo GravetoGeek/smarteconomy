@@ -7,7 +7,7 @@ import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 
 
 export default function Dashboard(){
-  const [date, setDate] = useState(new Date(1598051730000));
+  const [date, setDate] = useState(new Date());
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate
     setDate(currentDate);

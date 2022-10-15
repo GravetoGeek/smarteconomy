@@ -5,6 +5,9 @@ import {loginDAO} from '../database/authDAO';
 import * as userDAO from '../database/userDAO';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import * as profileDAO from '../database/profileDAO';
+import Profile from '../models/Profile';
+import HttpError from '../models/HttpError';
 
 
 
@@ -17,13 +20,11 @@ export const login = async (req:Request, res:Response) => {
         if(result.length === 0) throw {statusCode:404,message: 'Usuário não encontrado',auth:false}
         console.log(result);
         if(bcrypt.compareSync(user.password, result[0].password)){
-            const token = jwt.sign({
-                id: result[0].id,
-                email: result[0].email,
-            }, secret, {expiresIn: '1h'});
+
             return res.status(200).json({
                 message: 'Login realizado com sucesso',
-                token: token,
+                access_token: jwt.sign({id:result[0].id, email: result[0].email}, secret, {expiresIn: '5m'}),
+                refresh_token: jwt.sign({id:result[0].id, email: result[0].email}, secret, {expiresIn: '10m'}),
                 auth:true
             });
         }
@@ -53,13 +54,16 @@ export const signup = async (req:Request, res:Response) => {
         let result = await userDAO.user_create(user)
         console.log(result);
         if(result.affectedRows === 0) throw {statusCode:400,message: 'Usuário já existe',auth:false}
-        const token = jwt.sign({
-            id: result.insertId,
-            email: user.email,
-        }, secret, {expiresIn: '1h'});
+        const profile:Profile = {
+          email: user.email,
+          user_id: result[0]
+        }
+        let result2 = await profileDAO.profileDAO_create(profile)
+        
         return res.status(200).json({
             message: 'Usuário criado com sucesso',
-            token: token,
+            access_token: jwt.sign({id: result.insertId,email: user.email}, secret, {expiresIn: '5m'}),
+            refresh_token: jwt.sign({id: result.insertId,email: user.email}, secret, {expiresIn: '10m'}),
             auth:true
         });
     }
@@ -71,33 +75,60 @@ export const signup = async (req:Request, res:Response) => {
 
 
 export const verifyJWT = async (req:Request, res:Response, next:any)=>{
+  try {
     let secret:string = process.env.JWT_SECRET || 'jabulani';
-    const token:any = req.headers['x-access-token']
-    console.log('token',token)
-    if(!token){
+    const accessToken:any = req.headers['x-access-token']
+    const refreshToken:any = req.headers['x-refresh-token']
+
+    if(!accessToken){
       return res.status(401).send({
         auth:false,
-        message:'Token não encontrado',
-        token:null
+        message:'x-access-token não informado',
+        'x-access-token':null,
+        'x-refresh-token':null
       })
     }
-    const result = await jwt.verify(token,secret,function(err:any,decoded:any){
-      if(err){
-        console.log(JSON.stringify(err))
-        if(err.name == 'TokenExpiredError'){
-          return res.status(401).send({
+    // if(!refreshToken){
+    //   return res.status(401).send({
+    //     auth:false,
+    //     message:'x-refresh-token não informado',
+    //     'x-access-token':null,
+    //     'x-refresh-token':null
+    //   })
+    // }
+
+
+      jwt.verify(accessToken,secret,function(err:any,decoded:any){
+        console.log('decoded',decoded);
+        if(err){
+          if(err.name == 'TokenExpiredError'){
+              return res.status(401).send({
+                auth:false,
+                message:'Token expirado',
+                'x-access-token':null
+              })            
+          }
+          return res.status(500).json({
             auth:false,
-            message:'Token expirado',
-            token:null
+            message:'Falha ao autenticar token',
+            'x-access-token':null
           })
         }
-  
-        return res.status(500).json({
-          auth:false,
-          message:'Falha ao autenticar token',
-          token:null
-        })
+        next()
+      })
+
+
+
+  } catch (error:any) {
+    res.json(
+      {
+        auth:false,
+        message:'Falha ao autenticar token',
+        'x-access-token':null,
+        'x-refresh-token':null,
+        error: JSON.stringify(error)
       }
-      next()
-    })
-    }
+    )
+  }
+    
+}

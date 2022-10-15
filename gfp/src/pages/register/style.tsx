@@ -32,5 +32,10 @@ export const styles = StyleSheet.create({
     color:'white',
     fontWeight:'bold',
     fontSize:16,
+  },
+  txtLink:{
+    color:'#3e8cf8',
+    fontWeight:'bold',
+    fontSize:16,
   }
 });
