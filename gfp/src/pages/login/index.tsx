@@ -16,6 +16,7 @@ import {
 } from "native-base";
 import { useNavigation } from "@react-navigation/native";
 import { BACKEND_HOST, BACKEND_PORT } from "react-native-dotenv";
+import { styles } from "./style";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -23,6 +24,9 @@ export default function Login() {
   const navigation = useNavigation();
   function handleDashboard() {
     navigation.navigate("Dashboard");
+  }
+  function handleRegister() {
+    navigation.navigate("Register");
   }
   const submit = () => {
     const signData = JSON.stringify({ email, password });
@@ -99,12 +103,9 @@ export default function Login() {
           <Button mt="7" colorScheme="purple" onPress={submit}>
             Entrar
           </Button>
-          <HStack mt="5">
-          <Checkbox value="agree">
-            <Text ml="3">Concordo com a politica de segurança</Text>
-          </Checkbox>
-          
-        </HStack>
+          <Center>
+          <Text style={styles.txtLink} onPress={handleRegister} mt="7" color="muted.700" fontWeight={400}>Registrar</Text>
+          </Center>
         </Box>
         
       </VStack>
