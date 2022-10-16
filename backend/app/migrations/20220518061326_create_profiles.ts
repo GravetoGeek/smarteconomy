@@ -10,7 +10,7 @@ exports.up = async function (knex:any) {
         table.string('profession', 255);
         table.string('email', 255).notNullable().unique()
         table.integer('gender_id').unsigned();
-        table.foreign('gender_id').references('id').inTable('gender').onDelete('CASCADE').onUpdate('CASCADE')
+        table.foreign('gender_id').references('id').inTable('genders').onDelete('CASCADE').onUpdate('CASCADE')
         table.integer('user_id').unsigned().notNullable().unique()
         table.foreign('user_id').references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE')
         table.timestamp("created_at").defaultTo(knex.fn.now());
