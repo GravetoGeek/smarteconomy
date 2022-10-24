@@ -23,6 +23,6 @@ export const user_update = async (id:number,user:User)=>{
 }
 
 export const user_delete = async(id:number)=>{
-    const result = await connection('users').where({id}).delete()
+    const result = await connection('users').where({id}).del()
     return result
 }
