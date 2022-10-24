@@ -15,7 +15,6 @@ for(let i = 0; i < 100; i++){
     monthly_income: Number((Math.random()*(20000-1200)+1200).toFixed(2)),
     profession: faker.name.jobTitle(),
     gender_id: Math.round(Math.random() * (max - min) + min),
-    email: faker.internet.email(),
     user_id: i+1
   })
 } 
