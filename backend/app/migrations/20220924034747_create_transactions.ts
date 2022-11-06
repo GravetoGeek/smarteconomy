@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("destination_account").notNullable();
     table.string("description").notNullable();
     table.datetime("date", { precision: 6 }).defaultTo(knex.fn.now(6));
-    table.integer('account_id').unsigned().notNullable().unique()
+    table.integer('account_id').unsigned().notNullable();
     table.foreign('account_id').references('id').inTable('accounts').onDelete('CASCADE').onUpdate('CASCADE')
     table.integer('category_id').unsigned().notNullable()
     table.foreign('category_id').references('id').inTable('categories').onDelete('CASCADE').onUpdate('CASCADE') 
