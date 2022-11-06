@@ -6,6 +6,7 @@ import accountRoute from "./accountRoute";
 import categoryRoute from "./categoryRoute";
 import profileRoute from "./profileRoute";
 import genderRoute from "./genderRoute";
+import transactionRoute from "./transactionRoute";
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.use('/account',accountRoute)
 router.use('/category',categoryRoute)
 router.use('/profile',profileRoute)
 router.use('/gender',genderRoute)
+router.use('/transaction',transactionRoute)
 
 router.use((req:Request, res:Response, next) => {
   res.status(404).send('404 Not Found');

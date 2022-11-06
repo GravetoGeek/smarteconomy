@@ -19,6 +19,8 @@ import { BACKEND_HOST, BACKEND_PORT } from "react-native-dotenv";
 import { styles } from "./style";
 import axios from "axios";
 
+
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,18 +28,19 @@ export default function Login() {
 
   const navigation = useNavigation();
   function handleDashboard() {
-    navigation.navigate("Dashboard");
+    navigation.navigate('Dashboard');
   }
   function handleRegister() {
-    navigation.navigate("Register");
+    navigation.navigate('Register');
   }
   const submit = async () => {
     const signData = JSON.stringify({ email, password });
     console.log('iniciando login',signData)
-    if (email === "" || password === "") {
+    if (email === '' || password === '') {
       alert("Preencha todos os campos");
     } else {
       let url = `http://${BACKEND_HOST}:${BACKEND_PORT}/auth/login`;
+      console.log('url',url)
       let result = await axios.post(url, signData, {
         headers: {
           "Content-Type": "application/json",
