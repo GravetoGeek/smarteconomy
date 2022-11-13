@@ -18,6 +18,7 @@ export async function seed(knex: Knex): Promise<void> {
             amount: parseFloat((Math.random()*(20000-1200)+1200).toFixed(2)),
             destination_account: faker.finance.iban(true,'BR'),
             description: faker.lorem.sentence(),
+            type: faker.finance.transactionType(),
             date: faker.date.past(),
             account_id: Math.round(Math.random() * (max_account - min_account) + min_account),
             category_id: Math.round(Math.random() * (max_category - min_category) + min_category)
