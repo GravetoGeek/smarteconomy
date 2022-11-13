@@ -32,3 +32,4 @@ backend/dist
 backend/dir
 backend/.env.example
 backend/.env
+frontend/.env
