@@ -73,7 +73,7 @@ export default function Login() {
       <Image
       size={150}
       resizeMode="contain"
-      source={{uri:'https://github.com/gravetogeek.png'}}
+      source={{uri:'https://github.com/villaslobo.png'}}
       alt="Foto do Usuário"
       />
       <VStack width={"full"} p="5">
