@@ -31,3 +31,4 @@ uml.mdj
 backend/dist
 backend/dir
 backend/.env.example
+backend/.env
