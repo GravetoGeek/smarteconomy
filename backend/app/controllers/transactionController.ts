@@ -4,8 +4,8 @@ import * as transactionDAO from "../database/transactionDAO";
 
 export const transaction_create = async (req:Request, res:Response) => {
     try{
-        let {description, amount, date, destination_account, category_id, account_id} = req.body;
-        let transaction:Transaction = {amount, description, date, destination_account, category_id, account_id}
+        let {description, amount, date,type, destination_account, category_id, account_id} = req.body;
+        let transaction:Transaction = {amount, description, date, type, destination_account, category_id, account_id}
         let result = await transactionDAO.transaction_create(transaction)
         console.log(result);
         return res.status(200).json(result)
