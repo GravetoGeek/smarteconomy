@@ -8,7 +8,7 @@ module.exports = {
   },
   {
     "name": "frontend",
-    "cwd": "./gfp",
+    "cwd": "./frontend",
     "script": "expo",
     "args": "start --android"
 }
