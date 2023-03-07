@@ -6,8 +6,8 @@ import { NativeBaseProvider } from "native-base";
 import { configureStore } from '@reduxjs/toolkit';
 
 
+
 export default function App() {
-  
   return (
     <NativeBaseProvider>
     <NavigationContainer>
@@ -15,5 +15,5 @@ export default function App() {
       <Routes/>
     </NavigationContainer>
     </NativeBaseProvider>
-  );
+  )
 }
