@@ -20,7 +20,9 @@
     "test": "jest",
     "compile": "tsc",
     "prod": "ts-node dir/index.ts",
-    "start": "nodemon --watch 'app' --ext ts --exec ts-node app/index.ts"
+    "start": "nodemon --watch 'app' --ext ts --exec ts-node app/index.ts",
+    "clear": "git fetch -p && for /F \"tokens=1*\" %i in ('git branch -vv ^| find /v \"+\" ^| find /v \"master\" ^| find /v \"develop\" ^| find /v \"*\" ^| find /v \"feature\"^| find /v \"main\"') do git branch -D %i"
+
   },
   "repository": {
     "type": "git",
