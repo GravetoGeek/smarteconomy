@@ -7,5 +7,7 @@ type Transaction = {
     date?: Date;
     account_id?: number;
     category_id?: number;
+    created_at?: Date;
+    updated_at?: Date;
 }
 export default Transaction

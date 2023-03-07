@@ -5,7 +5,7 @@ import Profile from '../models/Profile';
 let max:number = 3
 let min:number = 1
 let profiles:Profile[] = [];
-
+faker.locale = 'pt_BR'
 
 for(let i = 0; i < 100; i++){
   profiles.push({
