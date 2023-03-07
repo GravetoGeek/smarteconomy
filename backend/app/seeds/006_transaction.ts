@@ -7,13 +7,13 @@ export async function seed(knex: Knex): Promise<void> {
     await knex("transactions").del();
     
     let transactions:Transaction[] = [];
-    let max_category:number = 3
+    let max_category:number = 7
     let min_category:number = 1
     let max_account:number = 100
     let min_account:number = 1
+    faker.locale = 'pt_BR'
 
-
-    for(let i = 0; i < 100; i++){
+    for(let i = 0; i < 10000; i++){
         transactions.push({
             amount: parseFloat((Math.random()*(20000-1200)+1200).toFixed(2)),
             destination_account: faker.finance.iban(true,'BR'),

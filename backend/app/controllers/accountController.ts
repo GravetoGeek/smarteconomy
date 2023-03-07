@@ -7,7 +7,6 @@ export const account_create = async (req:Request, res:Response) => {
         let {name, description, type, profile_id} = req.body;
         let account:Account = {name, description, type, profile_id}
         let result = await accountDAO.account_create(account)
-        console.log(result);
         return res.status(200).json(result)
     }
     catch(error:any){

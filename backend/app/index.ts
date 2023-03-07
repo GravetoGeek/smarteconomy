@@ -8,6 +8,8 @@ const interfaces = os.networkInterfaces();
 const interfaceInfo = Object.values(interfaces).flat().find(info => info?.family === 'IPv4' && !info.internal);
 const address:string|undefined = interfaceInfo?.address || process.env.NODE_HOST || 'localhost';
 const port:number = Number(process.env.NODE_PORT) || 8000;
+process.env.DB_HOST = address
+process.env.NODE_HOST = address
 const app = express();
 
 app.use(cors());

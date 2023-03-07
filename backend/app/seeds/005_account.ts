@@ -9,7 +9,7 @@ export async function seed(knex: Knex): Promise<void> {
     let accounts:Account[] = [];
     let max_profile = 100;
     let min_profile = 1;
-
+    faker.locale = 'pt_BR'
     for(let i = 0; i < 100; i++){
         accounts.push({
             name: faker.finance.accountName(),
