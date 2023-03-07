@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "npx knex migrate:latest && nodemon ."
+    "start": "npx knex migrate:latest && nodemon .",
+    "clear": "git fetch -p && for /F \"tokens=1*\" %i in ('git branch -vv ^| find /v \"+\" ^| find /v \"master\" ^| find /v \"develop\" ^| find /v \"*\" ^| find /v \"feature\"^| find /v \"main\"') do git branch -D %i"
+
   },
   "repository": {
     "type": "git",
