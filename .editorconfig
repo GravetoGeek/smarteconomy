@@ -1,0 +1,17 @@
+# IMPORTANTE: Este arquivo não deve ser excluído, pois ele é usado para definir as configurações de estilo de código para o projeto. Para mais informações, consulte o arquivo README.md.
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 4
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+semicolon = false
+
+[*.md]
+
+[*.conf]
+indent_style = space
+indent_size = 4

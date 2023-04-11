@@ -1,8 +1,8 @@
 type Gender = {
-  id?: number
-  gender: string
-  created_at?: Date;
-    updated_at?: Date;
-}
+  id?: number;
+  gender: string;
+  created_at?: number;
+  updated_at?: number;
+};
 
 export default Gender

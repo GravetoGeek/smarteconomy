@@ -1,8 +1,8 @@
-import {Router} from 'express'
+import { Router } from 'express'
 import { verifyJWT } from '../controllers/authController'
-import {sendMail} from "../controllers/emailController"
+import { sendMail } from '../controllers/emailController'
 
-const emailRoute = Router();
-emailRoute.post("/send",verifyJWT,sendMail)
+const emailRoute = Router()
+emailRoute.post('/send', verifyJWT, sendMail)
 
-export default emailRoute;
+export default emailRoute

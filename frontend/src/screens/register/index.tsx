@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import { BACKEND_HOST, BACKEND_PORT } from "@env";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { BACKEND_HOST, BACKEND_PORT } from "react-native-dotenv";
 import {
   Box,
   Button,
-  Center,
   FormControl,
   Icon,
   Input,
-  VStack,
+  VStack
 } from "native-base";
-import { MaterialIcons } from "@expo/vector-icons";
+import React, { useState } from "react";
 
 export default function Register() {
   const [formData, setData] = useState({});

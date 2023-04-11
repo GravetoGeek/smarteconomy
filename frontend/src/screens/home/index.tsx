@@ -18,19 +18,19 @@ export default function Home() {
         <Box width="full">
           <Heading color="coolGray.700">Home</Heading>
 
-        
+
           <Button mt="7" colorScheme="purple" onPress={handleLogin}>
             Entrar
           </Button>
           <HStack mt="5">
 
-          
+
         </HStack>
           <Button mt="7" colorScheme="purple" onPress={handleRegister}>
             Registrar
           </Button>
         </Box>
-        
+
       </VStack>
     </Center>
 
