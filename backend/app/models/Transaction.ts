@@ -1,13 +1,13 @@
 type Transaction = {
     id?: number;
     amount?: number;
-    destination_account?: string;
+    destination_account?: number | null;
     description?: string;
     type: string;
-    date?: Date;
+    date?: number;
     account_id?: number;
     category_id?: number;
-    created_at?: Date;
-    updated_at?: Date;
-}
+    created_at?: number;
+    updated_at?: number;
+};
 export default Transaction
