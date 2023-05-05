@@ -10,6 +10,10 @@ export const account_read = async (id: number) => {
     const result = await connection('accounts').where({ id })
     return result
 }
+export const account_byProfile = async (profile_id: number) => {
+    const result = await connection('accounts').where({ profile_id })
+    return result
+}
 
 export const account_list = async () => {
     const result = await connection('accounts').select()

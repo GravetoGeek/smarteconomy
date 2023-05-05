@@ -6,8 +6,17 @@ export async function up(knex: Knex): Promise<void> {
         table.float('amount', 8, 2).notNullable()
         table.integer('destination_account').nullable()
         table.string('description').notNullable()
-        table.string('type').notNullable()
-        table.timestamp('date').defaultTo(knex.fn.now())
+        table.timestamp('date').notNullable()
+
+        table.integer('type_id').unsigned().notNullable()
+        table
+            .foreign('type_id')
+            .references('id')
+            .inTable('transaction_types')
+            .onDelete('CASCADE')
+            .onUpdate('CASCADE')
+
+
         table.integer('account_id').unsigned().notNullable()
         table
             .foreign('account_id')
@@ -15,6 +24,7 @@ export async function up(knex: Knex): Promise<void> {
             .inTable('accounts')
             .onDelete('CASCADE')
             .onUpdate('CASCADE')
+
         table.integer('category_id').unsigned().notNullable()
         table
             .foreign('category_id')

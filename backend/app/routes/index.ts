@@ -1,15 +1,15 @@
-import { Router } from 'express'
-import authRoute from './authRoute'
-import { Request, Response } from 'express'
-import userRoute from './userRoute'
+import { Request, Response, Router } from 'express'
 import accountRoute from './accountRoute'
-import categoryRoute from './categoryRoute'
-import profileRoute from './profileRoute'
-import genderRoute from './genderRoute'
-import transactionRoute from './transactionRoute'
-import emailRoute from './emailRoute'
-import dashboardRoute from './dashboardRoute'
 import accountTypesRoute from './accountTypesRoute'
+import authRoute from './authRoute'
+import categoryRoute from './categoryRoute'
+import dashboardRoute from './dashboardRoute'
+import emailRoute from './emailRoute'
+import genderRoute from './genderRoute'
+import profileRoute from './profileRoute'
+import transactionRoute from './transactionRoute'
+import transactionTypesRoute from './transactionTypesRoute'
+import userRoute from './userRoute'
 
 const router = Router()
 
@@ -28,6 +28,7 @@ router.use('/transaction', transactionRoute)
 router.use('/email', emailRoute)
 router.use('/dashboard', dashboardRoute)
 router.use('/accounttypes', accountTypesRoute)
+router.use('/transactiontypes', transactionTypesRoute)
 
 router.use((req: Request, res: Response, next) => {
     res.status(404).send('404 Not Found')

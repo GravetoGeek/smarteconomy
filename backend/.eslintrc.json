@@ -1,7 +1,7 @@
 {
     "env": {
         "browser": true,
-        "es2022": true
+        "es13": true
     },
     "extends": [
         "eslint:recommended",
@@ -17,6 +17,7 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "no-unused-vars": "off",
         "max-len": [
             "error",
             {
