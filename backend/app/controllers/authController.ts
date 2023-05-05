@@ -1,13 +1,12 @@
-import 'dotenv/config'
-import User from '../models/User'
-import { Request, Response } from 'express'
-import { loginDAO } from '../database/authDAO'
-import * as userDAO from '../database/userDAO'
 import bcrypt from 'bcryptjs'
+import 'dotenv/config'
+import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
+import { loginDAO } from '../database/authDAO'
 import * as profileDAO from '../database/profileDAO'
+import * as userDAO from '../database/userDAO'
 import Profile from '../models/Profile'
-import HttpError from '../models/HttpError'
+import User from '../models/User'
 
 export const login = async (req: Request, res: Response) => {
     try {
@@ -84,7 +83,7 @@ export const signup = async (req: Request, res: Response) => {
                 message: 'Usuário já existe',
                 auth: false,
             }
-        const profile: Profile = {user_id: result[0]}
+        const profile: Profile = { user_id: result[0] }
         let result2 = await profileDAO.profileDAO_create(profile)
 
         return res.status(200).json({
@@ -112,36 +111,36 @@ export const signup = async (req: Request, res: Response) => {
 export const verifyJWT = async (req: Request, res: Response, next: any) => {
     try {
         return next()
-        let secret: string = process.env.JWT_SECRET || 'jabulani'
-        const accessToken: any = req.headers['x-access-token']
+        // let secret: string = process.env.JWT_SECRET || 'jabulani'
+        // const accessToken: any = req.headers['x-access-token']
 
-        if (!accessToken) {
-            return res.status(401).send({
-                auth: false,
-                message: 'x-access-token não informado',
-                'x-access-token': null,
-                'x-refresh-token': null,
-            })
-        }
+        // if (!accessToken) {
+        //     return res.status(401).send({
+        //         auth: false,
+        //         message: 'x-access-token não informado',
+        //         'x-access-token': null,
+        //         'x-refresh-token': null,
+        //     })
+        // }
 
-        jwt.verify(accessToken, secret, function (err: any, decoded: any) {
-            console.log('decoded', decoded)
-            if (err) {
-                if (err.name == 'TokenExpiredError') {
-                    return res.status(401).send({
-                        auth: false,
-                        message: 'Token expirado',
-                        'x-access-token': null,
-                    })
-                }
-                return res.status(500).json({
-                    auth: false,
-                    message: 'Falha ao autenticar token',
-                    'x-access-token': null,
-                })
-            }
-            next()
-        })
+        // jwt.verify(accessToken, secret, function (err: any, decoded: any) {
+        //     console.log('decoded', decoded)
+        //     if (err) {
+        //         if (err.name == 'TokenExpiredError') {
+        //             return res.status(401).send({
+        //                 auth: false,
+        //                 message: 'Token expirado',
+        //                 'x-access-token': null,
+        //             })
+        //         }
+        //         return res.status(500).json({
+        //             auth: false,
+        //             message: 'Falha ao autenticar token',
+        //             'x-access-token': null,
+        //         })
+        //     }
+        //     next()
+        // })
     } catch (error: any) {
         res.json({
             auth: false,

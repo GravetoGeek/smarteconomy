@@ -1,6 +1,6 @@
-import React from "react";
 import { useNavigation } from "@react-navigation/native";
-import { Box, Button, Center, Checkbox, Heading, HStack, VStack,Text } from "native-base";
+import { Box, Button, Center, Checkbox, HStack, Heading, Text, VStack } from "native-base";
+import React from "react";
 
 export default function Home() {
   const navigation = useNavigation();
@@ -13,9 +13,10 @@ export default function Home() {
   }
 
   return (
-    <Center height="full">
-      <VStack width={"full"} p="5">
-        <Box width="full">
+    <Box width="full">
+      <Center height="full">
+        <VStack width={"full"} p="5">
+
           <Heading color="coolGray.700">Home</Heading>
 
 
@@ -25,14 +26,15 @@ export default function Home() {
           <HStack mt="5">
 
 
-        </HStack>
+          </HStack>
           <Button mt="7" colorScheme="purple" onPress={handleRegister}>
             Registrar
           </Button>
-        </Box>
 
-      </VStack>
-    </Center>
+
+        </VStack>
+      </Center>
+    </Box >
 
   )
 }
