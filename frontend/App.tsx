@@ -1,8 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { NativeBaseProvider } from "native-base";
 import React from 'react';
-import FloatingBottomMenu from './src/components/FloatingBottomMenu';
-import Header from './src/components/Header';
 import StoreProvider from './src/contexts/StoreProvider';
 import Routes from './src/routes';
 
