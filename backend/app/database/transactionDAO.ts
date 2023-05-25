@@ -31,7 +31,7 @@ export const transaction_delete = async (id: number) => {
     return result
 }
 
-export const transaction_filter_byUser = async (userId: number) => {
+export const transaction_filter_byProfile = async (profileId: number) => {
     const result = await connection('transactions')
         .join('accounts', 'accounts.id', 'transactions.account_id')
         .join('profiles', 'profiles.id', 'accounts.profile_id')
@@ -47,12 +47,12 @@ export const transaction_filter_byUser = async (userId: number) => {
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
     return result
 }
 
 export const transaction_filter_byDate = async (
-    userId: number,
+    profileId: number,
     startDate: string,
     endDate: string
 ) => {
@@ -71,13 +71,13 @@ export const transaction_filter_byDate = async (
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
         .whereBetween('transactions.date', [startDate, endDate])
     return result
 }
 
 export const transaction_filter_byCategory = async (
-    userId: number,
+    profileId: number,
     categoryId: string
 ) => {
     const result = await connection('transactions')
@@ -95,13 +95,13 @@ export const transaction_filter_byCategory = async (
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
         .where('transactions.category_id', categoryId)
     return result
 }
 
 export const transaction_filter_byType = async (
-    userId: number,
+    profileId: number,
     type_id: number
 ) => {
     const result = await connection('transactions')
@@ -119,13 +119,13 @@ export const transaction_filter_byType = async (
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
         .where('transactions.type_id', type_id)
     return result
 }
 
 export const transaction_filter_byAccount = async (
-    userId: number,
+    profileId: number,
     accountId: number
 ) => {
     const result = await connection('transactions')
@@ -143,13 +143,13 @@ export const transaction_filter_byAccount = async (
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
         .where('transactions.account_id', accountId)
     return result
 }
 
 export const transaction_filter_byDateCategory = async (
-    userId: number,
+    profileId: number,
     startDate: string,
     endDate: string,
     categoryId: string
@@ -169,14 +169,14 @@ export const transaction_filter_byDateCategory = async (
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
         .where('transactions.category_id', categoryId)
         .whereBetween('transactions.date', [startDate, endDate])
     return result
 }
 
 export const transaction_filter_byDateType = async (
-    userId: number,
+    profileId: number,
     startDate: string,
     endDate: string,
     type_id: number
@@ -196,14 +196,14 @@ export const transaction_filter_byDateType = async (
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
         .where('transactions.type_id', type_id)
         .whereBetween('transactions.date', [startDate, endDate])
     return result
 }
 
 export const transaction_filter_byDateAccount = async (
-    userId: number,
+    profileId: number,
     startDate: string,
     endDate: string,
     accountId: number
@@ -223,14 +223,14 @@ export const transaction_filter_byDateAccount = async (
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
         .where('transactions.account_id', accountId)
         .whereBetween('transactions.date', [startDate, endDate])
     return result
 }
 
 export const transaction_filter_byCategoryType = async (
-    userId: number,
+    profileId: number,
     categoryId: string,
     type_id: number
 ) => {
@@ -249,14 +249,14 @@ export const transaction_filter_byCategoryType = async (
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
         .where('transactions.category_id', categoryId)
         .where('transactions.type_id', type_id)
     return result
 }
 
 export const transaction_filter_byCategoryAccount = async (
-    userId: number,
+    profileId: number,
     categoryId: string,
     accountId: number
 ) => {
@@ -275,14 +275,14 @@ export const transaction_filter_byCategoryAccount = async (
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
         .where('transactions.category_id', categoryId)
         .where('transactions.account_id', accountId)
     return result
 }
 
 export const transaction_filter_byTypeAccount = async (
-    userId: number,
+    profileId: number,
     type_id: number,
     accountId: number
 ) => {
@@ -301,14 +301,14 @@ export const transaction_filter_byTypeAccount = async (
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
         .where('transactions.type_id', type_id)
         .where('transactions.account_id', accountId)
     return result
 }
 
 export const transaction_filter_byDateCategoryType = async (
-    userId: number,
+    profileId: number,
     startDate: string,
     endDate: string,
     categoryId: string,
@@ -329,7 +329,7 @@ export const transaction_filter_byDateCategoryType = async (
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
         .where('transactions.category_id', categoryId)
         .where('transactions.type_id', type_id)
         .whereBetween('transactions.date', [startDate, endDate])
@@ -337,7 +337,7 @@ export const transaction_filter_byDateCategoryType = async (
 }
 
 export const transaction_filter_byDateCategoryAccount = async (
-    userId: number,
+    profileId: number,
     startDate: string,
     endDate: string,
     categoryId: string,
@@ -358,7 +358,7 @@ export const transaction_filter_byDateCategoryAccount = async (
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
         .where('transactions.category_id', categoryId)
         .where('transactions.account_id', accountId)
         .whereBetween('transactions.date', [startDate, endDate])
@@ -366,7 +366,7 @@ export const transaction_filter_byDateCategoryAccount = async (
 }
 
 export const transaction_filter_byDateTypeAccount = async (
-    userId: number,
+    profileId: number,
     startDate: string,
     endDate: string,
     type_id: number,
@@ -387,7 +387,7 @@ export const transaction_filter_byDateTypeAccount = async (
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
         .where('transactions.type_id', type_id)
         .where('transactions.account_id', accountId)
         .whereBetween('transactions.date', [startDate, endDate])
@@ -395,7 +395,7 @@ export const transaction_filter_byDateTypeAccount = async (
 }
 
 export const transaction_filter_byCategoryTypeAccount = async (
-    userId: number,
+    profileId: number,
     categoryId: string,
     type_id: number,
     accountId: number
@@ -415,7 +415,7 @@ export const transaction_filter_byCategoryTypeAccount = async (
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
         .where('transactions.category_id', categoryId)
         .where('transactions.type_id', type_id)
         .where('transactions.account_id', accountId)
@@ -423,7 +423,7 @@ export const transaction_filter_byCategoryTypeAccount = async (
 }
 
 export const transaction_filter_byDateCategoryTypeAccount = async (
-    userId: number,
+    profileId: number,
     startDate: string,
     endDate: string,
     categoryId: string,
@@ -445,7 +445,7 @@ export const transaction_filter_byDateCategoryTypeAccount = async (
             'transactions.updated_at',
             'transactions.id'
         )
-        .where('profiles.user_id', userId)
+        .where('profiles.id', profileId)
         .where('transactions.category_id', categoryId)
         .where('transactions.type_id', type_id)
         .where('transactions.account_id', accountId)

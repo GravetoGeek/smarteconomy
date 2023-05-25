@@ -39,7 +39,7 @@ export const transaction_read = async (req: Request, res: Response) => {
         let { id } = req.params
         let result = await transactionDAO.transaction_read(Number(id))
         if (result.length === 0)
-            throw { statusCode: 404, message: 'Transação não encontrada' }
+            return res.status(404).json([])
     } catch (error: any) {
         console.log(error)
         return res
@@ -57,7 +57,7 @@ export const transaction_update = async (req: Request, res: Response) => {
             transaction
         )
         if (result.length === 0)
-            throw { statusCode: 404, message: 'Transação não encontrada' }
+            return res.status(404).json([])
     } catch (error: any) {
         console.log(error)
         return res
@@ -71,7 +71,7 @@ export const transaction_delete = async (req: Request, res: Response) => {
         let { id } = req.params
         let result = await transactionDAO.transaction_delete(Number(id))
         if (result.length === 0)
-            throw { statusCode: 404, message: 'Transação não encontrada' }
+            return res.status(404).json([])
     } catch (error: any) {
         console.log(error)
         return res
@@ -94,86 +94,87 @@ export const transaction_list = async (req: Request, res: Response) => {
 
 export const transaction_filter = async (req: Request, res: Response) => {
     try {
-        let { userId, startDate, endDate, categoryId, type, accountId } = req.body
+        let { profileId, startDate, endDate, categoryId, typeId, accountId } = req.body
         let result: Transaction[] = []
 
-        if (userId === undefined)
-            throw { statusCode: 400, message: 'Usuário não informado' }
+        if (profileId === undefined)
+            throw { statusCode: 400, message: 'profileId não informado' }
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate === undefined &&
             endDate === undefined &&
             categoryId === undefined &&
-            type === undefined &&
+            typeId === undefined &&
             accountId === undefined
         ) {
-            result = await transactionDAO.transaction_filter_byUser(userId)
+            console.log("entrou")
+            result = await transactionDAO.transaction_filter_byProfile(profileId)
         }
 
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate !== undefined &&
             endDate !== undefined &&
             categoryId === undefined &&
-            type === undefined &&
+            typeId === undefined &&
             accountId === undefined
         ) {
             result = await transactionDAO.transaction_filter_byDate(
-                userId,
+                profileId,
                 startDate,
                 endDate
             )
         }
 
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate === undefined &&
             endDate === undefined &&
             categoryId !== undefined &&
-            type === undefined &&
+            typeId === undefined &&
             accountId === undefined
         ) {
             result = await transactionDAO.transaction_filter_byCategory(
-                userId,
+                profileId,
                 categoryId
             )
         }
 
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate === undefined &&
             endDate === undefined &&
             categoryId === undefined &&
-            type !== undefined &&
+            typeId !== undefined &&
             accountId === undefined
         ) {
-            result = await transactionDAO.transaction_filter_byType(userId, type)
+            result = await transactionDAO.transaction_filter_byType(profileId, typeId)
         }
 
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate === undefined &&
             endDate === undefined &&
             categoryId === undefined &&
-            type === undefined &&
+            typeId === undefined &&
             accountId !== undefined
         ) {
             result = await transactionDAO.transaction_filter_byAccount(
-                userId,
+                profileId,
                 accountId
             )
         }
 
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate !== undefined &&
             endDate !== undefined &&
             categoryId !== undefined &&
-            type === undefined &&
+            typeId === undefined &&
             accountId === undefined
         ) {
             result = await transactionDAO.transaction_filter_byDateCategory(
-                userId,
+                profileId,
                 startDate,
                 endDate,
                 categoryId
@@ -181,31 +182,31 @@ export const transaction_filter = async (req: Request, res: Response) => {
         }
 
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate !== undefined &&
             endDate !== undefined &&
             categoryId === undefined &&
-            type !== undefined &&
+            typeId !== undefined &&
             accountId === undefined
         ) {
             result = await transactionDAO.transaction_filter_byDateType(
-                userId,
+                profileId,
                 startDate,
                 endDate,
-                type
+                typeId
             )
         }
 
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate !== undefined &&
             endDate !== undefined &&
             categoryId === undefined &&
-            type === undefined &&
+            typeId === undefined &&
             accountId !== undefined
         ) {
             result = await transactionDAO.transaction_filter_byDateAccount(
-                userId,
+                profileId,
                 startDate,
                 endDate,
                 accountId
@@ -213,77 +214,77 @@ export const transaction_filter = async (req: Request, res: Response) => {
         }
 
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate === undefined &&
             endDate === undefined &&
             categoryId !== undefined &&
-            type !== undefined &&
+            typeId !== undefined &&
             accountId === undefined
         ) {
             result = await transactionDAO.transaction_filter_byCategoryType(
-                userId,
+                profileId,
                 categoryId,
-                type
+                typeId
             )
         }
 
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate === undefined &&
             endDate === undefined &&
             categoryId !== undefined &&
-            type === undefined &&
+            typeId === undefined &&
             accountId !== undefined
         ) {
             result = await transactionDAO.transaction_filter_byCategoryAccount(
-                userId,
+                profileId,
                 categoryId,
                 accountId
             )
         }
 
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate === undefined &&
             endDate === undefined &&
             categoryId === undefined &&
-            type !== undefined &&
+            typeId !== undefined &&
             accountId !== undefined
         ) {
             result = await transactionDAO.transaction_filter_byTypeAccount(
-                userId,
-                type,
+                profileId,
+                typeId,
                 accountId
             )
         }
 
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate !== undefined &&
             endDate !== undefined &&
             categoryId !== undefined &&
-            type !== undefined &&
+            typeId !== undefined &&
             accountId === undefined
         ) {
             result = await transactionDAO.transaction_filter_byDateCategoryType(
-                userId,
+                profileId,
                 startDate,
                 endDate,
                 categoryId,
-                type
+                typeId
             )
         }
 
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate !== undefined &&
             endDate !== undefined &&
             categoryId !== undefined &&
-            type === undefined &&
+            typeId === undefined &&
             accountId !== undefined
         ) {
             result = await transactionDAO.transaction_filter_byDateCategoryAccount(
-                userId,
+                profileId,
                 startDate,
                 endDate,
                 categoryId,
@@ -292,58 +293,58 @@ export const transaction_filter = async (req: Request, res: Response) => {
         }
 
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate !== undefined &&
             endDate !== undefined &&
             categoryId === undefined &&
-            type !== undefined &&
+            typeId !== undefined &&
             accountId !== undefined
         ) {
             result = await transactionDAO.transaction_filter_byDateTypeAccount(
-                userId,
+                profileId,
                 startDate,
                 endDate,
-                type,
+                typeId,
                 accountId
             )
         }
 
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate === undefined &&
             endDate === undefined &&
             categoryId !== undefined &&
-            type !== undefined &&
+            typeId !== undefined &&
             accountId !== undefined
         ) {
             result = await transactionDAO.transaction_filter_byCategoryTypeAccount(
-                userId,
+                profileId,
                 categoryId,
-                type,
+                typeId,
                 accountId
             )
         }
 
         if (
-            userId !== undefined &&
+            profileId !== undefined &&
             startDate !== undefined &&
             endDate !== undefined &&
             categoryId !== undefined &&
-            type !== undefined &&
+            typeId !== undefined &&
             accountId !== undefined
         ) {
             result =
                 await transactionDAO.transaction_filter_byDateCategoryTypeAccount(
-                    userId,
+                    profileId,
                     startDate,
                     endDate,
                     categoryId,
-                    type,
+                    typeId,
                     accountId
                 )
         }
 
-        if (result.length === 0) return res.status(404).json({ message: 'Nenhuma transação encontrada' })
+        if (result.length === 0) return res.status(404).json([])
         return res.status(200).json(result)
     } catch (error: any) {
         console.log(error)

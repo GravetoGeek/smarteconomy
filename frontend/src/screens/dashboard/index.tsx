@@ -1,35 +1,40 @@
 import { BACKEND_HOST, BACKEND_PORT } from "@env";
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { Box, Center, FlatList, HStack, Icon, Modal, ScrollView, Text, VStack, View } from "native-base";
-import React, { Children, useContext, useEffect, useRef, useState } from "react";
-import { Animated, Dimensions, TouchableOpacity } from "react-native";
-import Svg from "react-native-svg";
-import { VictoryChart, VictoryLabel, VictoryLegend, VictoryPie } from 'victory-native';
-import CircleButton from "../../components/CircleButton";
+import { Box, HStack, Icon, List, ScrollView, Spacer, Text, VStack } from "native-base";
+import React, { useContext, useEffect, useState } from "react";
+import { TouchableOpacity } from "react-native";
+import { VictoryPie } from 'victory-native';
+import CategoryIcon from "../../components/Dashboard/Icons/CategoryIcon";
 import Balance from "../../components/Dashboard/balance";
 import FloatingBottomMenu from "../../components/FloatingBottomMenu";
 import Header from "../../components/Header";
-import IconButton from "../../components/IconButton";
+import { Icons } from '../../components/Icons/Icons';
+import ListTransactionByCategory from '../../components/ListTransactionByCategory';
 import { Store } from '../../contexts/StoreProvider';
-import { styles } from "./style";
 
 interface ApiData {
   amount: number;
   category: string;
+  id: number;
 }
 
-interface Data {
+interface DataCategory {
   x: string;
   y: number;
+  category: string;
+  id?: number;
   color: string;
   iconName: string;
 }
 
 export default function Dashboard() {
-  const { user, setUser, token, setToken, profile, setProfile, startDate, endDate } = useContext(Store);
-  const [apiData, setApiData] = useState<ApiData[]>([]);
-  const [gastoTotal, setGastoTotal] = useState(0);
+  const { user, setUser, token, setToken, profile, setProfile, startDate, endDate, despesaTotal, setDespesaTotal, receitaTotal, setReceitaTotal, setTransactionTypes, } = useContext(Store);
+  const [apiDataDespesasPorCategorias, setApiDataDespesasPorCategorias] = useState<ApiData[]>([]);
+  const [apiDataRendasPorCategorias, setApiDataRendasPorCategorias] = useState<ApiData[]>([]);
+  // const [gastoTotal, setGastoTotal] = useState(0);
+  // const [rendaTotal, setRendaTotal] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState([]);
 
 
   const navigation = useNavigation();
@@ -56,11 +61,11 @@ export default function Dashboard() {
 
   // useEffect(() => {
   //   fetchData();
-  // }, []);
+  // });
 
   const fetchData = async () => {
+    console.log('dashboard')
     try {
-      let data = new Date();
       // let startDate = new Date(data.getFullYear(), data.getMonth(), 1).toISOString().slice(0, 10);
       // let endDate = new Date(data.getFullYear(), data.getMonth() + 1, 0).toISOString().slice(0, 10);
 
@@ -71,16 +76,13 @@ export default function Dashboard() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token.access_token}`
         },
-      })
-        .then((response) => response.json())
-      // console.log('profileResponse', profileResponse)
+      }).then((response) => response.json())
+
       setProfile({ ...profileResponse });
 
       if (profileResponse.name == null || profileResponse.birthday == null || profileResponse.lastname == null || profileResponse.monthly_income == null || profileResponse.gender_id == null || profileResponse.profession == null) {
         handleNavigateManageProfile()
       }
-
-      // console.log('profile', profile)
 
       // Buscar contas do usuário
       const accountResponse = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/account/byProfile/${profileResponse.id || profile.id}`, {
@@ -92,8 +94,7 @@ export default function Dashboard() {
       })
         .then((response) => response.json())
 
-      // console.log('accountResponse', accountResponse)
-      if (accountResponse.status == 404) {
+      if (accountResponse.length == 0) {
         handleNavigateAddAccount()
       }
 
@@ -103,9 +104,8 @@ export default function Dashboard() {
         "endDate": endDate
       }
 
-      console.log('payload', payload)
-      // Buscar transações do usuário por categoria em um determinado período
-      const response = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/dashboard/despesasporcategorias`, {
+      // Buscar despesas do usuário por categoria em um determinado período
+      const despesasporcategorias = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/dashboard/despesasporcategorias`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -114,64 +114,97 @@ export default function Dashboard() {
       }).then((response) => response.json())
 
 
-      if (response.length === 0) {
-        // handleNavigateAddTransaction()
+      // if (despesasporcategorias.length === 0) {
+      //   // handleNavigateAddTransaction()
+      // }
+
+      if (despesasporcategorias.length !== 0) {
+        // let countGastoMensal = 0;
+        // despesasporcategorias.forEach((item: ApiData) => {
+        //   countGastoMensal += item.amount;
+        // });
+        // setGastoTotal(countGastoMensal);
+
+        setApiDataDespesasPorCategorias(despesasporcategorias);
       }
 
-      if (response.length !== 0) {
-        let countGastoMensal = 0;
-        // console.log('response', response)
-        response.forEach((item: ApiData) => {
-          countGastoMensal += item.amount;
-        });
-        setGastoTotal(countGastoMensal);
 
-        setApiData(response);
+      // Buscar rendas do usuário por categoria em um determinado período
+      const rendasporcategorias = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/dashboard/rendasporcategorias`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }).then((response) => response.json())
+
+      if (rendasporcategorias.length !== 0) {
+        // let countRendaMensal = 0;
+        // console.log("rendasporcategorias", JSON.stringify(rendasporcategorias, null, 2))
+        // rendasporcategorias.forEach((item: ApiData) => {
+        //   countRendaMensal += item.amount;
+        // });
+        // setRendaTotal(countRendaMensal);
+
+        setApiDataRendasPorCategorias(rendasporcategorias);
       }
 
+
+
+
+      // Obter os tipos de transações
+      const res_transactionTypes = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/transactiontypes`, {
+        method: 'get',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }).then((response) => response.json())
+      setTransactionTypes(res_transactionTypes);
+      // setTypeId(res_transactionTypes[0].id);
 
 
     } catch (error) {
-      console.error(error);
+      console.log("dashboard", error);
     }
   };
 
-  const getCategoryIcon = (categoryName: string): string => {
-    switch (categoryName) {
-      case "Lazer":
-        return "local-activity";
-      case "Educação":
-        return "school";
-      case "Saúde":
-        return "local-hospital";
-      case "Transporte":
-        return "directions-car";
-      case "Outros":
-        return "category";
-      case "Moradia":
-        return "home";
-      case "Alimentação":
-        return "restaurant";
-      default:
-        return "help";
-    }
-  };
+  const getCategoryIcon = (categoryName: string): string => Icons.filter((item) => item.category === categoryName)[0]?.icon || "help";
+  const getCategoryColor = (categoryName: string): string => Icons.filter((item) => item.category === categoryName)[0]?.color || "gray.500";
+  const listCategoryColor = (): string[] => Icons.map((item) => { return item.color });
 
-
-  const cores = ['#FFA726', '#66BB6A', '#42A5F5', '#EF5350', '#AB47BC', '#FF7043', '#26C6DA', '#FFEE58', '#FFA726', '#66BB6A', '#42A5F5', '#EF5350', '#AB47BC', '#FF7043', '#26C6DA', '#f0ad4e', '#5cb85c', '#5bc0de', '#d9534f'];
-
-
-  let chartData: Data[] = apiData.map((item, index) => ({
+  let chartDataDespesas: DataCategory[] = apiDataDespesasPorCategorias.map((item, index) => ({
     x: item.category,
     y: item.amount,
-    color: cores[index],
+    category: item.category,
+    id: item.id,
+    color: getCategoryColor(item.category),
     iconName: getCategoryIcon(item.category),
   }));
 
-  if (chartData.length === 0) {
-    chartData = [{
+  if (chartDataDespesas.length === 0) {
+    chartDataDespesas = [{
       x: 'Sem despesas',
       y: 0.001,
+      category: 'Sem despesas',
+      color: '#a4a3a3',
+      iconName: 'help',
+    }]
+  }
+
+  let chartDataRendas: DataCategory[] = apiDataRendasPorCategorias.map((item, index) => ({
+    x: item.category,
+    y: item.amount,
+    category: item.category,
+    id: item.id,
+    color: getCategoryColor(item.category),
+    iconName: getCategoryIcon(item.category),
+  }));
+
+  if (chartDataRendas.length === 0) {
+    chartDataRendas = [{
+      x: 'Sem rendas',
+      y: 0.001,
+      category: 'Sem rendas',
       color: '#a4a3a3',
       iconName: 'help',
     }]
@@ -179,80 +212,163 @@ export default function Dashboard() {
 
 
 
-  const CategoryIcon = (props: any) => {
-    return <Icon
-      as={<MaterialIcons name={props.iconName} color={props.color} />}
-      size={5}
-      ml={2}
-      color="muted.400"
-    />
 
-  };
 
+  // const CategoryIcon = (props: any) => {
+  //   return <Icon
+  //     as={<MaterialIcons name={props.iconName} color={props.color} />}
+  //     size={5}
+  //     ml={2}
+  //     color={props.color}
+  //   />
+
+  // };
+
+
+  function handleListTransactionByCategory(categoria: DataCategory): void {
+    let { x, y, category, id, color, iconName } = categoria;
+    console.log("ListTransactionByCategory", categoria)
+    navigation.navigate('ListTransactionByCategory', { x, y, category, id, color, iconName });
+  }
 
   return (
-    <Box flex={1} bg="white">
+    <Box flex={1} bg="white" height="full">
       <Header />
       <VStack width="full">
 
-        <ScrollView>
+        <ScrollView height="85%">
           <Balance />
           <Box width="full" mt={1} mb={1}>
-            <Text color={'orange.600'} bold textAlign={'center'}>Despesa por categoria</Text>
+            <Text fontSize="lg" fontWeight="bold" mb={3} color={'black'} bold textAlign={'center'}>Despesas por categoria</Text>
 
-            {/* <Svg width="100%" viewBox="0 0 400 400"> */}
             <Box mb={1} borderRadius={2} shadow={1} >
-              <Svg width="100%">
-                <VictoryPie
-                  data={chartData}
-                  colorScale={cores}
-                  innerRadius={50}
-                  labelRadius={120}
-                  padding={100}
-                  // labels={({ datum }) => `${datum.x}: R$${datum.y}`}
-                  labels={({ datum }) => `${gastoTotal === 0 ? '' : (100 * datum.y / gastoTotal).toFixed(2) + '%'}\n${datum.x}\n${gastoTotal === 0 ? '' : moeda.format(datum.y)}`}
-                  animate={{ easing: 'exp' }}
-                  style={{
-                    labels: {
-                      fill: ({ datum }) => datum.color,
-                    },
-                    data: {
-                      fill: ({ datum }) => datum.color,
+              <VictoryPie
+                events={[{
+                  target: "data",
+                  eventHandlers: {
+                    onPressIn: () => {
+                      return [
+                        {
+                          target: "data",
+                          mutation: ({ radius, datum }) => {
+                            let newRadius = radius
+                            if (selectedCategory.includes(datum.x)) {
+                              setSelectedCategory(selectedCategory.filter((item) => item !== datum.x))
+                              newRadius = radius - 10
+                            }
+                            else {
+                              setSelectedCategory([...selectedCategory, datum.x])
+                              newRadius = radius + 10
+                            }
+                            return { radius: newRadius };
+                          }
+                        }
+                      ];
                     }
-                  }}
-                  events={[{
-                    target: "data",
+                  }
+                }]}
+                data={chartDataDespesas}
+                colorScale={listCategoryColor()}
+                innerRadius={50}
+                labelRadius={120}
+                padding={100}
+                labels={({ datum }) => `${despesaTotal === 0 ? '' : (100 * datum.y / despesaTotal).toFixed(2) + '%'}\n${datum.x}\n${despesaTotal === 0 ? '' : moeda.format(datum.y)}`}
+                animate={{ easing: 'exp' }}
+                style={{
+                  labels: {
+                    fill: ({ datum }) => datum.color,
+                  },
+                  data: {
+                    fill: ({ datum }) => datum.color,
+                  }
+                }}
 
-                    eventHandlers: {
-                      onPress: () => {
-                        return [
-                          { target: "data", mutation: ({ style }) => { return style.fill === "#c43a31" ? null : { style: { fill: "#c43a31" } } } },
-                          { target: "labels", mutation: ({ text }) => { return text === "clicked" ? null : { text: "clicked" } } }
-                        ]
-                      }
-                    }
-                  }]}
-
-                >
-                </VictoryPie>
-
-                <VictoryLabel
-                  textAnchor="middle" verticalAnchor="middle"
-                  x={200}
-                  y={200}
-                  text={`Total\n${moeda.format(gastoTotal)}`}
-                />
-
-
-
-
-              </Svg>
+              >
+              </VictoryPie>
+              <Box mb={100} >
+                {
+                  chartDataDespesas.map((item, index) => (
+                    <TouchableOpacity key={index} onPress={() => handleListTransactionByCategory(item)}>
+                      <List key={index} my={0} px={2} py={5} shadow={0} borderRadius={0} bg='white'>
+                        <HStack space={2} alignItems="center">
+                          <CategoryIcon color={item.color} category={item.category} size={5} />
+                          <Text bold color={item.color}>{item.x}</Text>
+                          <Spacer />
+                          <Text bold color={item.color}>{(100 * item.y / despesaTotal).toFixed(2)}%    {moeda.format(item.y)}</Text>
+                        </HStack>
+                      </List>
+                    </TouchableOpacity>
+                  ))
+                }
+              </Box>
 
             </Box>
 
+            <Text fontSize="lg" fontWeight="bold" mb={3} color={'black'} bold textAlign={'center'}>Rendas por categoria</Text>
 
+            <Box mb={1} borderRadius={2} shadow={1} >
+              <VictoryPie
+                events={[{
+                  target: "data",
+                  eventHandlers: {
+                    onPressIn: () => {
+                      return [
+                        {
+                          target: "data",
+                          mutation: ({ radius, datum }) => {
+                            let newRadius = radius
+                            if (selectedCategory.includes(datum.x)) {
+                              setSelectedCategory(selectedCategory.filter((item) => item !== datum.x))
+                              newRadius = radius - 10
+                            }
+                            else {
+                              setSelectedCategory([...selectedCategory, datum.x])
+                              newRadius = radius + 10
+                            }
+                            return { radius: newRadius };
+                          }
+                        }
+                      ];
+                    }
+                  }
+                }]}
+                data={chartDataRendas}
+                colorScale={listCategoryColor()}
+                innerRadius={50}
+                labelRadius={120}
+                padding={100}
+                labels={({ datum }) => `${receitaTotal === 0 ? '' : (100 * datum.y / receitaTotal).toFixed(2) + '%'}\n${datum.x}\n${receitaTotal === 0 ? '' : moeda.format(datum.y)}`}
+                animate={{ easing: 'exp' }}
+                style={{
+                  labels: {
+                    fill: ({ datum }) => datum.color,
+                  },
+                  data: {
+                    fill: ({ datum }) => datum.color,
+                  }
+                }}
+
+              >
+              </VictoryPie>
+              <Box mb={100} >
+                {
+                  chartDataRendas.map((item, index) => (
+                    <TouchableOpacity key={index} onPress={() => handleListTransactionByCategory(item)}>
+                      <List key={index} my={0} px={2} py={5} shadow={0} borderRadius={0} bg='white'>
+                        <HStack space={2} alignItems="center">
+                          <CategoryIcon color={item.color} category={item.category} size={5} />
+                          <Text bold color={item.color}>{item.x}</Text>
+                          <Spacer />
+                          <Text bold color={item.color}>{(100 * item.y / receitaTotal).toFixed(2)}%    {moeda.format(item.y)}</Text>
+                        </HStack>
+                      </List>
+                    </TouchableOpacity>
+                  ))
+                }
+              </Box>
+
+            </Box>
           </Box>
-
         </ScrollView >
       </VStack>
       <FloatingBottomMenu />

@@ -27,3 +27,12 @@ export const category_delete = async (id: number) => {
     const result = await connection('categories').where({ id }).del()
     return result
 }
+
+export const category_filter = async (transactionType: string) => {
+    const result = await connection('categories')
+        .join('transactiontypes_categories', 'categories.id', 'transactiontypes_categories.category_id')
+        .where('transactiontypes_categories.transaction_type_id', transactionType)
+        .select('categories.*')
+    return result
+}
+

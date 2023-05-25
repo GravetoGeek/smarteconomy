@@ -1,10 +1,16 @@
 import { faker } from '@faker-js/faker'
 import { Knex } from 'knex'
+import moment from 'moment'
 import Transaction from '../models/Transaction'
 
 export async function seed(knex: Knex): Promise<void> {
     // Deletes ALL existing entries
     await knex('transactions').del()
+    let hoje = moment()
+    let primeiro_dia = moment(hoje).startOf('month').date()
+    let ultimo_dia = moment(hoje).endOf('month').date()
+
+
 
     let transactions: Transaction[] = []
     let max_category = 7
@@ -34,7 +40,7 @@ export async function seed(knex: Knex): Promise<void> {
             type_id: Math.round(
                 Math.random() * (max_type - min_type) + min_type
             ),
-            date: faker.date.past(),
+            date: moment({ year: hoje.year(), month: hoje.month(), day: Math.round(Math.random() * (ultimo_dia - primeiro_dia) + primeiro_dia) }).format('YYYY-MM-DD'),
             account_id: account_1,
             category_id: Math.round(
                 Math.random() * (max_category - min_category) + min_category

@@ -1,6 +1,8 @@
 import { BACKEND_HOST, BACKEND_PORT } from "@env";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import jwtDecode from 'jwt-decode';
 import {
   Box,
   Button,
@@ -9,9 +11,11 @@ import {
   Input,
   VStack
 } from "native-base";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { Store } from "../../contexts/StoreProvider";
 
 export default function Register() {
+  const { user, setUser, token, setToken } = useContext(Store);
   const [formData, setData] = useState({});
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
@@ -66,7 +70,6 @@ export default function Register() {
       return false;
     }
     if (formData?.password != formData?.confirm_password) {
-      console.log("deu certo");
       setErrors({ ...errors, diferent: "Senhas não conferem" });
       return false;
     }
@@ -93,23 +96,43 @@ export default function Register() {
         body: signData,
       })
         .then((response) => response.json())
-        .then((responseJson) => {
+        .then(async (responseJson) => {
           if (responseJson.error) {
             alert(responseJson.error);
           } else {
-            console.log(responseJson);
             if (responseJson.auth) {
               alert("Cadastro realizado com sucesso");
-              handleAddTransaction();
+              let url = `http://${BACKEND_HOST}:${BACKEND_PORT}/auth/login`;
+              let result = await axios.post(url, signData, {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }).then((response) => {
+
+                //aqui usa-se o dispatch
+
+                if (response.status === 200) {
+                  let { access_token, auth, refresh_token } = response.data;
+                  setToken({ access_token, auth, refresh_token });
+                  const decodedToken = jwtDecode(access_token)
+                  let { id, email, exp, iat } = decodedToken;
+                  setUser({ id, email })
+                  handleDashboard()
+                }
+              }
+              ).catch((error) => {
+                console.log('error_register', error);
+              }
+              );
             }
           }
+
         })
         .catch((error) => {
           console.error(error);
         });
-      console.log(formData);
     } else {
-      console.log("errors", errors);
+      console.log("error_register2", errors);
     }
   };
   return (

@@ -87,11 +87,62 @@ export const dashboard_despesasPorCategorias = async (
     endDate: string
 ) => {
     const result = await connection('transactions')
-        .select('amount', 'categories.category')
+        .select('categories.id', 'categories.category', 'amount',)
         .sum('amount as amount')
         .join('categories', 'categories.id', 'transactions.category_id')
         .join('accounts', 'accounts.id', 'transactions.account_id')
         .where('transactions.type_id', 1)
+        .where('profile_id', profileId)
+        .modify((queryBuilder: any) => {
+            if (startDate && endDate) {
+                queryBuilder.whereBetween('transactions.date', [
+                    startDate,
+                    endDate,
+                ])
+            }
+        })
+        .groupBy('category_id')
+        .orderBy('amount', 'desc')
+    return result
+}
+
+export const dashboard_rendasPorCategorias = async (
+    profileId: number,
+    startDate: string,
+    endDate: string
+) => {
+    const result = await connection('transactions')
+        .select('categories.id', 'categories.category', 'amount',)
+        .sum('amount as amount')
+        .join('categories', 'categories.id', 'transactions.category_id')
+        .join('accounts', 'accounts.id', 'transactions.account_id')
+        .where('transactions.type_id', 2)
+        .where('profile_id', profileId)
+        .modify((queryBuilder: any) => {
+            if (startDate && endDate) {
+                queryBuilder.whereBetween('transactions.date', [
+                    startDate,
+                    endDate,
+                ])
+            }
+        })
+        .groupBy('category_id')
+        .orderBy('amount', 'desc')
+    return result
+}
+
+export const dashboard_transacoesPorCategorias = async (
+    profileId: number,
+    typeId: number,
+    startDate: string,
+    endDate: string
+) => {
+    const result = await connection('transactions')
+        .select('categories.id', 'categories.category', 'amount',)
+        .sum('amount as amount')
+        .join('categories', 'categories.id', 'transactions.category_id')
+        .join('accounts', 'accounts.id', 'transactions.account_id')
+        .where('transactions.type_id', typeId)
         .where('profile_id', profileId)
         .modify((queryBuilder: any) => {
             if (startDate && endDate) {

@@ -4,6 +4,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Box, Button, Center, FormControl, Icon, Input, Text, VStack } from "native-base";
 import React, { useContext, useEffect, useState } from "react";
 import DropDownPicker from "react-native-dropdown-picker";
+import FloatingBottomMenu from "../../components/FloatingBottomMenu";
 import Header from "../../components/Header";
 import { Store } from '../../contexts/StoreProvider';
 
@@ -11,7 +12,7 @@ export default function AddAccount() {
     const { user, profile, setProfile, accounts, setAccounts } = useContext(Store);
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
-    const [type_id, setType_id] = useState(1);
+    const [type_id, setType_id] = useState<number | string>(1);
     const [profile_id, setProfile_id] = useState(profile.id);
     const [open, setOpen] = useState(false);
     const [items, setType_Items] = useState([
@@ -33,9 +34,8 @@ export default function AddAccount() {
             },
         });
 
-        // console.log('response', response)
+
         const data = await response.json();
-        // console.log('data', data)
         let itemList = data.map((item: any) => {
             return {
                 label: item.type, value: item.id, icon: () => <MaterialIcons name="account-balance" size={18} color="black" />
@@ -58,7 +58,6 @@ export default function AddAccount() {
                     profile_id: Number(profile_id)
                 })
             })
-            console.log('response', response)
             if (response.status === 200) {
                 const data = await response.json();
                 setAccounts([...accounts, data])
@@ -68,7 +67,7 @@ export default function AddAccount() {
             }
 
         } catch (error) {
-            console.log('error', error)
+            console.log('error_addAcount', error)
         }
     }
 
@@ -80,6 +79,7 @@ export default function AddAccount() {
 
     return (
         <Box height="full" flex={1}>
+            <Header />
             <VStack width='full' p={5} flex={1}>
                 <Center>
                     <Text>Adicionar Conta</Text>
@@ -114,6 +114,13 @@ export default function AddAccount() {
 
                         <FormControl.Label>Tipo</FormControl.Label>
                         <DropDownPicker
+                            mode='SIMPLE'
+                            dropDownDirection="TOP"
+                            closeAfterSelecting={true}
+                            itemSeparator={false}
+                            listMode="SCROLLVIEW"
+                            modalAnimationType="slide"
+                            language="PT"
                             items={items}
                             open={open}
                             value={type_id}
@@ -121,16 +128,11 @@ export default function AddAccount() {
                             setValue={setType_id}
                             setItems={setType_Items}
                             containerStyle={{ height: 40 }}
-                            style={{ backgroundColor: '#fafafa' }}
-                            itemStyle={{
-                                justifyContent: 'flex-start'
-                            }}
-                            dropDownStyle={{ backgroundColor: '#fafafa' }}
-                            onChangeItem={item => setType_id(String(item.value))}
+                            onSelectItem={item => setType_id(String(item.value))}
                         />
 
 
-                        <Button onPress={submit} mt={4} colorScheme="teal" _text={{ color: 'white' }}>
+                        <Button onPress={submit} mt={4} colorScheme="purple" _text={{ color: 'white' }}>
                             Adicionar
                         </Button>
 
@@ -138,6 +140,7 @@ export default function AddAccount() {
                     </FormControl>
                 </Center>
             </VStack>
+            <FloatingBottomMenu />
         </Box>
     )
 
