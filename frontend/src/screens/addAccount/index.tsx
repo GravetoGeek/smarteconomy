@@ -78,7 +78,7 @@ export default function AddAccount() {
 
 
     return (
-        <Box height="full" flex={1}>
+        <Box height="full" flex={1} bg='white'>
             <Header />
             <VStack width='full' p={5} flex={1}>
                 <Center>

@@ -189,7 +189,7 @@ const AddTransaction = () => {
     };
 
     return (
-        <Box flex={1} >
+        <Box flex={1} bg='white'>
             <Header />
             {/* <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}

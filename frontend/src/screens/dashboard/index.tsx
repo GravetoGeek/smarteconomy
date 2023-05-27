@@ -169,7 +169,7 @@ export default function Dashboard() {
   };
 
   const getCategoryIcon = (categoryName: string): string => Icons.filter((item) => item.category === categoryName)[0]?.icon || "help";
-  const getCategoryColor = (categoryName: string): string => Icons.filter((item) => item.category === categoryName)[0]?.color || "gray.500";
+  const getCategoryColor = (categoryName: string): string => Icons.filter((item) => item.category === categoryName)[0]?.color || "#9e9e9e";
   const listCategoryColor = (): string[] => Icons.map((item) => { return item.color });
 
   let chartDataDespesas: DataCategory[] = apiDataDespesasPorCategorias.map((item, index) => ({

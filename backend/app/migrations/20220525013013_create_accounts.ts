@@ -12,7 +12,8 @@ exports.up = function (knex: any) {
                 table.string('description').notNullable()
                 table.integer('type_id').unsigned().notNullable()
                 table.foreign('type_id').references('id').inTable('account_types').onDelete('CASCADE').onUpdate('CASCADE')
-                table.integer('profile_id').unsigned().notNullable()
+                // table.integer('profile_id').unsigned().notNullable()
+                table.integer('profile_id').unsigned()
                 table
                     .foreign('profile_id')
                     .references('id')
