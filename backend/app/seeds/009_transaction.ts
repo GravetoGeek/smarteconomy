@@ -13,7 +13,7 @@ export async function seed(knex: Knex): Promise<void> {
 
 
     let transactions: Transaction[] = []
-    let max_category = 7
+    let max_category = 45
     let min_category = 1
     let max_account = 500
     let min_account = 1
@@ -31,20 +31,18 @@ export async function seed(knex: Knex): Promise<void> {
         if (account_2 === account_1) {
             account_2 += 1 // evita que o segundo número seja igual ao primeiro
         }
+        let category_id = Math.round(Math.random() * (max_category - min_category) + min_category)
+
         transactions.push({
             amount: parseFloat(
                 (Math.random() * (20000 - 1200) + 1200).toFixed(2)
             ),
             destination_account: account_2,
             description: faker.lorem.sentence(),
-            type_id: Math.round(
-                Math.random() * (max_type - min_type) + min_type
-            ),
+            type_id: category_id <= 22 ? 1 : (category_id >= 23 && category_id <= 43) ? 2 : 3, // 1 = receita, 2 = despesa, 3 = transferência
             date: moment({ year: hoje.year(), month: hoje.month(), day: Math.round(Math.random() * (ultimo_dia - primeiro_dia) + primeiro_dia) }).format('YYYY-MM-DD'),
             account_id: account_1,
-            category_id: Math.round(
-                Math.random() * (max_category - min_category) + min_category
-            ),
+            category_id: category_id
         })
     }
 

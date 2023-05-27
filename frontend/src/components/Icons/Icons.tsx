@@ -262,6 +262,17 @@ export const Icons = [
         "icon": "help",
         "color": "#ff9800",
         "type": ""
+    },
+    {
+        "category": "Transferência recebida",
+        "icon": "help",
+        "color": "#ff9800",
+        "type": ""
+    },
+    {
+        "category": "Transferência enviada",
+        "icon": "help",
+        "color": "#ff9800",
+        "type": ""
     }
 ]
-

@@ -49,6 +49,8 @@ export async function seed(knex: Knex): Promise<void> {
         "Participação em pesquisas",
         "Rendas de royalties",
         "Outras rendas",
+        "Transferência recebida",
+        "Transferência enviada"
     ];
 
     const categories: Category[] = [];
