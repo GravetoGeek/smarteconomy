@@ -9,7 +9,7 @@
 Este projeto é um aplicativo de gestão de finanças pessoais. Desenvolvido como trabalho de conclusão de curso, o aplicativo foi desenvolvido em React Native, utilizando o framework Expo, o backend foi desenvolvido utilizando a linguagem Javascript, bibliotecas como express.js, knex, jsonwebtoken, bcryptjs, moment, ts-node.
 
 ## Instalação
-<blockquote>
+
 Abra o terminal e clone o projeto <a href='https://github.com/GravetoGeek/gestao-financas-pessoais'>gestao-financas-pessoais</a>.
 
 ```bash
@@ -45,6 +45,4 @@ Execute em seguida o comando `npm run start`. O comando irá iniciar o frontend 
 ```bash
 npm run start
 ```
-<br>
-</blockquote>
 
