@@ -21,6 +21,8 @@ function StoreProvider({ children }) {
     ]
 
     const mesAtualtmp = mesestmp[moment().month()]?.month
+    const startDateTmp = moment().startOf('month').format('YYYY-MM-DD 00:00:00')
+    const endDateTmp = moment().endOf('month').format('YYYY-MM-DD 23:59:59')
 
     const initialState = {
         bottomMenuSelected: 0,
@@ -36,8 +38,8 @@ function StoreProvider({ children }) {
         despesaTotal: 0,
         receitaTotal: 0,
         hoje: moment().format('YYYY-MM-DD'),
-        startDate: moment().startOf('month').format('YYYY-MM-DD'),
-        endDate: moment().endOf('month').format('YYYY-MM-DD'),
+        startDate: startDateTmp,
+        endDate: endDateTmp,
         meses: mesestmp,
         mesAtual: mesAtualtmp,
     }
