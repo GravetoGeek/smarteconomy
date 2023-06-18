@@ -4,7 +4,7 @@ type Profile = {
   lastname?: string;
   birthday?: Date;
   monthly_income?: number;
-  profession?: string;
+  profession_id?: number;
   gender_id?: number;
   user_id?: number;
   created_at?: number;
