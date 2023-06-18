@@ -1,5 +1,6 @@
 {
   "name": "smart-economy",
+  "description": "Trabalho de conclusao de curso (Eduardo Sa Ribeiro de Moraes - Leonardo Aparecido Cardoso Villaslobo)",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {

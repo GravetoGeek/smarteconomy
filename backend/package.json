@@ -1,5 +1,5 @@
 {
-    "name": "gestao-financas-pessoais",
+    "name": "smart-economy",
     "version": "1.0.0",
     "description": "Trabalho de conclusao de curso (Eduardo Sa Ribeiro de Moraes - Leonardo Aparecido Cardoso Villaslobo)",
     "main": "app/index.ts",
@@ -21,6 +21,7 @@
         "compile": "tsc",
         "prod": "ts-node dir/index.ts",
         "start": "nodemon --watch 'app' --ext ts --exec ts-node app/index.ts",
+        "config": "knex migrate:latest && knex seed:run",
         "clear": "git fetch -p && for /F \"tokens=1*\" %i in ('git branch -vv ^| find /v \"+\" ^| find /v \"master\" ^| find /v \"develop\" ^| find /v \"*\" ^| find /v \"feature\"^| find /v \"main\"') do git branch -D %i"
     },
     "repository": {
