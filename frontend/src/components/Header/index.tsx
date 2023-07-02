@@ -9,11 +9,11 @@ import { Account, Category, Gender, Profile, Transaction, User } from "../../mod
 import { styles } from "./style";
 
 export default function Header() {
-    const { bottomMenuSelected, setBottomMenuSelected, mesAtual, setMesAtual, setMeses, setEndDate, setStartDate, setHoje, receitaTotal, setReceitaTotal, despesaTotal, setDespesaTotal, transaction_types, setTransactionTypes, account_types, setAccountTypes, categories, setCategories, user, setUser, token, setToken, profile, setProfile, startDate, endDate, accounts, setAccounts, gender, setGender, transactions, setTransactions } = useContext(Store);
+    const { setBottomMenuSelected, setMesAtual, setEndDate, setStartDate, setHoje, setReceitaTotal, setDespesaTotal, setTransactionTypes, setAccountTypes, setCategories, setUser, setToken, profile, setProfile, setAccounts, setGender, setTransactions } = useContext(Store);
     const navigation = useNavigation();
 
     function handleManageProfile() {
-        navigation.navigate("ManageProfile");
+        navigation.navigate("ManageProfile", {});
     }
 
     function handleLogout(): void {

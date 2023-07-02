@@ -104,6 +104,7 @@ export default function Dashboard() {
         "endDate": endDate
       }
 
+      console.log("payload", JSON.stringify(payload, null, 2))
       // Buscar despesas do usuário por categoria em um determinado período
       const despesasporcategorias = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/dashboard/despesasporcategorias`, {
         method: 'POST',

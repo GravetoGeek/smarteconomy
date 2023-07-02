@@ -9,7 +9,7 @@ import Header from "../../components/Header";
 import { Store } from '../../contexts/StoreProvider';
 
 export default function AddAccount() {
-    const { user, profile, setProfile, accounts, setAccounts } = useContext(Store);
+    const { user, profile, setProfile, accounts, setAccounts, bottomMenuSelected, setBottomMenuSelected } = useContext(Store);
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [type_id, setType_id] = useState<number | string>(1);
@@ -27,6 +27,7 @@ export default function AddAccount() {
     }
 
     const fetchData = async () => {
+        setBottomMenuSelected(2)
         const response = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/accounttypes`, {
             method: 'GET',
             headers: {

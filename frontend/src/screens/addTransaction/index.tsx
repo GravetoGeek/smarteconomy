@@ -17,7 +17,7 @@ import { styles } from './style';
 
 
 const AddTransaction = () => {
-    const { user, profile, categories, accounts, account_types, transaction_types, setCategories, setAccounts, setAccountTypes, setTransactionTypes } = useContext(Store);
+    const { user, profile, categories, accounts, account_types, transaction_types, setCategories, setAccounts, setAccountTypes, setTransactionTypes, bottomMenuSelected, setBottomMenuSelected } = useContext(Store);
     const locale = "pt-BR";
     const timeZone = "America/Sao_Paulo";
     const [description, setDescription] = useState("");
@@ -78,6 +78,7 @@ const AddTransaction = () => {
 
     const fetchData = async () => {
         try {
+            setBottomMenuSelected(1)
 
 
             // Obter as contas

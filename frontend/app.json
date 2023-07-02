@@ -1,7 +1,7 @@
 {
     "expo": {
-        "name": "gfp",
-        "slug": "gfp",
+        "name": "SmartEconomy",
+        "slug": "SmartEconomy",
         "version": "1.0.0",
         "orientation": "portrait",
         "icon": "./src/assets/icon.png",

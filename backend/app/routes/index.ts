@@ -6,6 +6,7 @@ import categoryRoute from './categoryRoute'
 import dashboardRoute from './dashboardRoute'
 import emailRoute from './emailRoute'
 import genderRoute from './genderRoute'
+import professionRoute from './professionRoute'
 import profileRoute from './profileRoute'
 import transactionRoute from './transactionRoute'
 import transactionTypesRoute from './transactionTypesRoute'
@@ -29,6 +30,7 @@ router.use('/email', emailRoute)
 router.use('/dashboard', dashboardRoute)
 router.use('/accounttypes', accountTypesRoute)
 router.use('/transactiontypes', transactionTypesRoute)
+router.use('/profession', professionRoute)
 
 router.use((req: Request, res: Response, next) => {
     res.status(404).send('404 Not Found')

@@ -1,30 +1,19 @@
 import { BACKEND_HOST, BACKEND_PORT } from '@env';
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { useFocusEffect } from "@react-navigation/native";
-import moment from 'moment';
-import { Box, Button, Center, Divider, HStack, Icon, Text, VStack } from "native-base";
-import React, { useContext, useState } from "react";
+import { Box, Center, Divider, HStack, Text, VStack } from "native-base";
+import React, { useContext } from "react";
 import { Store } from "../../../contexts/StoreProvider";
-import { Transaction } from '../../../models';
 
 export default function Balance() {
     const moeda = Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
     // const moeda = Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' });
 
     const {
-        user,
         profile,
-        setProfile,
-        accounts,
-        setAccounts,
-        transactions,
         setTransactions,
-        hoje,
-        setHoje,
         startDate,
-        setStartDate,
         endDate,
-        setEndDate,
         despesaTotal,
         setDespesaTotal,
         receitaTotal,
@@ -34,6 +23,7 @@ export default function Balance() {
 
     const fetchData = async () => {
         try {
+            console.log('Balance', JSON.stringify(profile.id, null, 2))
             const transactions = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/transaction/filter`, {
                 method: 'POST',
                 headers: {

@@ -26,7 +26,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/GravetoGeek/gestao-financas-pessoais.git"
+        "url": "git+https://github.com/GravetoGeek/smarteconomy.git"
     },
     "keywords": [
         "FinTech"
