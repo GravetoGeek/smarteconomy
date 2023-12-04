@@ -8,10 +8,12 @@ import {
   Button,
   FormControl,
   Icon,
+  Image,
   Input,
-  VStack
+  VStack,
 } from "native-base";
 import React, { useContext, useState } from "react";
+import cover from '../../assets/cover.png';
 import { Store } from "../../contexts/StoreProvider";
 
 export default function Register() {
@@ -138,6 +140,14 @@ export default function Register() {
   return (
     <Box height="full">
       <VStack width="full" p="5">
+        <Box width="full" height="40%" alignItems="center" justifyContent="center">
+          <Image
+            size={"full"}
+            resizeMode="contain"
+            source={cover}
+            alt="Smart Economy"
+          />
+        </Box>
         <FormControl
           pb="2"
           isRequired

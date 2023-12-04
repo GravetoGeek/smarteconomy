@@ -52,12 +52,18 @@ export const transaction_update = async (req: Request, res: Response) => {
     try {
         let { id } = req.params
         let transaction: Transaction = req.body
+        console.log('transaction', transaction)
         let result = await transactionDAO.transaction_update(
             Number(id),
             transaction
         )
-        if (result.length === 0)
+        console.log('result', result)
+        if (result.length === 0) {
             return res.status(404).json([])
+        }
+        else {
+            return res.status(200).json(result)
+        }
     } catch (error: any) {
         console.log(error)
         return res

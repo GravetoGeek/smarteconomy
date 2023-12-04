@@ -17,9 +17,11 @@ import {
     VStack
 } from "native-base";
 import React, { useContext, useState } from "react";
+import cover from '../../assets/cover.png';
 import { Store } from "../../contexts/StoreProvider";
 import { Account, Category, Gender, Profile, Transaction, User } from "../../models";
 import { styles } from "./style";
+
 // import { useDispatch } from "react-redux";
 // import { setUser } from "../../store/user/thunks";
 
@@ -109,16 +111,20 @@ export default function Login() {
 
 
     return (
+
         <Box flex={1} bg="white">
             <Center height="full">
-                <Image
-                    size={150}
-                    resizeMode="contain"
-                    source={{ uri: 'https://github.com/gravetogeek.png' }}
-                    alt="Foto do Usuário"
-                />
                 <VStack width={"full"} p="5">
+                    <Box width="full" height="40%" alignItems="center" justifyContent="center">
+                        <Image
+                            size={"full"}
+                            resizeMode="contain"
+                            source={cover}
+                            alt="Smart Economy"
+                        />
+                    </Box>
                     <Box width="full">
+
                         <Heading color="coolGray.700">Entrar</Heading>
 
                         <FormControl>
