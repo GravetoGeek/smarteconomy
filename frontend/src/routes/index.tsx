@@ -11,9 +11,10 @@ export default function Routes(){
     <Stack.Navigator>
       
       {/* <Stack.Screen name="Home" component={Home} options={{headerShown:true}} /> */}
+      <Stack.Screen name="Dashboard" component={Dashboard} options={{headerShown:true}} />
       <Stack.Screen name="Login" component={Login} options={{headerShown:true}}/>
       <Stack.Screen name="Register" component={Register} options={{headerShown:true}} />
-      <Stack.Screen name="Dashboard" component={Dashboard} options={{headerShown:true}} />
+      
       
       
     </Stack.Navigator>
