@@ -166,4 +166,55 @@ export const dashboard_despesasPorCategorias = async (
     }
 }
 
+export const dashboard_rendasPorCategorias = async (
+    req: Request,
+    res: Response
+) => {
+    try {
+        let { profileId, startDate, endDate } = req.body
+        let result: Object[] = []
+
+        if (profileId === undefined)
+            throw { statusCode: 400, message: 'Informe o profileId' }
+
+        result = await dashboardDAO.dashboard_rendasPorCategorias(
+            profileId,
+            startDate,
+            endDate
+        )
+
+        return res.status(200).json(result)
+    } catch (error: any) {
+        return res
+            .status(error.statusCode || 500)
+            .json({ message: error.message || 'Erro no servidor' })
+    }
+}
+
+export const dashboard_transacoesPorCategorias = async (
+    req: Request,
+    res: Response
+) => {
+    try {
+        let { profileId, typeId, startDate, endDate } = req.body
+        let result: Object[] = []
+
+        if (profileId === undefined)
+            throw { statusCode: 400, message: 'Informe o profileId' }
+
+        result = await dashboardDAO.dashboard_transacoesPorCategorias(
+            profileId,
+            typeId,
+            startDate,
+            endDate
+        )
+
+        return res.status(200).json(result)
+    } catch (error: any) {
+        return res
+            .status(error.statusCode || 500)
+            .json({ message: error.message || 'Erro no servidor' })
+    }
+}
+
 // Path: backend\app\utils\sendEmail.ts

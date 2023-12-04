@@ -67,7 +67,6 @@ export default function ManageProfile() {
 
         if (response) {
             setProfile(response)
-            // console.log('responsesubmit', response)
             navigation.navigate('Dashboard')
         }
     }
@@ -92,8 +91,6 @@ export default function ManageProfile() {
                 setProfession(response.profession)
                 setGender_id(String(response.gender_id))
                 setProfile(response)
-
-                // console.log('responsefetchProfile', response)
             }
         } catch (error) {
             if (error.name !== 'AbortError') {
@@ -117,10 +114,12 @@ export default function ManageProfile() {
     );
 
     return (
-        <Box flex={1} bg="white">
+        <Box bg="white" height='full'>
             <Header />
             <VStack width='full' paddingLeft={5} paddingRight={5}>
-                <Center>
+
+                <ScrollView>
+
                     <FormControl isRequired>
 
                         <Text fontSize="sm" fontWeight="bold">Gerenciar Perfil</Text>
@@ -167,29 +166,30 @@ export default function ManageProfile() {
                         />} />
                         <FormControl.Label _text={{ fontSize: 'sm', fontWeight: 'bold' }} >Gênero</FormControl.Label>
                         <DropDownPicker
+                            mode='SIMPLE'
+                            dropDownDirection="TOP"
+                            closeAfterSelecting={true}
+                            itemSeparator={false}
+                            listMode="SCROLLVIEW"
+                            modalAnimationType="slide"
+                            language="PT"
                             items={gender_items}
                             open={open}
                             value={gender_id}
                             setOpen={setOpen}
                             setValue={setGender_id}
                             setItems={setGender_items}
-                            containerStyle={{ height: 40 }}
-                            style={{ backgroundColor: '#fafafa' }}
-                            itemStyle={{
-                                justifyContent: 'flex-start',
-                                backgroundColor: '#fafafa'
-                            }}
-                            dropDownStyle={{ backgroundColor: '#fafafa' }}
-                            onChangeItem={item => setGender_id(String(item.value))}
+                            placeholder="Selecione o gênero"
+                            onSelectItem={item => setGender_id(String(item.value))}
                         />
 
 
 
                         <Button onPress={submit} mt={3} colorScheme="purple" _text={{ color: 'white' }}>Atualizar</Button>
                     </FormControl>
-                </Center>
 
 
+                </ScrollView>
             </VStack>
             <FloatingBottomMenu />
         </Box>
