@@ -11,7 +11,7 @@ exports.up = function (knex:any) {
         table.string('name').notNullable()
         table.string('description').notNullable()
         table.string('type').notNullable()
-        table.integer('profile_id').unsigned().notNullable().unique()
+        table.integer('profile_id').unsigned().notNullable()
         table.foreign('profile_id').references('id').inTable('profiles').onDelete('CASCADE').onUpdate('CASCADE')
         table.timestamp("created_at").defaultTo(knex.fn.now());
         table.timestamp("updated_at").defaultTo(knex.fn.now());

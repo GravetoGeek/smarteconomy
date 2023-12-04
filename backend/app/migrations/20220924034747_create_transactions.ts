@@ -6,6 +6,7 @@ export async function up(knex: Knex): Promise<void> {
     table.float("amount",8,2).notNullable();
     table.string("destination_account").notNullable();
     table.string("description").notNullable();
+    table.string("type").notNullable();
     table.datetime("date", { precision: 6 }).defaultTo(knex.fn.now(6));
     table.integer('account_id').unsigned().notNullable();
     table.foreign('account_id').references('id').inTable('accounts').onDelete('CASCADE').onUpdate('CASCADE')

@@ -1,119 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Button, Center,Text, VStack } from "native-base";
 import { Dimensions } from "react-native";
-import { LineChart } from "react-native-chart-kit";
-import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import { PieChart } from "react-native-chart-kit";
+import { BACKEND_HOST, BACKEND_PORT } from "react-native-dotenv";
+import axios from "axios";
 
 
+const URL = `http://${BACKEND_HOST}:${BACKEND_PORT}/transaction`;
 
 export default function Dashboard(){
-  const [date, setDate] = useState(new Date());
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate
-    setDate(currentDate);
-  }
+  const [data, setData] = useState([])
+
+  useEffect(() => {
+    fetchData();
+    }, []
+  );
   
-  const showMode = (currentMode)=>{
-    DateTimePickerAndroid.open({
-      value: date,
-      onChange,
-      mode:currentMode,
-      is24Hour: true,
-    });
+  const fetchData = async () => {
+    try{
+      const response = await axios.get(URL);
+      console.log(response.data)
+      setData(response.data);
+    }catch(error){
+      console.error(error);
+    }
   }
 
-  const showDatepicker = () => {
-    showMode('date');
-  }
-  const showTimepicker = () => {
-    showMode('time');
-  }
-  const data ={
-    labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun","Jul", "Ago", "Set", "Out", "Nov", "Dez"],
-    datasets: [
-      {
-        data: [
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-        ],
-        strokeWidth: 2,
-								color: (opacity = 1) => `rgba(255,0,0,${opacity})`, // optional
-                stroke: "#7f0000",
-      },
-      {
-        data: [
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-          Math.random() * 100,
-        ],
-        strokeWidth: 2,
-								color: (opacity = 1) => `rgba(0,255,0, ${opacity})`, // optional
-                stroke: "#427f00",
-      },
-    ],
-  }
-  
-  const chartConfig ={
-    backgroundColor: "#dd04f5",
-    backgroundGradientFrom: "#f6a3ff",
-    backgroundGradientTo: "#f6a3ff",
-    decimalPlaces: 2, // optional, defaults to 2dp
-    horizontalLabelRotation:90,
-    verticalLabelRotation:90,
-    color: (opacity = 1) => `rgba(150, 150, 150, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    style: {
-      borderRadius: 16,
-    },
-    propsForDots: {
-      r: "4",
-      strokeWidth: "2",
-    },
-  }
-
-  const graphStyle={
-    marginVertical: 8,
-    borderRadius: 16,
-  }
   const width=Dimensions.get("window").width;
   const height=200;
-  const bezier = true
   return(
     <Box height="full">
       <VStack width="full">
-        <Button onPress={showDatepicker} color="white" title="Show date picker!"/>
-        <Button onPress={showTimepicker} title="Show time picker!"/>
-        <Text>selected: {date.toLocaleString()}</Text>
         <Text color={'orange.600'} bold textAlign={'center'}>Balanço</Text>
         <Center>
-        <LineChart
+        <PieChart
         data={data}
         width={width*0.95}
-        yAxisLabel="R$"
-    yAxisSuffix=""
         height={height}
-        bezier={bezier}
-        style={graphStyle}
-        chartConfig={chartConfig}/>
+        chartConfig={{
+          backgroundColor: '#1cc910',
+          backgroundGradientFrom: '#eff3ff',
+          backgroundGradientTo: '#efefef',
+          decimalPlaces: 2,
+          color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+          style: {
+            borderRadius: 16,
+          },
+        }}
+        style={{
+          marginVertical: 8,
+          borderRadius: 16,
+        }}
+        accessor="type"
+        backgroundColor="transparent"
+        paddingLeft="15"
+        absolute
+        />
         </Center>
       </VStack>
     </Box>
