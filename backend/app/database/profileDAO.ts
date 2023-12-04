@@ -23,6 +23,6 @@ export const profileDAO_update = async (id:number,profile:Profile)=>{
 }
 
 export const profileDAO_delete = async(id:number)=>{
-    const result = await connection('profiles').where({id}).delete()
+    const result = await connection('profiles').where({id}).del()
     return result
 }
