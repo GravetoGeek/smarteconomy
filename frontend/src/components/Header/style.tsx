@@ -1,4 +1,4 @@
-import { StyleSheet, StatusBar } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 const statusBarHeight = StatusBar.currentHeight ? StatusBar.currentHeight + 22 : 64;
 
 export const styles = StyleSheet.create({
@@ -7,8 +7,8 @@ export const styles = StyleSheet.create({
         justifyContent: 'space-between',
         padding: statusBarHeight / 2,
         backgroundColor: '#790ea3',
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
+        // borderBottomLeftRadius: 20,
+        // borderBottomRightRadius: 20,
         marginBottom: 10,
         color: '#000000',
     },

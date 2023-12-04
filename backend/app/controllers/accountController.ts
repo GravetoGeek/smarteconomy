@@ -1,6 +1,6 @@
-import Account from '../models/Account'
 import { Request, Response } from 'express'
 import * as accountDAO from '../database/accountDAO'
+import Account from '../models/Account'
 
 export const account_create = async (req: Request, res: Response) => {
     try {
@@ -20,6 +20,20 @@ export const account_read = async (req: Request, res: Response) => {
     try {
         let { id } = req.params
         let result = await accountDAO.account_read(Number(id))
+        if (result.length === 0)
+            throw { statusCode: 404, message: 'Conta não encontrada' }
+        return res.status(200).json(result)
+    } catch (error: any) {
+        console.log(error)
+        return res
+            .status(error.statusCode || 500)
+            .json({ message: error.message || 'Erro no servidor' })
+    }
+}
+export const account_byProfile = async (req: Request, res: Response) => {
+    try {
+        let { id } = req.params
+        let result = await accountDAO.account_byProfile(Number(id))
         if (result.length === 0)
             throw { statusCode: 404, message: 'Conta não encontrada' }
         return res.status(200).json(result)

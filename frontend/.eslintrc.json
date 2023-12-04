@@ -1,7 +1,7 @@
 {
     "env": {
         "browser": true,
-        "es2022": true,
+        "es13": true,
         "react-native/react-native": true
     },
     "extends": [
@@ -17,7 +17,8 @@
         "ecmaVersion": "latest",
         "sourceType": "module",
         "ecmaFeatures": {
-            "jsx": true
+            "jsx": true,
+            "tsx": true
         },
         "project": "./tsconfig.json"
     },
@@ -27,6 +28,7 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "no-unused-vars": "warn",
         "max-len": [
             "error",
             {
