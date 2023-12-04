@@ -23,6 +23,9 @@ export default function Register() {
   function handleHome() {
     navigation.navigate("Home");
   }
+  function handleDashboard() {
+    navigation.navigate("Dashboard");
+  }
 
   const validate = () => {
     let emailRegex = /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/i;
@@ -69,13 +72,13 @@ export default function Register() {
   };
 
   const submit = () => {
-    delete errors.required;
-    delete errors.invalid;
-    delete errors.password;
-    delete errors.password_length;
-    delete errors.confirm_password;
-    delete errors.confirm_password_length;
-    delete errors.diferent;
+    delete errors?.required;
+    delete errors?.invalid;
+    delete errors?.password;
+    delete errors?.password_length;
+    delete errors?.confirm_password;
+    delete errors?.confirm_password_length;
+    delete errors?.diferent;
 
     if (validate()) {
       delete formData.confirm_password;
@@ -95,7 +98,7 @@ export default function Register() {
             console.log(responseJson);
             if (responseJson.auth) {
               alert("Cadastro realizado com sucesso");
-              handleHome();
+              handleDashboard();
             }
           }
         })
