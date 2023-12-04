@@ -4,7 +4,7 @@ import Transaction from "../models/Transaction";
 
 export async function seed(knex: Knex): Promise<void> {
     // Deletes ALL existing entries
-    await knex("transaction").del();
+    await knex("transactions").del();
     
     let transactions:Transaction[] = [];
     let max:number = 3
@@ -13,8 +13,8 @@ export async function seed(knex: Knex): Promise<void> {
 
     for(let i = 0; i < 100; i++){
         transactions.push({
-            amount: Number((Math.random()*(20000-1200)+1200).toFixed(2)),
-            destination_account: faker.finance.iban(),
+            amount: parseFloat((Math.random()*(20000-1200)+1200).toFixed(2)),
+            destination_account: faker.finance.iban(true,'BR'),
             description: faker.lorem.sentence(),
             date: faker.date.past(),
             account_id: i+1,
@@ -23,5 +23,5 @@ export async function seed(knex: Knex): Promise<void> {
     }
 
     // Inserts seed entries
-    await knex("transaction").insert(transactions);
+    await knex("transactions").insert(transactions);
 };
