@@ -15,8 +15,7 @@ export async function seed(knex: Knex): Promise<void> {
         "Outros",
     ];
 
-    const categories:Category[] = [];
-
+    const categories: Category[] = [];
 
     for (const category of categories_name) {
         categories.push({
@@ -27,6 +26,4 @@ export async function seed(knex: Knex): Promise<void> {
 
     // Inserts seed entries
     await knex("categories").insert(categories);
-
-    
-};
+}

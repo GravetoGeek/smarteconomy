@@ -3,5 +3,9 @@
   "compilerOptions": {
     "jsx": "react",
     "strict": true
-  }
+  },
+  "include": [
+    "src",
+    "types/env.d.ts"
+  ],
 }

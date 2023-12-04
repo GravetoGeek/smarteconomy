@@ -1,28 +1,27 @@
-import Profile from "../models/Profile";
-import connection from "./connection";
+import Profile from '../models/Profile'
+import connection from './connection'
 
-export const profileDAO_create = async (profile:Profile)=>{
+export const profileDAO_create = async (profile: Profile) => {
     const result = await connection('profiles').insert(profile)
     return result
 }
 
-export const profileDAO_read = async (id:number) => {
-    const result = await connection('profiles').where({id})
+export const profileDAO_read = async (id: number) => {
+    const result = await connection('profiles').where({ id })
     return result
 }
 
-
-export const profileDAO_list = async () =>{
+export const profileDAO_list = async () => {
     const result = await connection('profiles').select()
     return result
 }
 
-export const profileDAO_update = async (id:number,profile:Profile)=>{
-    const result = await connection('profiles').where({id}).update(profile)
+export const profileDAO_update = async (id: number, profile: Profile) => {
+    const result = await connection('profiles').where({ id }).update(profile)
     return result
 }
 
-export const profileDAO_delete = async(id:number)=>{
-    const result = await connection('profiles').where({id}).del()
+export const profileDAO_delete = async (id: number) => {
+    const result = await connection('profiles').where({ id }).del()
     return result
 }
