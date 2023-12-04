@@ -7,7 +7,12 @@ exports.up = async function (knex: any) {
                 table.string('lastname', 255)
                 table.string('birthday', 255)
                 table.string('monthly_income', 255)
-                table.string('profession', 255)
+                table.integer('profession_id', 255).unsigned()
+                table.foreign('profession_id')
+                    .references('id')
+                    .inTable('professions')
+                    .onDelete('CASCADE')
+                    .onUpdate('CASCADE')
                 table.integer('gender_id').unsigned()
                 table
                     .foreign('gender_id')

@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
-import { Box, Button, Center, Checkbox, HStack, Heading, Text, VStack } from "native-base";
+import { Box, Button, Center, Checkbox, HStack, Heading, Image, Text, VStack, } from "native-base";
 import React from "react";
+import cover from '../../assets/cover.png';
 
 export default function Home() {
   const navigation = useNavigation();
@@ -16,8 +17,15 @@ export default function Home() {
     <Box width="full">
       <Center height="full">
         <VStack width={"full"} p="5">
-
-          <Heading color="coolGray.700">Home</Heading>
+          <Box width="full" height="40%" alignItems="center" justifyContent="center">
+            <Image
+              size={"full"}
+              resizeMode="contain"
+              source={cover}
+              alt="Smart Economy"
+            />
+          </Box>
+          {/*<Heading color="coolGray.700">Home</Heading>*/}
 
 
           <Button mt="7" colorScheme="purple" onPress={handleLogin}>

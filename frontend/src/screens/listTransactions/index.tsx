@@ -12,7 +12,7 @@ import { Icons } from "../../components/Icons/Icons";
 import { Store } from "../../contexts/StoreProvider";
 import { Category, Transaction, TransactionTypes } from "../../models";
 
-const ListTransactions = ({ route }) => {
+const ListTransactions = () => {
     const { setTransactionTypes, user, setUser, token, setToken, profile, setProfile, startDate, endDate, transactions, setTransactions, receitaTotal, categories, setCategories, despesaTotal, transaction_types } = useContext(Store);
     // const [transactions, setTransactions] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -24,7 +24,7 @@ const ListTransactions = ({ route }) => {
         React.useCallback(() => {
             fetchTransactions();
             fetchCategories();
-            fetchTransactionTypes
+            fetchTransactionTypes()
         }, [])
     );
 

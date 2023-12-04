@@ -1,6 +1,16 @@
-import { faker } from "@faker-js/faker";
-import { Knex } from "knex";
-import Profile from "../models/Profile";
+import { Knex } from 'knex';
+
+
+
+export async function seed(knex: Knex): Promise<void> {
+
+    return knex("professions")
+        .del()
+        .then(function () {
+            // Inserts seed entries
+            return knex('professions').insert(cbolist)
+        });
+}
 
 const cbolist = [
 {"cbo":"6125-10","title":"Abacaxicultor","type":"Sinônimo"},
@@ -10476,33 +10486,3 @@ const cbolist = [
 {"cbo":"2030-10","title":"Zoólogo","type":"Sinônimo"},
 {"cbo":"2233-10","title":"Zootecnista","type":"Ocupação"},
 ]
-
-
-let max = 3;
-let min = 1;
-let profiles: Profile[] = [];
-faker.locale = "pt_BR";
-
-for (let i = 0; i < 100; i++) {
-    profiles.push({
-        name: faker.name.firstName(),
-        lastname: faker.name.lastName(),
-        birthday: faker.date.birthdate({ min: 18, max: 85, mode: "age" }),
-        monthly_income: Number(
-            (Math.random() * (20000 - 1200) + 1200).toFixed(2)
-        ),
-        profession_id: Math.round(Math.random() * cbolist.length + 1),
-        gender_id: Math.round(Math.random() * (max - min) + min),
-        user_id: i + 1,
-    });
-}
-
-exports.seed = function (knex: Knex) {
-    // Deletes ALL existing entries
-    return knex("profiles")
-        .del()
-        .then(function () {
-            // Inserts seed entries
-            return knex("profiles").insert(profiles);
-        });
-};
