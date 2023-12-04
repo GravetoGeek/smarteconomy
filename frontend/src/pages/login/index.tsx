@@ -17,46 +17,55 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { BACKEND_HOST, BACKEND_PORT } from "react-native-dotenv";
 import { styles } from "./style";
+import axios from "axios";
+
+
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
+
   const navigation = useNavigation();
   function handleDashboard() {
-    navigation.navigate("Dashboard");
+    navigation.navigate('Dashboard');
   }
   function handleRegister() {
-    navigation.navigate("Register");
+    navigation.navigate('Register');
   }
-  const submit = () => {
+  const submit = async () => {
     const signData = JSON.stringify({ email, password });
-    if (email === "" || password === "") {
+    console.log('iniciando login',signData)
+    if (email === '' || password === '') {
       alert("Preencha todos os campos");
     } else {
-      fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/auth/login`, {
-        method: "POST",
+      let url = `http://${BACKEND_HOST}:${BACKEND_PORT}/auth/login`;
+      console.log('url',url)
+      let result = await axios.post(url, signData, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: signData,
+      }).then((response) => {
+        console.log(JSON.stringify(response,undefined,2));
+
+        
+
+        if (response.status === 200) {
+          handleDashboard();
+        }
       })
-        .then((response) => response.json())
-        .then((responseJson) => {
-          if (responseJson.error) {
-            alert(responseJson.error);
-          } else {
-            console.log(responseJson);
-            if (responseJson.auth) {
-              alert("Login realizado com sucesso");
-              handleDashboard();
-            }
-            // setEmail("");
-            // setPassword("");
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      .catch((error) => {
+        console.log(JSON.stringify(error,undefined,2));
+        // alert(error.response.status);
+        if([404,401].includes(error.response.status)){
+          setErrors({ ...errors, emailOrPassword: "Email ou senha inválido" });
+        }
+        if(error.response.status === 408){
+          setErrors({ ...errors, requestTimeout: "Tempo de requisição expirado." });
+        }
+      });
+
+      console.log(JSON.stringify(result,undefined,2));
     }
   };
   return (
@@ -100,6 +109,8 @@ export default function Login() {
               }
             />
           </FormControl>
+          {'emailOrPassword' in errors ? ( <Text color="red.500">{errors.emailOrPassword}</Text> ) : null}
+          {'requestTimeout' in errors ? ( <Text color="red.500">{errors.requestTimeout}</Text> ) : null}
           <Button mt="7" colorScheme="purple" onPress={submit}>
             Entrar
           </Button>

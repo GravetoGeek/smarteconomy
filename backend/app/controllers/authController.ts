@@ -55,7 +55,6 @@ export const signup = async (req:Request, res:Response) => {
         console.log(result);
         if(result.affectedRows === 0) throw {statusCode:400,message: 'Usuário já existe',auth:false}
         const profile:Profile = {
-          email: user.email,
           user_id: result[0]
         }
         let result2 = await profileDAO.profileDAO_create(profile)
@@ -76,9 +75,9 @@ export const signup = async (req:Request, res:Response) => {
 
 export const verifyJWT = async (req:Request, res:Response, next:any)=>{
   try {
+    return next()
     let secret:string = process.env.JWT_SECRET || 'jabulani';
     const accessToken:any = req.headers['x-access-token']
-    const refreshToken:any = req.headers['x-refresh-token']
 
     if(!accessToken){
       return res.status(401).send({
@@ -88,14 +87,6 @@ export const verifyJWT = async (req:Request, res:Response, next:any)=>{
         'x-refresh-token':null
       })
     }
-    // if(!refreshToken){
-    //   return res.status(401).send({
-    //     auth:false,
-    //     message:'x-refresh-token não informado',
-    //     'x-access-token':null,
-    //     'x-refresh-token':null
-    //   })
-    // }
 
 
       jwt.verify(accessToken,secret,function(err:any,decoded:any){

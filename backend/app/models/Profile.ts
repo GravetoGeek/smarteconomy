@@ -6,7 +6,6 @@ type Profile = {
     monthly_income?: number;
     profession?: string;
     gender_id?: number
-    email: string
     user_id?:number
 }
 
