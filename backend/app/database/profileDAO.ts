@@ -10,6 +10,10 @@ export const profileDAO_read = async (id: number) => {
     const result = await connection('profiles').where({ id })
     return result
 }
+export const profileDAO_byUser = async (user_id: number) => {
+    const result = await connection('profiles').where({ user_id })
+    return result
+}
 
 export const profileDAO_list = async () => {
     const result = await connection('profiles').select()

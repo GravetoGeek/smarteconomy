@@ -25,6 +25,9 @@ export default function Register() {
   function handleDashboard() {
     navigation.navigate("Dashboard");
   }
+  function handleAddTransaction() {
+    navigation.navigate("AddTransaction");
+  }
 
   const validate = () => {
     let emailRegex = /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/i;
@@ -97,7 +100,7 @@ export default function Register() {
             console.log(responseJson);
             if (responseJson.auth) {
               alert("Cadastro realizado com sucesso");
-              handleDashboard();
+              handleAddTransaction();
             }
           }
         })

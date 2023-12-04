@@ -1,17 +1,24 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { NativeBaseProvider } from "native-base";
 import React from 'react';
+import FloatingBottomMenu from './src/components/FloatingBottomMenu';
+import Header from './src/components/Header';
+import StoreProvider from './src/contexts/StoreProvider';
 import Routes from './src/routes';
-
 
 export default function App() {
   return (
 
     <NativeBaseProvider>
       <NavigationContainer>
-        {/* <StatusBar barStyle="light-content" backgroundColor="#bc14ff" /> */}
-        <Routes />
+        <StoreProvider>
+          {/* <StatusBar barStyle="light-content" backgroundColor="#bc14ff" /> */}
+          <Routes />
+
+        </StoreProvider>
       </NavigationContainer>
+
     </NativeBaseProvider>
+
   )
 }

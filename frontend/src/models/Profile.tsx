@@ -1,14 +1,14 @@
 type Profile = {
     id?: number;
-    name?: string;
-    lastname?: string;
-    birthday?: Date;
-    monthly_income?: number;
-    profession?: string;
-    gender_id?: number;
+    name?: string | null;
+    lastname?: string | null;
+    birthday?: Date | null;
+    monthly_income?: number | null;
+    profession?: string | null;
+    gender_id?: number | null;
     user_id?: number;
-    created_at_?: Date;
-    updated_at_?: Date;
+    created_at_?: Date | null;
+    updated_at_?: Date | null;
 };
 
 export default Profile

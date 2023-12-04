@@ -1,5 +1,5 @@
-import { Knex } from 'knex'
 import { faker } from '@faker-js/faker'
+import { Knex } from 'knex'
 import Account from '../models/Account'
 
 export async function seed(knex: Knex): Promise<void> {
@@ -14,7 +14,7 @@ export async function seed(knex: Knex): Promise<void> {
     faker.locale = 'pt_BR'
 
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 500; i++) {
 
         accounts.push({
             type_id: Math.floor(Math.random() * account_types + 1),

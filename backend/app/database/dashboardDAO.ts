@@ -91,6 +91,7 @@ export const dashboard_despesasPorCategorias = async (
         .sum('amount as amount')
         .join('categories', 'categories.id', 'transactions.category_id')
         .join('accounts', 'accounts.id', 'transactions.account_id')
+        .where('transactions.type_id', 1)
         .where('profile_id', profileId)
         .modify((queryBuilder: any) => {
             if (startDate && endDate) {
