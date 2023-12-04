@@ -34,20 +34,17 @@ export default function Balance() {
 
     const fetchData = async () => {
         try {
-
-            const response = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/transaction/filter`, {
+            const transactions = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/transaction/filter`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    userId: user.id,
+                    profileId: profile.id,
                     startDate: startDate,
                     endDate: endDate
                 })
-            })
-
-
+            }).then((res) => res.json())
 
 
             setTransactions(transactions);
@@ -66,7 +63,7 @@ export default function Balance() {
 
         }
         catch (error) {
-            console.log(error)
+            console.log('Balance', error)
         }
     }
 

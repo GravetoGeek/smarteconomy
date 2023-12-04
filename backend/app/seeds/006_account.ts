@@ -19,7 +19,7 @@ export async function seed(knex: Knex): Promise<void> {
         accounts.push({
             type_id: Math.floor(Math.random() * account_types + 1),
             description: faker.lorem.sentence(),
-            name: i === 0 ? 'Outra conta' : `Conta ${i} - ${faker.finance.accountName()}`,
+            name: `Conta ${i} - ${faker.finance.accountName()}`,
             profile_id: Math.round(
                 Math.random() * (max_profile - min_profile) + min_profile
             ),

@@ -34,8 +34,7 @@ export const account_byProfile = async (req: Request, res: Response) => {
     try {
         let { id } = req.params
         let result = await accountDAO.account_byProfile(Number(id))
-        if (result.length === 0)
-            throw { statusCode: 404, message: 'Conta não encontrada' }
+        if (result.length === 0) return res.status(404).json(result)
         return res.status(200).json(result)
     } catch (error: any) {
         console.log(error)

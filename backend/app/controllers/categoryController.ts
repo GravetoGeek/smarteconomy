@@ -1,6 +1,6 @@
-import Category from '../models/Category'
 import { Request, Response } from 'express'
 import * as categoryDAO from '../database/categoryDAO'
+import Category from '../models/Category'
 
 export const category_create = async (req: Request, res: Response) => {
     try {
@@ -66,6 +66,20 @@ export const category_delete = async (req: Request, res: Response) => {
 export const category_list = async (req: Request, res: Response) => {
     try {
         let result = await categoryDAO.category_list()
+        return res.status(200).json(result)
+    } catch (error: any) {
+        console.log(error)
+        return res
+            .status(error.statusCode || 500)
+            .json({ message: error.message || 'Erro no servidor' })
+    }
+}
+
+export const category_filter = async (req: Request, res: Response) => {
+    try {
+        let { transactionType } = req.body
+        let result = await categoryDAO.category_filter(transactionType)
+        if (result.length === 0) return res.status(404).json(result)
         return res.status(200).json(result)
     } catch (error: any) {
         console.log(error)

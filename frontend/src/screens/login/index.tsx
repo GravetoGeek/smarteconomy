@@ -3,6 +3,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import jwtDecode from 'jwt-decode';
+import moment from "moment";
 import {
     Box,
     Button,
@@ -17,6 +18,7 @@ import {
 } from "native-base";
 import React, { useContext, useState } from "react";
 import { Store } from "../../contexts/StoreProvider";
+import { Account, Category, Gender, Profile, Transaction, User } from "../../models";
 import { styles } from "./style";
 // import { useDispatch } from "react-redux";
 // import { setUser } from "../../store/user/thunks";
@@ -24,10 +26,17 @@ import { styles } from "./style";
 
 
 export default function Login() {
-    const { user, setUser, token, setToken } = useContext(Store);
+    const { user, setUser, token, setToken, setProfile } = useContext(Store);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
+
+    // let hoje = moment().format('YYYY-MM-DD')
+
+    // setHoje(hoje)
+    // setStartDate(moment(hoje).startOf('month').format('YYYY-MM-DD'));
+    // setEndDate(moment(hoje).endOf('month').format('YYYY-MM-DD'));
+    // setMesAtual(meses[moment(hoje).month()]?.month)
 
     const navigation = useNavigation();
     // const dispatch = useDispatch();
@@ -38,51 +47,67 @@ export default function Login() {
     function handleRegister() {
         navigation.navigate('Register');
     }
+
+
     const submit = async () => {
-        const signData = JSON.stringify({ email, password });
-        console.log('iniciando login', signData)
-        if (email === '' || password === '') {
+        if (!email || !password) {
             alert("Preencha todos os campos");
-        } else {
-            let url = `http://${BACKEND_HOST}:${BACKEND_PORT}/auth/login`;
-            console.log('url', url)
-            let result = await axios.post(url, signData, {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }).then((response) => {
-                console.log('responseLogin', JSON.stringify(response, undefined, 2));
+            return;
+        }
 
-                //aqui usa-se o dispatch
+        const url = `http://${BACKEND_HOST}:${BACKEND_PORT}/auth/login`;
+        const signData = JSON.stringify({ email, password });
 
-                if (response.status === 200) {
-                    let { access_token, auth, refresh_token } = response.data;
-                    setToken({ access_token, auth, refresh_token });
-                    const decodedToken = jwtDecode(access_token)
-                    let { id, email, exp, iat } = decodedToken;
-                    setUser({ id, email })
+        try {
+            const loginResponse = await fetch(url, {
+                method: 'POST',
+                body: signData,
+                headers: { "Content-Type": "application/json" },
+            });
 
-                    // console.log('decodedToken', decodedToken)
+            // if (!loginResponse.ok) {
+            //     throw new Error('Erro no Login');
+            // }
 
 
+            const { access_token, auth, refresh_token } = await loginResponse.json();
 
-                    handleDashboard();
-                }
+            setToken({ access_token, auth, refresh_token });
+
+            const { id, email, exp, iat } = jwtDecode(access_token);
+            setUser({ id, email });
+
+            let profileResponse = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/profile/byUser/${id}`, {
+                method: 'GET',
+                headers: { "Content-Type": "application/json" },
             })
-                .catch((error) => {
-                    // console.log(JSON.stringify(error, undefined, 2));
-                    // alert(error.response.status);
-                    if ([404, 401].includes(error.response.status)) {
-                        setErrors({ ...errors, emailOrPassword: "Email ou senha inválido" });
-                    }
-                    if (error.response.status === 408) {
-                        setErrors({ ...errors, requestTimeout: "Tempo de requisição expirado." });
-                    }
-                });
 
-            console.log(JSON.stringify(result, undefined, 2));
+            if (!profileResponse.ok) {
+                throw new Error('Erro ao buscar perfil');
+            }
+
+            profileResponse = await profileResponse.json();
+
+
+            setProfile(profileResponse);
+
+            handleDashboard();
+
+        } catch (error) {
+            console.log(error);
+            const status = error.response ? error.response.status : 500;
+
+            if ([404, 401].includes(status)) {
+                setErrors({ ...errors, emailOrPassword: "Email ou senha inválido" });
+            } else if (status === 408) {
+                setErrors({ ...errors, requestTimeout: "Tempo de requisição expirado." });
+            } else {
+                setErrors({ ...errors, unknown: "Um erro desconhecido ocorreu." });
+            }
         }
     };
+
+
     return (
         <Box flex={1} bg="white">
             <Center height="full">
