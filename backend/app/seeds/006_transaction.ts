@@ -7,8 +7,10 @@ export async function seed(knex: Knex): Promise<void> {
     await knex("transactions").del();
     
     let transactions:Transaction[] = [];
-    let max:number = 3
-    let min:number = 1
+    let max_category:number = 3
+    let min_category:number = 1
+    let max_account:number = 100
+    let min_account:number = 1
 
 
     for(let i = 0; i < 100; i++){
@@ -17,8 +19,8 @@ export async function seed(knex: Knex): Promise<void> {
             destination_account: faker.finance.iban(true,'BR'),
             description: faker.lorem.sentence(),
             date: faker.date.past(),
-            account_id: i+1,
-            category_id: Math.round(Math.random() * (max - min) + min)
+            account_id: Math.round(Math.random() * (max_account - min_account) + min_account),
+            category_id: Math.round(Math.random() * (max_category - min_category) + min_category)
         })
     }
 

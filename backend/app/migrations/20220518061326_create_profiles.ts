@@ -8,7 +8,6 @@ exports.up = async function (knex:any) {
         table.string('birthday', 255);
         table.string('monthly_income', 255);
         table.string('profession', 255);
-        table.string('email', 255).notNullable().unique()
         table.integer('gender_id').unsigned();
         table.foreign('gender_id').references('id').inTable('genders').onDelete('CASCADE').onUpdate('CASCADE')
         table.integer('user_id').unsigned().notNullable().unique()
