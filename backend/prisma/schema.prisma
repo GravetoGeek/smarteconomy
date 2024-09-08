@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id        String   @id @default(cuid())
+    email     String   @unique
+    name      String
+    lastname  String
+    birthdate DateTime
+    profession String
+    role      String   @default("user")
+    posts     Post[]
+    gender    Gender   @relation(fields: [genderId], references: [id])
+    genderId  String
+    password  String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    Profile Profile[]
+    Profession Profession[]
+}
+
+model Post {
+    id             String         @id @default(cuid())
+    title          String
+    slug           String         @unique
+    content        String
+    published      Boolean        @default(false)
+    author         User           @relation(fields: [authorId], references: [id])
+    authorId       String
+    postCategories PostCategory[]
+    createdAt      DateTime       @default(now())
+    updatedAt      DateTime       @updatedAt
+}
+
+model PostCategory {
+    id        String   @id @default(cuid())
+    category  String
+    posts     Post[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Profile {
+    id        String   @id @default(cuid())
+    bio       String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Gender {
+    id     String @id @default(cuid())
+    gender String @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    User User[]
+}
+
+model Profession {
+    id          String   @id @default(cuid())
+    profession  String   @unique
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    User        User[]
+}
