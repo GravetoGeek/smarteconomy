@@ -1,0 +1,99 @@
+{
+    "env": {
+        "browser": true,
+        "es13": true,
+        "react-native/react-native": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:react/recommended",
+        "plugin:react-native/all"
+    ],
+    "overrides": [],
+    "parser": "@react-native-community/eslint-plugin",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true,
+            "tsx": true
+        },
+        "project": "./tsconfig.json"
+    },
+    "plugins": [
+        "react",
+        "react-native",
+        "@typescript-eslint"
+    ],
+    "rules": {
+        "no-unused-vars": "warn",
+        "max-len": [
+            "error",
+            {
+                "code": 200
+            }
+        ],
+        "linebreak-style": [
+            "error",
+            "windows"
+        ],
+        "indent": [
+            "error",
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "never"
+        ],
+        "comma-dangle": [
+            "error",
+            "only-multiline"
+        ],
+        "no-return-assign": 1,
+        "prefer-const": "off",
+        "no-param-reassign": "off",
+        "arrow-body-style": [
+            "error",
+            "always"
+        ],
+        "implicit-arrow-linebreak": [
+            "error",
+            "beside"
+        ],
+        "function-paren-newline": [
+            "error",
+            "consistent"
+        ],
+        "no-throw-literal": "off",
+        "eqeqeq": [
+            "error",
+            "smart"
+        ],
+        "object-curly-newline": [
+            "error",
+            {
+                "ObjectExpression": {
+                    "multiline": true,
+                    "minProperties": 6
+                },
+                "ObjectPattern": {
+                    "multiline": true
+                },
+                "ImportDeclaration": "never",
+                "ExportDeclaration": {
+                    "multiline": true,
+                    "minProperties": 6
+                }
+            }
+        ]
+    }
+}
