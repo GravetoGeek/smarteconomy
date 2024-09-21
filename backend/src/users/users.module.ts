@@ -1,9 +1,9 @@
+import {DatabaseModule} from '@/database/database.module';
 import {Module} from '@nestjs/common';
-import {UsersController} from './users.controller';
-import {UsersService} from './users.service';
+import {UsersResolver} from './graphql/resolvers/users.resolver';
 
 @Module({
-  providers: [UsersService],
-  controllers: [UsersController]
+    imports: [DatabaseModule],
+    providers: [UsersResolver]
 })
 export class UsersModule {}
