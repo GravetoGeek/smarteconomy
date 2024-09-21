@@ -1,0 +1,159 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id           Int         @id @default(autoincrement())
+    email        String      @unique @db.VarChar(255)
+    name         String      @db.VarChar(30)
+    lastname     String      @db.VarChar(50)
+    birthdate    DateTime    @db.Date
+    role         String      @default("USER")
+    posts        Post[]
+    gender       Gender     @relation(fields: [genderId], references: [id])
+    genderId     Int         @unique
+    password     String      @db.VarChar(50)
+    createdAt    DateTime    @default(now())
+    updatedAt    DateTime    @updatedAt
+    profile      Profile?    @relation
+    profileId    String?     @unique @db.VarChar(50)
+    professionId Int         @unique
+    profession   Profession? @relation(fields: [professionId], references: [id])
+    status       AccountStatus @default(ACTIVE)
+}
+
+model Post {
+    id           Int            @id @default(autoincrement())
+    title        String
+    slug         String         @unique
+    content      String
+    published    Boolean        @default(false)
+    author       User           @relation(fields: [authorId], references: [id])
+    authorId     Int
+    postCategory PostCategory[] @relation
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+}
+
+model PostCategory {
+    id        Int      @id @default(autoincrement())
+    category  String
+    posts     Post[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Profile {
+    id        Int      @id @default(autoincrement())
+    bio       String   @default("")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    User      User     @relation(fields: [userId], references: [id])
+    userId    Int      @unique
+}
+
+model Gender {
+    id        Int      @id @default(autoincrement())
+    gender    String   @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    user      User[]
+}
+
+model Profession {
+    id         Int      @id @default(autoincrement())
+    profession String   @unique
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    user       User[]
+}
+
+model CBO_Familia {
+    id        Int      @id @default(autoincrement())
+    codigo    String   @unique
+    titulo    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model CBO_Grande_Grupo {
+    id        Int      @id @default(autoincrement())
+    codigo    String   @unique
+    titulo    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model CBO_Ocupacao {
+    id        Int      @id @default(autoincrement())
+    codigo    String   @unique
+    titulo    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model CBO_Perfil_Ocupacional {
+    id                     Int      @id @default(autoincrement())
+    cod_grande_grupo       String
+    cod_subgrupo_principal String
+    cod_subgrupo           String
+    cod_familia            String
+    cod_ocupacao           String
+    sgl_grande_area        String
+    nome_grande_area       String
+    titulo                 String
+    createdAt              DateTime @default(now())
+    updatedAt              DateTime @updatedAt
+}
+
+model CBO_Sinonimo {
+    id        Int      @id @default(autoincrement())
+    codigo    String   @unique
+    titulo    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model CBO_Subgrupo_Principal {
+    id        Int      @id @default(autoincrement())
+    codigo    String   @unique
+    titulo    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model CBO_Subgrupo {
+    id        Int      @id @default(autoincrement())
+    codigo    String   @unique
+    titulo    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Author {
+    id        Int      @id @default(autoincrement())
+    name      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+enum Role {
+    USER
+    ADMIN
+}
+
+enum AccountStatus {
+    ACTIVE
+    INACTIVE
+}
