@@ -1,0 +1,67 @@
+services:
+  backend:
+    container_name: backend
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.backend
+    # user: "1000:1000"  # Permissões do backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/backend:delegated
+      - /backend/node_modules  # Corrige o volume de dependências
+    depends_on:
+      - db
+      - migration
+    environment:
+      - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?schema=${DATABASE_SCHEMA}
+
+  db:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.database
+    restart: always
+    container_name: db
+    volumes:
+      - dbdata:/var/lib/postgresql/data  # Mapeia um diretório local (se preferir persistir localmente)
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_HOST_AUTH_METHOD=md5  # Use autenticação com senha, mais seguro
+
+  migration:
+    container_name: migration
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.migration
+    depends_on:
+      - db
+    command: sh -c 'until nc -z db 5432; do echo waiting for db; sleep 1; done; npx prisma migrate deploy'
+
+  studio:
+    container_name: studio
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.studio
+    ports:
+      - "5555:5555"
+    depends_on:
+      - db
+      - migration
+      - backend
+    environment:
+      - DATABASE_URL=postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?schema=${DATABASE_SCHEMA}
+
+volumes:
+  dbdata:  # Volume para o banco de dados
