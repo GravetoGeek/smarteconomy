@@ -19,7 +19,11 @@
         "test:debug": "npx dotenv-cli -e .env.test -- node --runInBand --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:e2e": "npx dotenv-cli -e .env.test -- jest --runInBand --config ./jest.e2e.config.ts",
         "test:int": "npx dotenv-cli -e .env.test -- jest --runInBand --config ./jest.int.config.ts",
-        "prisma:migrateTest": "npx dotenv-cli -e .env.test -- npx migrate deploy"
+        "prisma:migrateTest": "npx dotenv-cli -e .env.test -- npx migrate deploy",
+        "clearBranchsLinux": "git fetch -p && for branch in `git branch -vv | grep ': gone]' | awk '{print $1}'`; do git branch -D $branch; done",
+        "clearBranchsWindows": "git fetch -p && for /F \"tokens=1*\" %i in ('git branch -vv | find /v \"+\" | find /v \"master\" | find /v \"develop\" | find /v \"*\" | find /v \"feature\"') do git branch -D %i",
+        "clearCacheLinux": "npm cache clean --force && sudo rm -rf node_modules && sudo rm package-lock.json",
+        "clearCacheWindows": "npm cache clean --force && rmdir /s /q node_modules && del /q package-lock.json"
     },
     "dependencies": {
         "@apollo/server": "^4.11.0",
