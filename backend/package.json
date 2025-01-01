@@ -38,8 +38,8 @@
         "rxjs": "^7.8.1"
     },
     "devDependencies": {
-        "@faker-js/faker": "^9.0.1",
         "@eslint/js": "^9.10.0",
+        "@faker-js/faker": "^9.0.1",
         "@nestjs/cli": "^10.0.0",
         "@nestjs/schematics": "^10.0.0",
         "@nestjs/testing": "^10.0.0",
@@ -81,5 +81,8 @@
         ],
         "coverageDirectory": "../coverage",
         "testEnvironment": "node"
+    },
+    "prisma": {
+        "schema": "./src/database/prisma/schema.prisma"
     }
 }
