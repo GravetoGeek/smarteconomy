@@ -14,22 +14,22 @@ datasource db {
 }
 
 model User {
-    id           Int         @id @default(autoincrement())
-    email        String      @unique @db.VarChar(255)
-    name         String      @db.VarChar(30)
-    lastname     String      @db.VarChar(50)
-    birthdate    DateTime    @db.Date
-    role         String      @default("USER")
+    id           Int           @id @default(autoincrement())
+    email        String        @unique @db.VarChar(255)
+    name         String        @db.VarChar(30)
+    lastname     String        @db.VarChar(50)
+    birthdate    DateTime      @db.Date
+    role         String        @default("USER")
     posts        Post[]
-    gender       Gender     @relation(fields: [genderId], references: [id])
-    genderId     Int         @unique
-    password     String      @db.VarChar(50)
-    createdAt    DateTime    @default(now())
-    updatedAt    DateTime    @updatedAt
-    profile      Profile?    @relation
-    profileId    String?     @unique @db.VarChar(50)
-    professionId Int         @unique
-    profession   Profession? @relation(fields: [professionId], references: [id])
+    gender       Gender        @relation(fields: [genderId], references: [id])
+    genderId     Int
+    password     String        @db.VarChar(50)
+    createdAt    DateTime      @default(now())
+    updatedAt    DateTime      @updatedAt
+    profile      Profile?      @relation
+    profileId    String?       @db.VarChar(50)
+    profession   Profession?   @relation(fields: [professionId], references: [id])
+    professionId Int
     status       AccountStatus @default(ACTIVE)
 }
 
