@@ -2,17 +2,17 @@ import {PrismaService} from '@/database/prisma/prisma.service';
 import {Args,ID,Query,Resolver} from '@nestjs/graphql';
 import {User} from '../models/User';
 
-@Resolver(()=> User)
+@Resolver(() => User)
 export class UsersResolver {
-    constructor(private prisma: PrismaService) { }
+    constructor(private prisma: PrismaService) {}
 
     @Query(() => [User])
-    users():Promise<User[]> {
+    users(): Promise<User[]> {
         return this.prisma.user.findMany();
     }
 
     @Query(() => User)
-    userById(@Args('id') id: string):Promise<User> {
+    userById(@Args('id') id: number): Promise<User> {
         return this.prisma.user.findUnique({
             where: {
                 id: id
@@ -21,7 +21,7 @@ export class UsersResolver {
     }
 
     @Query(() => User)
-    userByEmail(@Args('email') email: string):Promise<User> {
+    userByEmail(@Args('email') email: string): Promise<User> {
         return this.prisma.user.findUnique({
             where: {
                 email: email
@@ -29,7 +29,7 @@ export class UsersResolver {
         });
     }
     @Query(() => [User])
-    usersByRole(@Args('role') role: string):Promise<User[]> {
+    usersByRole(@Args('role') role: string): Promise<User[]> {
         return this.prisma.user.findMany({
             where: {
                 role: role
@@ -37,10 +37,12 @@ export class UsersResolver {
         });
     }
     @Query(() => [User])
-    usersByProfession(@Args('profession') profession: string):Promise<User[]> {
+    usersByProfession(@Args('profession') profession: string): Promise<User[]> {
         return this.prisma.user.findMany({
             where: {
-                profession: profession
+                profession: {
+                    profession: profession
+                }
             }
         });
     }
