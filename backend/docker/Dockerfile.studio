@@ -1,0 +1,16 @@
+FROM node:23-alpine
+
+# Instalar dependências do sistema necessárias para o Prisma
+RUN apk add --no-cache openssl
+
+WORKDIR /backend
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 5555
+
+CMD ["npx", "prisma", "studio"]
