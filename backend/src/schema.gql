@@ -10,9 +10,9 @@ type User {
   birthdate: DateTime!
   role: String!
   gender: String!
-  genderId: String!
+  genderId: Float!
   profession: String!
-  professionId: String!
+  professionId: Float!
   profile: String!
   password: String!
   created_at: DateTime!
@@ -27,6 +27,8 @@ scalar DateTime
 type Query {
   hello: String!
   users: [User!]!
-  userById(id: String!): User!
+  userById(id: Float!): User!
   userByEmail(email: String!): User!
+  usersByRole(role: String!): [User!]!
+  usersByProfession(profession: String!): [User!]!
 }
