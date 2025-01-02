@@ -6,18 +6,18 @@ CREATE TYPE "AccountStatus" AS ENUM ('ACTIVE', 'INACTIVE');
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "email" VARCHAR(255) NOT NULL,
     "name" VARCHAR(30) NOT NULL,
     "lastname" VARCHAR(50) NOT NULL,
     "birthdate" DATE NOT NULL,
     "role" TEXT NOT NULL DEFAULT 'USER',
-    "genderId" INTEGER NOT NULL,
+    "genderId" TEXT NOT NULL,
     "password" VARCHAR(50) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "profileId" VARCHAR(50),
-    "professionId" INTEGER NOT NULL,
+    "professionId" TEXT NOT NULL,
     "status" "AccountStatus" NOT NULL DEFAULT 'ACTIVE',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -25,12 +25,12 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "Post" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "published" BOOLEAN NOT NULL DEFAULT false,
-    "authorId" INTEGER NOT NULL,
+    "authorId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -39,7 +39,7 @@ CREATE TABLE "Post" (
 
 -- CreateTable
 CREATE TABLE "PostCategory" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "category" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -49,18 +49,18 @@ CREATE TABLE "PostCategory" (
 
 -- CreateTable
 CREATE TABLE "Profile" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "bio" TEXT NOT NULL DEFAULT '',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "userId" TEXT NOT NULL,
 
     CONSTRAINT "Profile_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Gender" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "gender" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE "Gender" (
 
 -- CreateTable
 CREATE TABLE "Profession" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "profession" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE "Profession" (
 
 -- CreateTable
 CREATE TABLE "CBO_Familia" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "codigo" TEXT NOT NULL,
     "titulo" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -91,7 +91,7 @@ CREATE TABLE "CBO_Familia" (
 
 -- CreateTable
 CREATE TABLE "CBO_Grande_Grupo" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "codigo" TEXT NOT NULL,
     "titulo" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -102,7 +102,7 @@ CREATE TABLE "CBO_Grande_Grupo" (
 
 -- CreateTable
 CREATE TABLE "CBO_Ocupacao" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "codigo" TEXT NOT NULL,
     "titulo" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -113,7 +113,7 @@ CREATE TABLE "CBO_Ocupacao" (
 
 -- CreateTable
 CREATE TABLE "CBO_Perfil_Ocupacional" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "cod_grande_grupo" TEXT NOT NULL,
     "cod_subgrupo_principal" TEXT NOT NULL,
     "cod_subgrupo" TEXT NOT NULL,
@@ -130,7 +130,7 @@ CREATE TABLE "CBO_Perfil_Ocupacional" (
 
 -- CreateTable
 CREATE TABLE "CBO_Sinonimo" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "codigo" TEXT NOT NULL,
     "titulo" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -141,7 +141,7 @@ CREATE TABLE "CBO_Sinonimo" (
 
 -- CreateTable
 CREATE TABLE "CBO_Subgrupo_Principal" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "codigo" TEXT NOT NULL,
     "titulo" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -152,7 +152,7 @@ CREATE TABLE "CBO_Subgrupo_Principal" (
 
 -- CreateTable
 CREATE TABLE "CBO_Subgrupo" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "codigo" TEXT NOT NULL,
     "titulo" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -163,7 +163,7 @@ CREATE TABLE "CBO_Subgrupo" (
 
 -- CreateTable
 CREATE TABLE "Author" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -173,8 +173,8 @@ CREATE TABLE "Author" (
 
 -- CreateTable
 CREATE TABLE "_PostToPostCategory" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
 );
 
 -- CreateIndex
