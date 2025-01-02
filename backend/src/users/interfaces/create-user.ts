@@ -4,10 +4,7 @@ export interface ICreateUser {
     lastname: string;
     birthdate: Date;
     role: string;
-    gender: string;
-    genderId: number;
-    profession: string;
-    professionId: number;
-    profile: string;
+    genderId: string;
+    professionId: string;
     password: string;
 }
