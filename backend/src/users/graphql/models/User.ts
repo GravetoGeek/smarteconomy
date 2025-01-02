@@ -1,33 +1,34 @@
 import {Field,ID,ObjectType} from "@nestjs/graphql"
+import {Profession} from "@prisma/client"
 
 @ObjectType()
 export class User {
-    @Field(()=>ID)
-    id?: number
+    @Field(() => ID)
+    id?: string
     @Field()
-    email?:string
+    email?: string
     @Field()
-    name:string
+    name: string
     @Field()
-    lastname:string
+    lastname: string
     @Field()
-    birthdate:Date
+    birthdate: Date
     @Field()
-    role?:string
+    role?: string
     @Field()
-    gender?:string
+    gender?: string
     @Field()
-    genderId?:number
+    genderId?: string
     @Field()
-    profession?:string
+    profession?: string
     @Field()
-    professionId?:number
+    professionId?: string
     @Field()
-    profile?:string
+    profile?: string
     @Field()
-    password?:string
+    password?: string
     @Field()
-    created_at?:Date
+    created_at?: Date
     @Field()
-    updated_at?:Date
+    updated_at?: Date
 }
