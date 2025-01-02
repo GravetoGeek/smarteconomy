@@ -15,3 +15,5 @@ RUN npm install
 
 # Copiar o restante do código da aplicação para o diretório de trabalho
 COPY . .
+
+RUN npx prisma generate
