@@ -12,7 +12,7 @@ export class UsersResolver {
     }
 
     @Query(() => User)
-    userById(@Args('id') id: number): Promise<User> {
+    userById(@Args('id') id: string): Promise<User> {
         return this.prisma.user.findUnique({
             where: {
                 id: id
@@ -37,13 +37,20 @@ export class UsersResolver {
         });
     }
     @Query(() => [User])
-    usersByProfession(@Args('profession') profession: string): Promise<User[]> {
-        return this.prisma.user.findMany({
+    usersByProfession(@Args('profession') searchProfession: string): Promise<User[]> {
+        return this.prisma.profession.findUnique({
             where: {
-                profession: {
-                    profession: profession
-                }
+                profession: searchProfession
             }
+        }).then(profession => {
+            if(!profession) {
+                return [];
+            }
+            return this.prisma.user.findMany({
+                where: {
+                    professionId: profession.id
+                }
+            });
         });
     }
 
