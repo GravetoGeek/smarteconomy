@@ -14,7 +14,7 @@ datasource db {
 }
 
 model User {
-    id           Int           @id @default(autoincrement())
+    id           String        @id @default(uuid())
     email        String        @unique @db.VarChar(255)
     name         String        @db.VarChar(30)
     lastname     String        @db.VarChar(50)
@@ -22,32 +22,32 @@ model User {
     role         String        @default("USER")
     posts        Post[]
     gender       Gender        @relation(fields: [genderId], references: [id])
-    genderId     Int
+    genderId     String
     password     String        @db.VarChar(50)
     createdAt    DateTime      @default(now())
     updatedAt    DateTime      @updatedAt
     profile      Profile?      @relation
     profileId    String?       @db.VarChar(50)
     profession   Profession?   @relation(fields: [professionId], references: [id])
-    professionId Int
+    professionId String
     status       AccountStatus @default(ACTIVE)
 }
 
 model Post {
-    id           Int            @id @default(autoincrement())
+    id           String         @id @default(uuid())
     title        String
     slug         String         @unique
     content      String
     published    Boolean        @default(false)
     author       User           @relation(fields: [authorId], references: [id])
-    authorId     Int
+    authorId     String
     postCategory PostCategory[] @relation
     createdAt    DateTime       @default(now())
     updatedAt    DateTime       @updatedAt
 }
 
 model PostCategory {
-    id        Int      @id @default(autoincrement())
+    id        String   @id @default(uuid())
     category  String
     posts     Post[]
     createdAt DateTime @default(now())
@@ -55,16 +55,16 @@ model PostCategory {
 }
 
 model Profile {
-    id        Int      @id @default(autoincrement())
+    id        String   @id @default(uuid())
     bio       String   @default("")
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     User      User     @relation(fields: [userId], references: [id])
-    userId    Int      @unique
+    userId    String   @unique
 }
 
 model Gender {
-    id        Int      @id @default(autoincrement())
+    id        String   @id @default(uuid())
     gender    String   @unique
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -72,7 +72,7 @@ model Gender {
 }
 
 model Profession {
-    id         Int      @id @default(autoincrement())
+    id         String   @id @default(uuid())
     profession String   @unique
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
@@ -80,7 +80,7 @@ model Profession {
 }
 
 model CBO_Familia {
-    id        Int      @id @default(autoincrement())
+    id        String   @id @default(uuid())
     codigo    String   @unique
     titulo    String
     createdAt DateTime @default(now())
@@ -88,7 +88,7 @@ model CBO_Familia {
 }
 
 model CBO_Grande_Grupo {
-    id        Int      @id @default(autoincrement())
+    id        String   @id @default(uuid())
     codigo    String   @unique
     titulo    String
     createdAt DateTime @default(now())
@@ -96,7 +96,7 @@ model CBO_Grande_Grupo {
 }
 
 model CBO_Ocupacao {
-    id        Int      @id @default(autoincrement())
+    id        String   @id @default(uuid())
     codigo    String   @unique
     titulo    String
     createdAt DateTime @default(now())
@@ -104,7 +104,7 @@ model CBO_Ocupacao {
 }
 
 model CBO_Perfil_Ocupacional {
-    id                     Int      @id @default(autoincrement())
+    id                     String   @id @default(uuid())
     cod_grande_grupo       String
     cod_subgrupo_principal String
     cod_subgrupo           String
@@ -118,7 +118,7 @@ model CBO_Perfil_Ocupacional {
 }
 
 model CBO_Sinonimo {
-    id        Int      @id @default(autoincrement())
+    id        String   @id @default(uuid())
     codigo    String   @unique
     titulo    String
     createdAt DateTime @default(now())
@@ -126,7 +126,7 @@ model CBO_Sinonimo {
 }
 
 model CBO_Subgrupo_Principal {
-    id        Int      @id @default(autoincrement())
+    id        String   @id @default(uuid())
     codigo    String   @unique
     titulo    String
     createdAt DateTime @default(now())
@@ -134,7 +134,7 @@ model CBO_Subgrupo_Principal {
 }
 
 model CBO_Subgrupo {
-    id        Int      @id @default(autoincrement())
+    id        String   @id @default(uuid())
     codigo    String   @unique
     titulo    String
     createdAt DateTime @default(now())
@@ -142,7 +142,7 @@ model CBO_Subgrupo {
 }
 
 model Author {
-    id        Int      @id @default(autoincrement())
+    id        String   @id @default(uuid())
     name      String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
