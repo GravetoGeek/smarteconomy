@@ -15,6 +15,7 @@ import {GenderModule} from './gender/gender.module';
 import {ProfilesModule} from './profiles/profiles.module';
 import {TransactionsModule} from './transactions/transactions.module';
 import {UsersModule} from './users/users.module';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
     imports: [
@@ -33,6 +34,7 @@ import {UsersModule} from './users/users.module';
             autoSchemaFile: path.resolve(process.cwd(), 'src/schema.gql'),
         }
         ),
+        SharedModule,
     ],
     controllers: [AppController],
     providers: [AppService, AppResolver],
