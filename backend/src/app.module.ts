@@ -13,9 +13,9 @@ import {DashboardsModule} from './dashboards/dashboards.module';
 import {DatabaseModule} from './database/database.module';
 import {GenderModule} from './gender/gender.module';
 import {ProfilesModule} from './profiles/profiles.module';
+import {SharedModule} from './shared/shared.module';
 import {TransactionsModule} from './transactions/transactions.module';
 import {UsersModule} from './users/users.module';
-import { SharedModule } from './shared/shared.module';
 
 @Module({
     imports: [
@@ -31,12 +31,13 @@ import { SharedModule } from './shared/shared.module';
         DatabaseModule,
         GraphQLModule.forRoot<ApolloDriverConfig>({
             driver: ApolloDriver,
-            autoSchemaFile: path.resolve(process.cwd(), 'src/schema.gql'),
+            autoSchemaFile: path.resolve(process.cwd(),'src/schema.gql'),
+            playground: true,
         }
         ),
         SharedModule,
     ],
     controllers: [AppController],
-    providers: [AppService, AppResolver],
+    providers: [AppService,AppResolver],
 })
 export class AppModule {}
