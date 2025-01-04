@@ -6,7 +6,7 @@ export class User {
     @Field(() => ID)
     id?: string
     @Field()
-    email?: string
+    email: string
     @Field()
     name: string
     @Field()
@@ -14,7 +14,7 @@ export class User {
     @Field()
     birthdate: Date
     @Field()
-    role?: string
+    role: string
     @Field()
     gender?: string
     @Field()
