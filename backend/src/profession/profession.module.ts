@@ -5,8 +5,8 @@ import {CreateProfessionUseCase} from './application/use-cases/create-profession
 import {FindAllProfessionsUseCase} from './application/use-cases/find-all-professions.use-case'
 import {FindProfessionByIdUseCase} from './application/use-cases/find-profession-by-id.use-case'
 import {PROFESSION_REPOSITORY} from './domain/tokens'
+import {ProfessionResolver} from './graphql/resolvers/profession.resolver'
 import {ProfessionPrismaRepository} from './infrastructure/repositories/profession-prisma.repository'
-import {ProfessionResolver} from './interfaces/graphql/resolvers/profession.resolver'
 
 @Module({
     imports: [DatabaseModule],

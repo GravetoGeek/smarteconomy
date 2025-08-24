@@ -1,7 +1,10 @@
 import {Field,InputType} from '@nestjs/graphql'
+import {IsNotEmpty,IsString} from 'class-validator'
 
 @InputType()
 export class CreateGenderInput {
-    @Field(() => String)
+    @Field()
+    @IsNotEmpty()
+    @IsString()
     gender: string
 }
