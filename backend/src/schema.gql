@@ -14,7 +14,7 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type Profession {
+type ProfessionModel {
   id: ID!
   profession: String!
   createdAt: DateTime!
@@ -62,7 +62,8 @@ type Query {
   searchUsers(input: SearchUsersInput!): SearchResult!
   genders: [GenderModel!]!
   gender(id: String!): GenderModel!
-  professions: [Profession!]!
+  professions: [ProfessionModel!]!
+  profession(id: String!): ProfessionModel!
 }
 
 input SearchUsersInput {
@@ -78,6 +79,7 @@ type Mutation {
   updateUser(id: String!, input: UpdateUserInput!): UpdateUserResponse!
   deleteUser(id: String!): DeleteUserResponse!
   createGender(input: CreateGenderInput!): GenderModel!
+  createProfession(input: CreateProfessionInput!): ProfessionModel!
 }
 
 input CreateUserInput {
@@ -100,4 +102,8 @@ input UpdateUserInput {
 
 input CreateGenderInput {
   gender: String!
+}
+
+input CreateProfessionInput {
+  profession: String!
 }
