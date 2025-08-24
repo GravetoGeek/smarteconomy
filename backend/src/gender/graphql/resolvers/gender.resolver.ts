@@ -1,7 +1,6 @@
 import {Logger} from '@nestjs/common'
 import {Args,Mutation,Query,Resolver} from '@nestjs/graphql'
-import {GenderApplicationService} from '../../../application/services/gender-application.service'
-import {GenderType} from '../../../domain/entities/gender'
+import {GenderApplicationService} from '../../application/services/gender-application.service'
 import {CreateGenderInput} from '../inputs/create-gender.input'
 import {GenderModel} from '../models/gender.model'
 

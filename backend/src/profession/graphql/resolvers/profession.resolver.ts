@@ -1,6 +1,6 @@
 import {Logger} from '@nestjs/common'
 import {Args,Mutation,Query,Resolver} from '@nestjs/graphql'
-import {ProfessionApplicationService} from '../../../application/services/profession-application.service'
+import {ProfessionApplicationService} from '../../application/services/profession-application.service'
 import {CreateProfessionInput} from '../inputs/create-profession.input'
 import {ProfessionModel} from '../models/profession.model'
 
