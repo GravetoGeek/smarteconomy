@@ -23,7 +23,7 @@ model User {
     posts        Post[]
     gender       Gender        @relation(fields: [genderId], references: [id])
     genderId     String
-    password     String        @db.VarChar(50)
+    password     String        @db.VarChar(255)
     createdAt    DateTime      @default(now())
     updatedAt    DateTime      @updatedAt
     profile      Profile?      @relation

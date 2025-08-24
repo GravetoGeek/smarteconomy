@@ -2,21 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
+type Gender {
   id: ID!
-  email: String!
-  name: String!
-  lastname: String!
-  birthdate: DateTime!
-  role: String!
   gender: String!
-  genderId: String!
-  profession: String!
-  professionId: String!
-  profile: String!
-  password: String!
-  created_at: DateTime!
-  updated_at: DateTime!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 """
@@ -24,11 +14,84 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Profession {
+  id: ID!
+  profession: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type DeleteUserResponse {
+  success: Boolean!
+}
+
+type User {
+  id: ID!
+  email: String!
+  name: String!
+  lastname: String!
+  birthdate: DateTime!
+  role: String!
+  genderId: String
+  professionId: String
+  profileId: String
+  status: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type SearchResult {
+  items: [User!]!
+  total: Int!
+  currentPage: Int!
+  limit: Int!
+  totalPages: Int!
+  lastPage: Int!
+}
+
+type UpdateUserResponse {
+  user: User
+  success: Boolean!
+}
+
 type Query {
   hello: String!
   users: [User!]!
-  userById(id: String!): User!
-  userByEmail(email: String!): User!
-  usersByRole(role: String!): [User!]!
-  usersByProfession(profession: String!): [User!]!
+  userById(id: String!): User
+  userByEmail(email: String!): User
+  searchUsers(input: SearchUsersInput!): SearchResult!
+  genders: [Gender!]!
+  professions: [Profession!]!
+}
+
+input SearchUsersInput {
+  page: Int = 1
+  limit: Int = 10
+  filter: String
+  sort: String
+  sortDirection: String = "asc"
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!): User!
+  updateUser(id: String!, input: UpdateUserInput!): UpdateUserResponse!
+  deleteUser(id: String!): DeleteUserResponse!
+}
+
+input CreateUserInput {
+  email: String!
+  name: String!
+  lastname: String!
+  birthdate: String!
+  role: String!
+  genderId: String!
+  professionId: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  email: String
+  name: String
+  lastname: String
+  password: String
 }

@@ -1,5 +1,5 @@
 # Use a imagem oficial do Node.js 23 Alpine como imagem base
-FROM node:23-alpine
+FROM node:24-alpine
 
 # Instalar dependências do sistema necessárias para o Prisma
 RUN apk add --no-cache openssl
