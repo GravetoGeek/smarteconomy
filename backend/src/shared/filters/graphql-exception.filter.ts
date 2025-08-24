@@ -2,6 +2,7 @@ import {ArgumentsHost,Catch,ExceptionFilter} from '@nestjs/common'
 import {GqlArgumentsHost} from '@nestjs/graphql'
 import {GraphQLError} from 'graphql'
 import {environmentConfig} from '../../config/environment.config'
+import {GenderAlreadyExistsException,GenderNotFoundException,InvalidGenderTypeException} from '../../gender/domain/exceptions/gender-domain.exception'
 import {UserEmailAlreadyExistsException,UserInvalidAgeException,UserInvalidEmailException,UserInvalidPasswordException} from '../../users/domain/exceptions/user-domain.exception'
 import {UserNotFoundException} from '../exceptions/user-not-found.exception'
 
@@ -37,6 +38,11 @@ export class GraphQLExceptionFilter implements ExceptionFilter {
         if(exception instanceof UserInvalidEmailException) return 'USER_INVALID_EMAIL'
         if(exception instanceof UserInvalidPasswordException) return 'USER_INVALID_PASSWORD'
 
+        // ✅ Exceções de domínio do módulo gender
+        if(exception instanceof GenderNotFoundException) return 'GENDER_NOT_FOUND'
+        if(exception instanceof GenderAlreadyExistsException) return 'GENDER_ALREADY_EXISTS'
+        if(exception instanceof InvalidGenderTypeException) return 'GENDER_INVALID_TYPE'
+
         // ✅ Outras exceções
         if(exception instanceof UserNotFoundException) return 'USER_NOT_FOUND'
         if(exception instanceof Error&&exception.message.includes('already exists')) return 'RESOURCE_EXISTS'
@@ -51,6 +57,11 @@ export class GraphQLExceptionFilter implements ExceptionFilter {
         if(exception instanceof UserInvalidAgeException) return 422        // Unprocessable Entity
         if(exception instanceof UserInvalidEmailException) return 422     // Unprocessable Entity
         if(exception instanceof UserInvalidPasswordException) return 422  // Unprocessable Entity
+
+        // ✅ Exceções de domínio do módulo gender
+        if(exception instanceof GenderNotFoundException) return 404        // Not Found
+        if(exception instanceof GenderAlreadyExistsException) return 409  // Conflict
+        if(exception instanceof InvalidGenderTypeException) return 422    // Unprocessable Entity
 
         // ✅ Outras exceções
         if(exception instanceof UserNotFoundException) return 404

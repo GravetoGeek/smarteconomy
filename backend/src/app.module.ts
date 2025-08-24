@@ -49,7 +49,10 @@ import {UsersModule} from './users/users.module'
                 }
 
                 return cleanError
-            }
+            },
+            // ✅ Configurações para debug
+            debug: true,
+            introspection: true
         }
         ),
         SharedModule,
