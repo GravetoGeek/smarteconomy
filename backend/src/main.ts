@@ -7,9 +7,13 @@ async function bootstrap() {
     const app=await NestFactory.create(AppModule)
 
     app.useGlobalPipes(new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true
+        whitelist: false, // ✅ Desabilitar whitelist para debug
+        forbidNonWhitelisted: false, // ✅ Desabilitar forbidNonWhitelisted para debug
+        transform: true,
+        // ✅ Configurações para debug
+        skipMissingProperties: true,
+        skipNullProperties: true,
+        skipUndefinedProperties: true
     }))
 
     // ✅ Aplicar filtro de exceção global para tratamento correto de erros
