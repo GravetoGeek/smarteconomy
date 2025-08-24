@@ -1,0 +1,227 @@
+{
+    "info": {
+        "name": "SmartEconomy API",
+        "description": "API GraphQL para gestão financeira - Módulo Users",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:3000"
+        },
+        {
+            "key": "graphql_endpoint",
+            "value": "{{base_url}}/graphql"
+        }
+    ],
+    "item": [
+        {
+            "name": "Users",
+            "item": [
+                {
+                    "name": "Get All Users",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query { users { id email name lastname role status createdAt } }\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": [
+                                "{{graphql_endpoint}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get User by ID",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query GetUserById($id: String!) { userById(id: $id) { id email name lastname role status createdAt } }\",\n  \"variables\": {\n    \"id\": \"USER_ID_AQUI\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": [
+                                "{{graphql_endpoint}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get User by Email",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query GetUserByEmail($email: String!) { userByEmail(email: $email) { id email name lastname role status createdAt } }\",\n  \"variables\": {\n    \"email\": \"joao.silva@example.com\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": [
+                                "{{graphql_endpoint}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Search Users",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query SearchUsers($input: SearchUsersInput!) { searchUsers(input: $input) { items { id email name lastname role } total currentPage totalPages } }\",\n  \"variables\": {\n    \"input\": {\n      \"page\": 1,\n      \"limit\": 10,\n      \"filter\": \"joão\",\n      \"sort\": \"name\",\n      \"sortDirection\": \"asc\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": [
+                                "{{graphql_endpoint}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation CreateUser($input: CreateUserInput!) { createUser(input: $input) { id email name lastname role status createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"email\": \"joao.silva@example.com\",\n      \"name\": \"João\",\n      \"lastname\": \"Silva\",\n      \"birthdate\": \"1990-01-15\",\n      \"role\": \"USER\",\n      \"genderId\": \"GENDER_ID_AQUI\",\n      \"professionId\": \"PROFESSION_ID_AQUI\",\n      \"password\": \"senha123456\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": [
+                                "{{graphql_endpoint}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation UpdateUser($id: String!, $input: UpdateUserInput!) { updateUser(id: $id, input: $input) { id email name lastname role status updatedAt } }\",\n  \"variables\": {\n    \"id\": \"USER_ID_AQUI\",\n    \"input\": {\n      \"name\": \"João Pedro\",\n      \"lastname\": \"Silva Santos\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": [
+                                "{{graphql_endpoint}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation DeleteUser($id: String!) { deleteUser(id: $id) { id email name lastname } }\",\n  \"variables\": {\n    \"id\": \"USER_ID_AQUI\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": [
+                                "{{graphql_endpoint}}"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Supporting Data",
+            "item": [
+                {
+                    "name": "Get Genders",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query { genders { id gender } }\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": [
+                                "{{graphql_endpoint}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Professions",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query { professions { id profession } }\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": [
+                                "{{graphql_endpoint}}"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
