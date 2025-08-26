@@ -1,18 +1,18 @@
-import {Test,TestingModule} from '@nestjs/testing'
-import {CreateUserUseCase} from '../application/use-cases/create-user.use-case'
-import {UserEmailAlreadyExistsException} from '../domain/exceptions/user-domain.exception'
-import {HashServicePort} from '../domain/ports/hash-service.port'
-import {UserRepositoryPort} from '../domain/ports/user-repository.port'
-import {User,UserRole} from '../domain/user.entity'
-import {HASH_SERVICE,USER_REPOSITORY} from '../domain/tokens'
+import { Test, TestingModule } from '@nestjs/testing'
+import { CreateUserUseCase } from '../application/use-cases/create-user.use-case'
+import { UserEmailAlreadyExistsException } from '../domain/exceptions/user-domain.exception'
+import { HashServicePort } from '../domain/ports/hash-service.port'
+import { UserRepositoryPort } from '../domain/ports/user-repository.port'
+import { User, UserRole } from '../domain/user.entity'
+import { HASH_SERVICE, USER_REPOSITORY } from '../domain/tokens'
 
-describe('CreateUserUseCase',() => {
+describe('CreateUserUseCase', () => {
     let useCase: CreateUserUseCase
     let mockUserRepository: jest.Mocked<UserRepositoryPort>
     let mockHashService: jest.Mocked<HashServicePort>
 
     beforeEach(async () => {
-        const mockUserRepositoryImpl={
+        const mockUserRepositoryImpl = {
             save: jest.fn(),
             findById: jest.fn(),
             findByIdOrFail: jest.fn(),
@@ -22,15 +22,15 @@ describe('CreateUserUseCase',() => {
             search: jest.fn(),
             existsByEmail: jest.fn(),
             existsById: jest.fn(),
-            sortableFields: ['id','email','name']
+            sortableFields: ['id', 'email', 'name']
         }
 
-        const mockHashServiceImpl={
+        const mockHashServiceImpl = {
             hash: jest.fn(),
             compare: jest.fn()
         }
 
-        const module: TestingModule=await Test.createTestingModule({
+        const module: TestingModule = await Test.createTestingModule({
             providers: [
                 CreateUserUseCase,
                 {
@@ -44,17 +44,17 @@ describe('CreateUserUseCase',() => {
             ]
         }).compile()
 
-        useCase=module.get<CreateUserUseCase>(CreateUserUseCase)
-        mockUserRepository=module.get(USER_REPOSITORY)
-        mockHashService=module.get(HASH_SERVICE)
+        useCase = module.get<CreateUserUseCase>(CreateUserUseCase)
+        mockUserRepository = module.get(USER_REPOSITORY)
+        mockHashService = module.get(HASH_SERVICE)
     })
 
-    it('should be defined',() => {
+    it('should be defined', () => {
         expect(useCase).toBeDefined()
     })
 
-    describe('execute',() => {
-        const validRequest={
+    describe('execute', () => {
+        const validRequest = {
             email: 'test@example.com',
             name: 'John',
             lastname: 'Doe',
@@ -65,10 +65,10 @@ describe('CreateUserUseCase',() => {
             password: 'SecurePass123'
         }
 
-        it('should create user successfully',async () => {
+        it('should create user successfully', async () => {
             // Arrange
-            const hashedPassword='hashedPassword123'
-            const expectedUser=User.create({
+            const hashedPassword = 'hashedPassword123'
+            const expectedUser = User.create({
                 ...validRequest,
                 password: hashedPassword
             })
@@ -78,7 +78,7 @@ describe('CreateUserUseCase',() => {
             mockUserRepository.save.mockResolvedValue(expectedUser)
 
             // Act
-            const result=await useCase.execute(validRequest)
+            const result = await useCase.execute(validRequest)
 
             // Assert
             expect(mockUserRepository.existsByEmail).toHaveBeenCalledWith(validRequest.email)
@@ -87,7 +87,7 @@ describe('CreateUserUseCase',() => {
             expect(result.user).toEqual(expectedUser)
         })
 
-        it('should throw UserEmailAlreadyExistsException when email already exists',async () => {
+        it('should throw UserEmailAlreadyExistsException when email already exists', async () => {
             // Arrange
             mockUserRepository.existsByEmail.mockResolvedValue(true)
 
@@ -100,9 +100,9 @@ describe('CreateUserUseCase',() => {
             expect(mockUserRepository.save).not.toHaveBeenCalled()
         })
 
-        it('should validate email format through User entity',async () => {
+        it('should validate email format through User entity', async () => {
             // Arrange
-            const invalidEmailRequest={
+            const invalidEmailRequest = {
                 ...validRequest,
                 email: 'invalid-email'
             }
@@ -113,9 +113,9 @@ describe('CreateUserUseCase',() => {
             await expect(useCase.execute(invalidEmailRequest)).rejects.toThrow('Invalid email format')
         })
 
-        it('should validate password complexity through User entity',async () => {
+        it('should validate password complexity through User entity', async () => {
             // Arrange
-            const weakPasswordRequest={
+            const weakPasswordRequest = {
                 ...validRequest,
                 password: 'weak'
             }
@@ -128,9 +128,9 @@ describe('CreateUserUseCase',() => {
             )
         })
 
-        it('should validate age through User entity',async () => {
+        it('should validate age through User entity', async () => {
             // Arrange
-            const youngUserRequest={
+            const youngUserRequest = {
                 ...validRequest,
                 birthdate: '2010-01-01' // 13 years old
             }
