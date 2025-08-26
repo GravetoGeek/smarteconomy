@@ -626,13 +626,13 @@ export class UsersResolver {
 
 ```bash
 # Teste queries básicas
-./test-query.sh
+curl -s http://localhost:3000/graphql -H "Content-Type: application/json" -d '{"query":"query { users { id name email } }"}'
 
 # Teste mutations
-./test-mutations.sh
+curl -s http://localhost:3000/graphql -H "Content-Type: application/json" -d '{"query":"mutation CreateUser($input: CreateUserInput!) { createUser(input: $input) { id email name } }","variables":{"input":{"email":"test@example.com","name":"Test","lastname":"User","birthdate":"1990-01-01","role":"USER","genderId":"gender-id","professionId":"profession-id","password":"password123"}}}'
 
 # Teste com dados específicos
-./test-user-by-id.sh
+curl -s http://localhost:3000/graphql -H "Content-Type: application/json" -d '{"query":"query GetUser($id: String!) { user(id: $id) { id name email } }","variables":{"id":"user-id"}}'
 ```
 
 ### **3. Com Postman**

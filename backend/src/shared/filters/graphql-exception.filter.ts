@@ -1,11 +1,12 @@
 import {ArgumentsHost,Catch,ExceptionFilter} from '@nestjs/common'
 import {GqlArgumentsHost} from '@nestjs/graphql'
 import {GraphQLError} from 'graphql'
+import {UserNotFoundException as AuthUserNotFoundException,InvalidCredentialsException,InvalidTokenException,RefreshTokenInvalidException,TokenExpiredException,TooManyLoginAttemptsException,UserAccountInactiveException} from '../../auth/domain/exceptions/auth-domain.exception'
+import {CategoryAlreadyExistsException,CategoryNotFoundException,InvalidCategoryNameException} from '../../categories/domain/exceptions/category-domain.exception'
 import {environmentConfig} from '../../config/environment.config'
 import {GenderAlreadyExistsException,GenderNotFoundException,InvalidGenderTypeException} from '../../gender/domain/exceptions/gender-domain.exception'
 import {InvalidProfessionTypeException,ProfessionAlreadyExistsException,ProfessionNotFoundException} from '../../profession/domain/exceptions/profession-domain.exception'
 import {UserEmailAlreadyExistsException,UserInvalidAgeException,UserInvalidEmailException,UserInvalidPasswordException} from '../../users/domain/exceptions/user-domain.exception'
-import {CategoryAlreadyExistsException,CategoryNotFoundException,InvalidCategoryNameException} from '../../categories/domain/exceptions/category-domain.exception'
 import {UserNotFoundException} from '../exceptions/user-not-found.exception'
 
 @Catch()
@@ -55,6 +56,15 @@ export class GraphQLExceptionFilter implements ExceptionFilter {
         if(exception instanceof CategoryAlreadyExistsException) return 'CATEGORY_ALREADY_EXISTS'
         if(exception instanceof InvalidCategoryNameException) return 'CATEGORY_INVALID_NAME'
 
+        // ✅ Exceções de domínio do módulo auth
+        if(exception instanceof InvalidCredentialsException) return 'INVALID_CREDENTIALS'
+        if(exception instanceof AuthUserNotFoundException) return 'USER_NOT_FOUND'
+        if(exception instanceof InvalidTokenException) return 'INVALID_TOKEN'
+        if(exception instanceof TokenExpiredException) return 'TOKEN_EXPIRED'
+        if(exception instanceof RefreshTokenInvalidException) return 'REFRESH_TOKEN_INVALID'
+        if(exception instanceof UserAccountInactiveException) return 'USER_ACCOUNT_INACTIVE'
+        if(exception instanceof TooManyLoginAttemptsException) return 'TOO_MANY_LOGIN_ATTEMPTS'
+
         // ✅ Outras exceções
         if(exception instanceof UserNotFoundException) return 'USER_NOT_FOUND'
         if(exception instanceof Error&&exception.message.includes('already exists')) return 'RESOURCE_EXISTS'
@@ -83,6 +93,15 @@ export class GraphQLExceptionFilter implements ExceptionFilter {
         if(exception instanceof CategoryNotFoundException) return 404        // Not Found
         if(exception instanceof CategoryAlreadyExistsException) return 409  // Conflict
         if(exception instanceof InvalidCategoryNameException) return 422    // Unprocessable Entity
+
+        // ✅ Exceções de domínio do módulo auth
+        if(exception instanceof InvalidCredentialsException) return 401        // Unauthorized
+        if(exception instanceof AuthUserNotFoundException) return 404         // Not Found
+        if(exception instanceof InvalidTokenException) return 401             // Unauthorized
+        if(exception instanceof TokenExpiredException) return 401             // Unauthorized
+        if(exception instanceof RefreshTokenInvalidException) return 401      // Unauthorized
+        if(exception instanceof UserAccountInactiveException) return 403      // Forbidden
+        if(exception instanceof TooManyLoginAttemptsException) return 429     // Too Many Requests
 
         // ✅ Outras exceções
         if(exception instanceof UserNotFoundException) return 404
