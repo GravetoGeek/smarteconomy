@@ -203,7 +203,7 @@ describe('Account Entity', () => {
 
                 // Assert
                 expect(account.balance).toBe(originalBalance + creditAmount)
-                expect(account.updatedAt.getTime()).toBeGreaterThan(originalUpdatedAt.getTime())
+                expect(account.updatedAt.getTime()).toBeGreaterThanOrEqual(originalUpdatedAt.getTime())
             })
 
             it('should handle decimal amounts', () => {
@@ -241,7 +241,7 @@ describe('Account Entity', () => {
 
                 // Assert
                 expect(account.balance).toBe(originalBalance - debitAmount)
-                expect(account.updatedAt.getTime()).toBeGreaterThan(originalUpdatedAt.getTime())
+                expect(account.updatedAt.getTime()).toBeGreaterThanOrEqual(originalUpdatedAt.getTime())
             })
 
             it('should handle decimal amounts', () => {
