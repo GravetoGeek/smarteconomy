@@ -5,6 +5,7 @@ import {environmentConfig} from '../../config/environment.config'
 import {GenderAlreadyExistsException,GenderNotFoundException,InvalidGenderTypeException} from '../../gender/domain/exceptions/gender-domain.exception'
 import {InvalidProfessionTypeException,ProfessionAlreadyExistsException,ProfessionNotFoundException} from '../../profession/domain/exceptions/profession-domain.exception'
 import {UserEmailAlreadyExistsException,UserInvalidAgeException,UserInvalidEmailException,UserInvalidPasswordException} from '../../users/domain/exceptions/user-domain.exception'
+import {CategoryAlreadyExistsException,CategoryNotFoundException,InvalidCategoryNameException} from '../../categories/domain/exceptions/category-domain.exception'
 import {UserNotFoundException} from '../exceptions/user-not-found.exception'
 
 @Catch()
@@ -49,6 +50,11 @@ export class GraphQLExceptionFilter implements ExceptionFilter {
         if(exception instanceof ProfessionAlreadyExistsException) return 'PROFESSION_ALREADY_EXISTS'
         if(exception instanceof InvalidProfessionTypeException) return 'PROFESSION_INVALID_TYPE'
 
+        // ✅ Exceções de domínio do módulo categories
+        if(exception instanceof CategoryNotFoundException) return 'CATEGORY_NOT_FOUND'
+        if(exception instanceof CategoryAlreadyExistsException) return 'CATEGORY_ALREADY_EXISTS'
+        if(exception instanceof InvalidCategoryNameException) return 'CATEGORY_INVALID_NAME'
+
         // ✅ Outras exceções
         if(exception instanceof UserNotFoundException) return 'USER_NOT_FOUND'
         if(exception instanceof Error&&exception.message.includes('already exists')) return 'RESOURCE_EXISTS'
@@ -72,6 +78,11 @@ export class GraphQLExceptionFilter implements ExceptionFilter {
         // ✅ Exceções de domínio do módulo profession
         if(exception instanceof ProfessionNotFoundException) return 404        // Not Found
         if(exception instanceof InvalidProfessionTypeException) return 422    // Unprocessable Entity
+
+        // ✅ Exceções de domínio do módulo categories
+        if(exception instanceof CategoryNotFoundException) return 404        // Not Found
+        if(exception instanceof CategoryAlreadyExistsException) return 409  // Conflict
+        if(exception instanceof InvalidCategoryNameException) return 422    // Unprocessable Entity
 
         // ✅ Outras exceções
         if(exception instanceof UserNotFoundException) return 404
