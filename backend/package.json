@@ -13,12 +13,12 @@
         "start:debug": "nest start --debug --watch",
         "start:prod": "node dist/main",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-        "test": "npx dotenv-cli -e .env.test -- jest --runInBand",
-        "test:watch": "npx dotenv-cli -e .env.test -- jest --runInBand --watch",
-        "test:cov": "npx dotenv-cli -e .env.test -- jest --runInBand --coverage",
-        "test:debug": "npx dotenv-cli -e .env.test -- node --runInBand --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-        "test:e2e": "npx dotenv-cli -e .env.test -- jest --runInBand --config ./jest.e2e.config.ts",
-        "test:int": "npx dotenv-cli -e .env.test -- jest --runInBand --config ./jest.int.config.ts",
+    "test": "npx dotenv-cli -e .env.test -- jest --runInBand --config ./jest.unit.config.cjs",
+    "test:watch": "npx dotenv-cli -e .env.test -- jest --runInBand --watch --config ./jest.unit.config.cjs",
+    "test:cov": "npx dotenv-cli -e .env.test -- jest --runInBand --coverage --config ./jest.unit.config.cjs",
+    "test:debug": "npx dotenv-cli -e .env.test -- node --inspect-brk node_modules/.bin/jest --runInBand --config ./jest.unit.config.cjs",
+    "test:e2e": "npx dotenv-cli -e .env.test -- node -r ts-node/register -r tsconfig-paths/register node_modules/.bin/jest --runInBand --config ./jest.e2e.config.ts",
+    "test:int": "npx dotenv-cli -e .env.test -- node -r ts-node/register -r tsconfig-paths/register node_modules/.bin/jest --runInBand --config ./jest.int.config.ts",
         "prisma:migrateTest": "npx dotenv-cli -e .env.test -- npx migrate deploy",
         "db:seed": "ts-node prisma/seed.ts",
         "clearBranchsLinux": "git fetch -p && for branch in `git branch -vv | grep ': gone]' | awk '{print $1}'`; do git branch -D $branch; done",
@@ -29,6 +29,7 @@
     },
     "dependencies": {
         "@apollo/server": "^4.12.2",
+    "@nestjs/jwt": "^11.0.0",
         "@nestjs/apollo": "^13.1.0",
         "@nestjs/common": "^11.1.6",
         "@nestjs/config": "^4.0.2",
@@ -76,14 +77,6 @@
         "tsconfig-paths": "^4.2.0",
         "typescript": "^5.1.3",
         "typescript-eslint": "^8.4.0"
-    },
-    "jest": {
-        "testEnvironment": "node",
-        "rootDir": "src",
-        "testRegex": ".*\\.spec\\.ts$",
-        "transform": {
-            "^.+\\.(t|j)s$": "ts-jest"
-        }
     },
     "prisma": {
         "schema": "./src/database/prisma/schema.prisma"
