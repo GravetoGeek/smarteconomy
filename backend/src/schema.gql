@@ -23,6 +23,7 @@ type ProfessionModel {
 
 type DeleteUserResponse {
   success: Boolean!
+  message: String!
 }
 
 type User {
@@ -32,8 +33,8 @@ type User {
   lastname: String!
   birthdate: DateTime!
   role: String!
-  genderId: String
-  professionId: String
+  genderId: String!
+  professionId: String!
   profileId: String
   status: String!
   createdAt: DateTime!
@@ -50,8 +51,9 @@ type SearchResult {
 }
 
 type UpdateUserResponse {
-  user: User
   success: Boolean!
+  user: User!
+  message: String!
 }
 
 type Query {
@@ -67,11 +69,11 @@ type Query {
 }
 
 input SearchUsersInput {
-  page: Int = 1
-  limit: Int = 10
+  page: Int!
+  limit: Int!
   filter: String
   sort: String
-  sortDirection: String = "asc"
+  sortDirection: String
 }
 
 type Mutation {
@@ -90,14 +92,20 @@ input CreateUserInput {
   role: String!
   genderId: String!
   professionId: String!
+  profileId: String
   password: String!
 }
 
 input UpdateUserInput {
   email: String
-  name: String
-  lastname: String
-  password: String
+  name: String!
+  lastname: String!
+  birthdate: String
+  role: String
+  genderId: String!
+  professionId: String!
+  profileId: String
+  password: String!
 }
 
 input CreateGenderInput {
