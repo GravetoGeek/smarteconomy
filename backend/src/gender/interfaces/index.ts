@@ -1,3 +1,3 @@
 // GraphQL
-export {GenderResolver} from '../graphql/resolvers/gender.resolver';
+export {GenderResolver} from './graphql/resolvers/gender.resolver';
 
