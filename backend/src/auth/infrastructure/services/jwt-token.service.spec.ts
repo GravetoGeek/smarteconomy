@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { JwtService } from '@nestjs/jwt'
-import { ConfigService } from '@nestjs/config'
-import { JwtCryptoService } from './jwt-crypto.service'
+import { Test, TestingModule } from '@nestjs/testing';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { JwtTokenService } from './jwt-token.service';
 
-describe('JwtCryptoService', () => {
-    let service: JwtCryptoService
-    let jwtService: jest.Mocked<JwtService>
-    let configService: jest.Mocked<ConfigService>
+describe('JwtTokenService', () => {
+    let service: JwtTokenService;
+    let jwtService: jest.Mocked<JwtService>;
+    let configService: jest.Mocked<ConfigService>;
 
     const mockUser = {
         id: 'user-123',
@@ -15,7 +15,7 @@ describe('JwtCryptoService', () => {
         lastname: 'User',
         role: 'USER',
         status: 'ACTIVE'
-    }
+    };
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
