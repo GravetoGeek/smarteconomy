@@ -1,5 +1,5 @@
 import { User, UserRole, AccountStatus } from './user.entity'
-import { TestDataFactory, TestAssertions } from '@/__tests__/utils/test-helpers'
+import { TestDataFactory, TestAssertions } from '../../__tests__/utils/test-helpers'
 
 describe('User Entity', () => {
     describe('create method', () => {

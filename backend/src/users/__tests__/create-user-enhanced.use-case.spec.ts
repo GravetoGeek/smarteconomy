@@ -5,7 +5,7 @@ import { HashServicePort } from '../domain/ports/hash-service.port'
 import { User, UserRole } from '../domain/user.entity'
 import { UserEmailAlreadyExistsException } from '../domain/exceptions/user-domain.exception'
 import { USER_REPOSITORY, HASH_SERVICE } from '../domain/tokens'
-import { TestDataFactory, MockProviders } from '@/__tests__/utils/test-helpers'
+import { TestDataFactory, MockProviders } from '../../__tests__/utils/test-helpers'
 
 describe('CreateUserUseCase', () => {
     let useCase: CreateUserUseCase

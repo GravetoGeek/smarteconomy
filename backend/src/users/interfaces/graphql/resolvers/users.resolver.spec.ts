@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { UsersResolver } from './users.resolver'
 import { UsersApplicationService } from '../../../application/services/users-application.service'
-import { LoggerService } from '@/shared/services/logger.service'
+import { LoggerService } from '../../../../shared/services/logger.service'
 import { UserRole } from '../../../domain/user.entity'
 import { CreateUserInput } from '../inputs/create-user.input'
 import { SearchUsersInput } from '../inputs/search-users.input'

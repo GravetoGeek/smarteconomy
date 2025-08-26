@@ -3,7 +3,7 @@ import { FindAccountByIdUseCase, FindAccountByIdRequest } from './find-account-b
 import { Account, AccountType } from '../../domain/account.entity'
 import { AccountRepositoryPort } from '../../domain/ports/account-repository.port'
 import { ACCOUNT_REPOSITORY } from '../../domain/tokens'
-import { TestDataFactory, MockProviders } from '@/__tests__/utils/test-helpers'
+import { TestDataFactory, MockProviders } from '../../../__tests__/utils/test-helpers'
 
 describe('FindAccountByIdUseCase', () => {
     let useCase: FindAccountByIdUseCase

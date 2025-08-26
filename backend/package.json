@@ -78,21 +78,12 @@
         "typescript-eslint": "^8.4.0"
     },
     "jest": {
-        "moduleFileExtensions": [
-            "js",
-            "json",
-            "ts"
-        ],
+        "testEnvironment": "node",
         "rootDir": "src",
         "testRegex": ".*\\.spec\\.ts$",
         "transform": {
             "^.+\\.(t|j)s$": "ts-jest"
-        },
-        "collectCoverageFrom": [
-            "**/*.(t|j)s"
-        ],
-        "coverageDirectory": "../coverage",
-        "testEnvironment": "node"
+        }
     },
     "prisma": {
         "schema": "./src/database/prisma/schema.prisma"
