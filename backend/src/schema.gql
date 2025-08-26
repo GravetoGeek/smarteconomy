@@ -2,6 +2,30 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AuthUser {
+  id: String!
+  email: String!
+  role: String!
+}
+
+type AuthResponse {
+  accessToken: String!
+  refreshToken: String!
+  expiresIn: Float!
+  tokenType: String!
+  user: AuthUser!
+}
+
+type LogoutResponse {
+  success: Boolean!
+  message: String!
+}
+
+type ValidateTokenResponse {
+  valid: Boolean!
+  user: AuthUser
+}
+
 type Category {
   id: String!
   category: String!
@@ -75,6 +99,7 @@ type Query {
   profession(id: String!): ProfessionModel!
   categories: [Category!]!
   category(id: String!): Category!
+  validateToken(input: ValidateTokenInput!): ValidateTokenResponse!
 }
 
 input SearchUsersInput {
@@ -85,6 +110,10 @@ input SearchUsersInput {
   sortDirection: String
 }
 
+input ValidateTokenInput {
+  accessToken: String!
+}
+
 type Mutation {
   createUser(input: CreateUserInput!): User!
   updateUser(id: String!, input: UpdateUserInput!): UpdateUserResponse!
@@ -92,6 +121,9 @@ type Mutation {
   createGender(input: CreateGenderInput!): GenderModel!
   createProfession(input: CreateProfessionInput!): ProfessionModel!
   createCategory(input: CreateCategoryInput!): Category!
+  login(input: LoginInput!): AuthResponse!
+  refreshToken(input: RefreshTokenInput!): AuthResponse!
+  logout(input: LogoutInput!): LogoutResponse!
 }
 
 input CreateUserInput {
@@ -128,4 +160,17 @@ input CreateProfessionInput {
 
 input CreateCategoryInput {
   category: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input RefreshTokenInput {
+  refreshToken: String!
+}
+
+input LogoutInput {
+  accessToken: String!
 }

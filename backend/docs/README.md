@@ -81,10 +81,10 @@ docker-compose up -d
 
 ```bash
 # Teste as queries GraphQL
-./test-query.sh
+curl -s http://localhost:3000/graphql -H "Content-Type: application/json" -d '{"query":"query { users { id name email } }"}'
 
 # Teste as mutations
-./test-mutations.sh
+curl -s http://localhost:3000/graphql -H "Content-Type: application/json" -d '{"query":"mutation CreateUser($input: CreateUserInput!) { createUser(input: $input) { id email name } }","variables":{"input":{"email":"test@example.com","name":"Test","lastname":"User","birthdate":"1990-01-01","role":"USER","genderId":"gender-id","professionId":"profession-id","password":"password123"}}}'
 ```
 
 ## 📖 **Documentação por Nível de Experiência**
