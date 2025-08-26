@@ -1,5 +1,5 @@
 import { Gender, GenderType } from './gender'
-import { TestAssertions } from '@/__tests__/utils/test-helpers'
+import { TestAssertions } from '../../../__tests__/utils/test-helpers'
 
 describe('Gender Entity', () => {
     describe('create method', () => {

@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '@/database/prisma/prisma.service'
+import { PrismaService } from '../../../database/prisma/prisma.service'
 import { ProfessionPrismaRepository } from './profession-prisma.repository'
 import { Profession, ProfessionType } from '../../domain/entities/profession'
-import { LoggerService } from '@/shared/services/logger.service'
-import { TestDatabaseUtils, TestDataFactory } from '@/__tests__/utils/test-helpers'
+import { LoggerService } from '../../../shared/services/logger.service'
+import { TestDatabaseUtils, TestDataFactory } from '../../../__tests__/utils/test-helpers'
 
 describe('ProfessionPrismaRepository Integration', () => {
     let repository: ProfessionPrismaRepository

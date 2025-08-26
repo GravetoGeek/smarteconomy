@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '@/database/prisma/prisma.service'
-import { LoggerService } from '@/shared/services/logger.service'
+import { PrismaService } from '../../database/prisma/prisma.service'
+import { LoggerService } from '../../shared/services/logger.service'
 import { ConfigModule } from '@nestjs/config'
-import { UserRole } from '@/users/domain/user.entity'
-import { AccountType } from '@/accounts/domain/account.entity'
-import { GenderType } from '@/gender/domain/entities/gender'
+import { UserRole } from '../../users/domain/user.entity'
+import { AccountType } from '../../accounts/domain/account.entity'
+import { GenderType } from '../../gender/domain/entities/gender'
 
 /**
  * Test Data Factories

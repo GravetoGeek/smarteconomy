@@ -3,7 +3,7 @@ import { CreateAccountUseCase, CreateAccountRequest } from './create-account.use
 import { Account, AccountType } from '../../domain/account.entity'
 import { AccountRepositoryPort } from '../../domain/ports/account-repository.port'
 import { ACCOUNT_REPOSITORY } from '../../domain/tokens'
-import { TestDataFactory, MockProviders } from '@/__tests__/utils/test-helpers'
+import { TestDataFactory, MockProviders } from '../../../__tests__/utils/test-helpers'
 
 describe('CreateAccountUseCase', () => {
     let useCase: CreateAccountUseCase

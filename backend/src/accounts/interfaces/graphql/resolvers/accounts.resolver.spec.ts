@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { AccountsResolver } from './accounts.resolver'
 import { AccountsApplicationService } from '../../../application/services/accounts-application.service'
-import { LoggerService } from '@/shared/services/logger.service'
+import { LoggerService } from '../../../../shared/services/logger.service'
 import { CreateAccountInput } from '../inputs/create-account.input'
 import { AccountType } from '../../../domain/account.entity'
 

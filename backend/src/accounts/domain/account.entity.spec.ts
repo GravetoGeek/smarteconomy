@@ -1,5 +1,5 @@
 import { Account, AccountType, AccountStatus } from './account.entity'
-import { TestDataFactory, TestAssertions } from '@/__tests__/utils/test-helpers'
+import { TestDataFactory, TestAssertions } from '../../__tests__/utils/test-helpers'
 
 describe('Account Entity', () => {
     describe('constructor', () => {
