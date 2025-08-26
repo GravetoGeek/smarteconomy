@@ -367,7 +367,7 @@ type Query {
   userById(id: String!): User
   userByEmail(email: String!): User
   searchUsers(input: SearchUsersInput!): SearchResult!
-  
+
   # 💰 Queries de Contas Financeiras
   accountsByUser(userId: String!): [Account!]!
   accountById(id: String!): Account
@@ -377,7 +377,7 @@ type Mutation {
   createUser(input: CreateUserInput!): User!
   updateUser(id: String!, input: UpdateUserInput!): User
   deleteUser(id: String!): Boolean!
-  
+
   # 💰 Mutations de Contas Financeiras
   createAccount(input: CreateAccountInput!): Account!
 }
