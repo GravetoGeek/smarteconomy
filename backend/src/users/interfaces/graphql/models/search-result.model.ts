@@ -1,5 +1,5 @@
-import {Field,Int,ObjectType} from '@nestjs/graphql'
-import {User} from './User'
+import { Field, Int, ObjectType } from '@nestjs/graphql'
+import { User } from './User'
 
 @ObjectType()
 export class SearchResult {
