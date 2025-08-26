@@ -2,9 +2,9 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type GenderModel {
-  id: ID!
-  gender: String!
+type Category {
+  id: String!
+  category: String!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -13,6 +13,13 @@ type GenderModel {
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+type GenderModel {
+  id: ID!
+  gender: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
 
 type ProfessionModel {
   id: ID!
@@ -66,6 +73,8 @@ type Query {
   gender(id: String!): GenderModel!
   professions: [ProfessionModel!]!
   profession(id: String!): ProfessionModel!
+  categories: [Category!]!
+  category(id: String!): Category!
 }
 
 input SearchUsersInput {
@@ -82,6 +91,7 @@ type Mutation {
   deleteUser(id: String!): DeleteUserResponse!
   createGender(input: CreateGenderInput!): GenderModel!
   createProfession(input: CreateProfessionInput!): ProfessionModel!
+  createCategory(input: CreateCategoryInput!): Category!
 }
 
 input CreateUserInput {
@@ -114,4 +124,8 @@ input CreateGenderInput {
 
 input CreateProfessionInput {
   profession: String!
+}
+
+input CreateCategoryInput {
+  category: String!
 }
