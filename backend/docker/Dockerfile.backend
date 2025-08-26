@@ -1,7 +1,7 @@
-FROM node:23-alpine
+FROM node:24-alpine
 
-# Instalar dependências do sistema necessárias para o Prisma
-RUN apk add --no-cache openssl
+# Instalar dependências do sistema necessárias para o Prisma e bcrypt
+RUN apk add --no-cache openssl python3 make g++ git
 
 # Define o diretório de trabalho
 WORKDIR /backend

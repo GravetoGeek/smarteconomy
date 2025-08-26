@@ -1,15 +1,24 @@
-import {ValidationPipe} from '@nestjs/common';
-import {NestFactory} from '@nestjs/core';
-import {AppModule} from './app.module';
+import {ValidationPipe} from '@nestjs/common'
+import {NestFactory} from '@nestjs/core'
+import {AppModule} from './app.module'
+import {GraphQLExceptionFilter} from './shared/filters/graphql-exception.filter'
 
 async function bootstrap() {
-    const app=await NestFactory.create(AppModule);
+    const app=await NestFactory.create(AppModule)
 
     app.useGlobalPipes(new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true
-    }));
-    await app.listen(process.env.BACKEND_PORT);
+        whitelist: false, // ✅ Desabilitar whitelist para debug
+        forbidNonWhitelisted: false, // ✅ Desabilitar forbidNonWhitelisted para debug
+        transform: true,
+        // ✅ Configurações para debug
+        skipMissingProperties: true,
+        skipNullProperties: true,
+        skipUndefinedProperties: true
+    }))
+
+    // ✅ Aplicar filtro de exceção global para tratamento correto de erros
+    app.useGlobalFilters(new GraphQLExceptionFilter())
+
+    await app.listen(process.env.BACKEND_PORT)
 }
-bootstrap();
+bootstrap()
