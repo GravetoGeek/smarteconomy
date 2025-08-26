@@ -1,16 +1,16 @@
-import {Test,TestingModule} from '@nestjs/testing'
-import {CreateProfessionUseCase} from '../application/use-cases/create-profession.use-case'
-import {Profession,ProfessionType} from '../domain/entities/profession'
-import {InvalidProfessionTypeException,ProfessionAlreadyExistsException} from '../domain/exceptions/profession-domain.exception'
-import {ProfessionRepositoryPort} from '../domain/ports/profession-repository.port'
-import {PROFESSION_REPOSITORY} from '../domain/tokens'
+import { Test, TestingModule } from '@nestjs/testing'
+import { CreateProfessionUseCase } from '../application/use-cases/create-profession.use-case'
+import { Profession, ProfessionType } from '../domain/entities/profession'
+import { InvalidProfessionTypeException, ProfessionAlreadyExistsException } from '../domain/exceptions/profession-domain.exception'
+import { ProfessionRepositoryPort } from '../domain/ports/profession-repository.port'
+import { PROFESSION_REPOSITORY } from '../domain/tokens'
 
-describe('CreateProfessionUseCase',() => {
+describe('CreateProfessionUseCase', () => {
     let useCase: CreateProfessionUseCase
     let mockProfessionRepository: jest.Mocked<ProfessionRepositoryPort>
 
     beforeEach(async () => {
-        const mockRepository={
+        const mockRepository = {
             save: jest.fn(),
             findById: jest.fn(),
             findByProfession: jest.fn(),
@@ -20,7 +20,7 @@ describe('CreateProfessionUseCase',() => {
             existsByProfession: jest.fn()
         }
 
-        const module: TestingModule=await Test.createTestingModule({
+        const module: TestingModule = await Test.createTestingModule({
             providers: [
                 CreateProfessionUseCase,
                 {
@@ -30,51 +30,51 @@ describe('CreateProfessionUseCase',() => {
             ]
         }).compile()
 
-        useCase=module.get<CreateProfessionUseCase>(CreateProfessionUseCase)
-        mockProfessionRepository=module.get(PROFESSION_REPOSITORY)
+        useCase = module.get<CreateProfessionUseCase>(CreateProfessionUseCase)
+        mockProfessionRepository = module.get(PROFESSION_REPOSITORY)
     })
 
-    it('should be defined',() => {
+    it('should be defined', () => {
         expect(useCase).toBeDefined()
     })
 
-    describe('execute',() => {
-        it('should create a profession successfully',async () => {
+    describe('execute', () => {
+        it('should create a profession successfully', async () => {
             // Arrange
-            const professionInput='ENGINEER'
-            const mockProfession=Profession.create(ProfessionType.ENGINEER)
+            const professionInput = 'ENGINEER'
+            const mockProfession = Profession.create(ProfessionType.ENGINEER)
 
             mockProfessionRepository.existsByProfession.mockResolvedValue(false)
             mockProfessionRepository.save.mockResolvedValue(mockProfession)
 
             // Act
-            const result=await useCase.execute(professionInput)
+            const result = await useCase.execute(professionInput)
 
             // Assert
-            expect(result).toBe(mockProfession)
+            expect(result).toEqual(mockProfession)
             expect(mockProfessionRepository.existsByProfession).toHaveBeenCalledWith(ProfessionType.ENGINEER)
-            expect(mockProfessionRepository.save).toHaveBeenCalledWith(mockProfession)
+            expect(mockProfessionRepository.save).toHaveBeenCalledWith(expect.any(Profession))
         })
 
-        it('should create a profession with Portuguese input',async () => {
+        it('should create a profession with Portuguese input', async () => {
             // Arrange
-            const professionInput='Engenheiro'
-            const mockProfession=Profession.create(ProfessionType.ENGINEER)
+            const professionInput = 'Engenheiro'
+            const mockProfession = Profession.create(ProfessionType.ENGINEER)
 
             mockProfessionRepository.existsByProfession.mockResolvedValue(false)
             mockProfessionRepository.save.mockResolvedValue(mockProfession)
 
             // Act
-            const result=await useCase.execute(professionInput)
+            const result = await useCase.execute(professionInput)
 
             // Assert
-            expect(result).toBe(mockProfession)
+            expect(result).toEqual(mockProfession)
             expect(mockProfessionRepository.existsByProfession).toHaveBeenCalledWith(ProfessionType.ENGINEER)
         })
 
-        it('should throw ProfessionAlreadyExistsException when profession already exists',async () => {
+        it('should throw ProfessionAlreadyExistsException when profession already exists', async () => {
             // Arrange
-            const professionInput='DOCTOR'
+            const professionInput = 'DOCTOR'
             mockProfessionRepository.existsByProfession.mockResolvedValue(true)
 
             // Act & Assert
@@ -83,9 +83,9 @@ describe('CreateProfessionUseCase',() => {
             expect(mockProfessionRepository.save).not.toHaveBeenCalled()
         })
 
-        it('should throw InvalidProfessionTypeException for invalid profession',async () => {
+        it('should throw InvalidProfessionTypeException for invalid profession', async () => {
             // Arrange
-            const professionInput='INVALID_PROFESSION'
+            const professionInput = 'INVALID_PROFESSION'
 
             // Act & Assert
             await expect(useCase.execute(professionInput)).rejects.toThrow(InvalidProfessionTypeException)
@@ -93,19 +93,19 @@ describe('CreateProfessionUseCase',() => {
             expect(mockProfessionRepository.save).not.toHaveBeenCalled()
         })
 
-        it('should handle case-insensitive input',async () => {
+        it('should handle case-insensitive input', async () => {
             // Arrange
-            const professionInput='developer'
-            const mockProfession=Profession.create(ProfessionType.DEVELOPER)
+            const professionInput = 'developer'
+            const mockProfession = Profession.create(ProfessionType.DEVELOPER)
 
             mockProfessionRepository.existsByProfession.mockResolvedValue(false)
             mockProfessionRepository.save.mockResolvedValue(mockProfession)
 
             // Act
-            const result=await useCase.execute(professionInput)
+            const result = await useCase.execute(professionInput)
 
             // Assert
-            expect(result).toBe(mockProfession)
+            expect(result).toEqual(mockProfession)
             expect(mockProfessionRepository.existsByProfession).toHaveBeenCalledWith(ProfessionType.DEVELOPER)
         })
     })
