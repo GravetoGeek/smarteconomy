@@ -15,7 +15,7 @@ import {FindGenderByIdUseCase} from './application/use-cases/find-gender-by-id.u
 import {GenderPrismaRepository} from './infrastructure/repositories/gender-prisma.repository'
 
 // Interfaces
-import {GenderResolver} from './graphql/resolvers/gender.resolver'
+import {GenderResolver} from './interfaces/graphql/resolvers/gender.resolver'
 
 // Tokens para injeção de dependência
 import {GENDER_REPOSITORY} from './domain/tokens'
