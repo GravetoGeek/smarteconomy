@@ -15,7 +15,7 @@ Esta collection Postman foi desenvolvida para oferecer uma cobertura completa da
 - **Validate Token**: Validação de tokens de acesso
 - **Logout**: Encerramento de sessão
 
-### 3. 👥 Users  
+### 3. 👥 Users
 - **Get All Users**: Lista todos os usuários
 - **Get User by ID**: Busca usuário específico
 - **Get User by Email**: Busca por email
@@ -140,7 +140,7 @@ Esta collection é mantida sincronizada com:
 
 ---
 
-**Versão**: 2.0.0  
-**Última Atualização**: Janeiro 2024  
-**Módulos**: Authentication, Users, Accounts, Gender, Profession, Categories  
+**Versão**: 2.0.0
+**Última Atualização**: Janeiro 2024
+**Módulos**: Authentication, Users, Accounts, Gender, Profession, Categories
 **Compatibilidade**: NestJS 11 + GraphQL + Prisma 5
