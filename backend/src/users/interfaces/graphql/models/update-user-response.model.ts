@@ -6,8 +6,8 @@ export class UpdateUserResponse {
     @Field()
     success: boolean
 
-    @Field(() => User)
-    user: User
+    @Field(() => User, { nullable: true })
+    user: User | null
 
     @Field()
     message: string
