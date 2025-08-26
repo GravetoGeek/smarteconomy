@@ -101,6 +101,16 @@ type User {
   updatedAt: DateTime!
 }
 
+type Account {
+  id: ID!
+  name: String!
+  type: String!
+  balance: Float!
+  userId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
 type SearchResult {
   items: [User!]!
   total: Int!
@@ -116,6 +126,11 @@ type Query {
   userById(id: String!): User
   userByEmail(email: String!): User
   searchUsers(input: SearchUsersInput!): SearchResult!
+  
+  # 💰 Contas Financeiras
+  accountsByUser(userId: String!): [Account!]!
+  accountById(id: String!): Account
+  
   genders: [Gender!]!
   professions: [Profession!]!
 }
@@ -124,6 +139,9 @@ type Mutation {
   createUser(input: CreateUserInput!): User!
   updateUser(id: String!, input: UpdateUserInput!): User
   deleteUser(id: String!): Boolean!
+  
+  # 💰 Contas Financeiras
+  createAccount(input: CreateAccountInput!): Account!
 }
 
 input SearchUsersInput {
@@ -152,6 +170,13 @@ input UpdateUserInput {
   password: String
 }
 
+input CreateAccountInput {
+  name: String!
+  type: String!
+  balance: Float
+  userId: String!
+}
+
 scalar DateTime
 ```
 
@@ -175,6 +200,14 @@ enum AccountStatus {
   ACTIVE = 'ACTIVE'
   INACTIVE = 'INACTIVE'
   SUSPENDED = 'SUSPENDED'
+}
+
+enum AccountType {
+  CHECKING = 'CHECKING'       // Conta Corrente
+  SAVINGS = 'SAVINGS'         // Conta Poupança
+  INVESTMENT = 'INVESTMENT'   // Conta de Investimento
+  CREDIT_CARD = 'CREDIT_CARD' // Cartão de Crédito
+  WALLET = 'WALLET'           // Carteira
 }
 ```
 
@@ -340,6 +373,94 @@ query {
 }
 ```
 
+### **8. 💰 Buscar Contas por Usuário**
+
+```graphql
+query AccountsByUser($userId: String!) {
+  accountsByUser(userId: $userId) {
+    id
+    name
+    type
+    balance
+    createdAt
+    updatedAt
+  }
+}
+```
+
+**Variables:**
+```json
+{
+  "userId": "user-uuid-here"
+}
+```
+
+**Resposta:**
+```json
+{
+  "data": {
+    "accountsByUser": [
+      {
+        "id": "account-uuid-1",
+        "name": "Conta Corrente Principal",
+        "type": "CHECKING",
+        "balance": 1500.50,
+        "createdAt": "2025-08-26T10:00:00.000Z",
+        "updatedAt": "2025-08-26T10:00:00.000Z"
+      },
+      {
+        "id": "account-uuid-2",
+        "name": "Conta Poupança",
+        "type": "SAVINGS",
+        "balance": 5000.00,
+        "createdAt": "2025-08-26T10:05:00.000Z",
+        "updatedAt": "2025-08-26T10:05:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+### **9. 💰 Buscar Conta por ID**
+
+```graphql
+query AccountById($id: String!) {
+  accountById(id: $id) {
+    id
+    name
+    type
+    balance
+    userId
+    createdAt
+    updatedAt
+  }
+}
+```
+
+**Variables:**
+```json
+{
+  "id": "account-uuid-here"
+}
+```
+
+**Resposta:**
+```json
+{
+  "data": {
+    "accountById": {
+      "id": "account-uuid-1",
+      "name": "Conta Corrente Principal",
+      "type": "CHECKING",
+      "balance": 1500.50,
+      "userId": "user-uuid-here",
+      "createdAt": "2025-08-26T10:00:00.000Z",
+      "updatedAt": "2025-08-26T10:00:00.000Z"
+    }
+  }
+}
+```
+
 ## ✏️ **Mutations**
 
 ### **1. Criar Usuário**
@@ -456,6 +577,88 @@ mutation DeleteUser($id: String!) {
 }
 ```
 
+### **4. 💰 Criar Conta Financeira**
+
+```graphql
+mutation CreateAccount($input: CreateAccountInput!) {
+  createAccount(input: $input) {
+    id
+    name
+    type
+    balance
+    userId
+    createdAt
+  }
+}
+```
+
+**Variables para Conta Corrente:**
+```json
+{
+  "input": {
+    "name": "Conta Corrente Principal",
+    "type": "CHECKING",
+    "balance": 1500.50,
+    "userId": "user-uuid-here"
+  }
+}
+```
+
+**Variables para Conta Poupança:**
+```json
+{
+  "input": {
+    "name": "Conta Poupança",
+    "type": "SAVINGS",
+    "balance": 5000.00,
+    "userId": "user-uuid-here"
+  }
+}
+```
+
+**Variables para Cartão de Crédito:**
+```json
+{
+  "input": {
+    "name": "Cartão Visa Gold",
+    "type": "CREDIT_CARD",
+    "balance": 0.00,
+    "userId": "user-uuid-here"
+  }
+}
+```
+
+**Resposta de Sucesso:**
+```json
+{
+  "data": {
+    "createAccount": {
+      "id": "account-uuid-new",
+      "name": "Conta Corrente Principal",
+      "type": "CHECKING",
+      "balance": 1500.50,
+      "userId": "user-uuid-here",
+      "createdAt": "2025-08-26T10:30:00.000Z"
+    }
+  }
+}
+```
+
+**Resposta de Erro:**
+```json
+{
+  "errors": [
+    {
+      "message": "User not found",
+      "extensions": {
+        "code": "USER_NOT_FOUND",
+        "statusCode": 404
+      }
+    }
+  ]
+}
+```
+
 ## 📝 **Types**
 
 ### **User Type**
@@ -472,6 +675,20 @@ type User {
   professionId: String
   profileId: String
   status: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+```
+
+### **💰 Account Type**
+
+```graphql
+type Account {
+  id: ID!
+  name: String!
+  type: String!
+  balance: Float!
+  userId: String!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -524,6 +741,16 @@ input SearchUsersInput {
   filter: String
   sort: String
   sortDirection: String = "asc"
+}
+```
+
+#### **💰 CreateAccountInput**
+```graphql
+input CreateAccountInput {
+  name: String!
+  type: String!
+  balance: Float
+  userId: String!
 }
 ```
 
@@ -700,16 +927,16 @@ mutation CreateUser($input: CreateUserInput!) {
     "birthdate": "1985-05-20",
     "role": "ADMIN",
     "genderId": "gender-uuid-from-step-1",
-    "professionId": "profession-uuid-from-step-1",
-    "password": "Admin123456!"
   }
 }
 ```
 
-#### **Passo 3: Verificar Usuário Criado**
+### **4. 💰 Fluxo Completo: Usuário + Contas Financeiras**
+
+#### **Passo 1: Criar Usuário**
 ```graphql
-query {
-  users {
+mutation CreateUser($input: CreateUserInput!) {
+  createUser(input: $input) {
     id
     email
     name
@@ -721,7 +948,156 @@ query {
 }
 ```
 
-### **2. Busca Avançada com Filtros**
+**Variables:**
+```json
+{
+  "input": {
+    "email": "cliente@smarteconomy.com",
+    "name": "Maria",
+    "lastname": "Silva",
+    "birthdate": "1990-03-15",
+    "role": "USER",
+    "genderId": "gender-uuid-from-step-1",
+    "professionId": "profession-uuid-from-step-1",
+    "password": "Cliente123456!"
+  }
+}
+```
+
+#### **Passo 2: Criar Conta Corrente**
+```graphql
+mutation CreateCheckingAccount($input: CreateAccountInput!) {
+  createAccount(input: $input) {
+    id
+    name
+    type
+    balance
+    userId
+    createdAt
+  }
+}
+```
+
+**Variables:**
+```json
+{
+  "input": {
+    "name": "Conta Corrente Principal",
+    "type": "CHECKING",
+    "balance": 2500.00,
+    "userId": "user-uuid-created-above"
+  }
+}
+```
+
+#### **Passo 3: Criar Conta Poupança**
+```graphql
+mutation CreateSavingsAccount($input: CreateAccountInput!) {
+  createAccount(input: $input) {
+    id
+    name
+    type
+    balance
+    userId
+    createdAt
+  }
+}
+```
+
+**Variables:**
+```json
+{
+  "input": {
+    "name": "Conta Poupança",
+    "type": "SAVINGS",
+    "balance": 10000.00,
+    "userId": "user-uuid-created-above"
+  }
+}
+```
+
+#### **Passo 4: Criar Cartão de Crédito**
+```graphql
+mutation CreateCreditCard($input: CreateAccountInput!) {
+  createAccount(input: $input) {
+    id
+    name
+    type
+    balance
+    userId
+    createdAt
+  }
+}
+```
+
+**Variables:**
+```json
+{
+  "input": {
+    "name": "Cartão Mastercard Black",
+    "type": "CREDIT_CARD",
+    "balance": 0.00,
+    "userId": "user-uuid-created-above"
+  }
+}
+```
+
+#### **Passo 5: Listar Todas as Contas do Usuário**
+```graphql
+query GetAllUserAccounts($userId: String!) {
+  accountsByUser(userId: $userId) {
+    id
+    name
+    type
+    balance
+    createdAt
+    updatedAt
+  }
+}
+```
+
+**Variables:**
+```json
+{
+  "userId": "user-uuid-created-above"
+}
+```
+
+**Resposta Esperada:**
+```json
+{
+  "data": {
+    "accountsByUser": [
+      {
+        "id": "account-uuid-1",
+        "name": "Conta Corrente Principal",
+        "type": "CHECKING",
+        "balance": 2500.00,
+        "createdAt": "2025-08-26T10:00:00.000Z",
+        "updatedAt": "2025-08-26T10:00:00.000Z"
+      },
+      {
+        "id": "account-uuid-2",
+        "name": "Conta Poupança",
+        "type": "SAVINGS",
+        "balance": 10000.00,
+        "createdAt": "2025-08-26T10:05:00.000Z",
+        "updatedAt": "2025-08-26T10:05:00.000Z"
+      },
+      {
+        "id": "account-uuid-3",
+        "name": "Cartão Mastercard Black",
+        "type": "CREDIT_CARD",
+        "balance": 0.00,
+        "createdAt": "2025-08-26T10:10:00.000Z",
+        "updatedAt": "2025-08-26T10:10:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+### **5. Atualização de Perfil**
 
 ```graphql
 query SearchUsersAdvanced($input: SearchUsersInput!) {
@@ -865,6 +1241,10 @@ mutation UpdateUserProfile($id: String!, $input: UpdateUserInput!) {
 | `USER_INVALID_AGE` | Idade inválida | 400 |
 | `USER_INVALID_EMAIL` | Email inválido | 400 |
 | `USER_INVALID_PASSWORD` | Senha inválida | 400 |
+| `ACCOUNT_NOT_FOUND` | Conta não encontrada | 404 |
+| `ACCOUNT_INVALID_TYPE` | Tipo de conta inválido | 400 |
+| `ACCOUNT_INVALID_BALANCE` | Saldo inválido | 400 |
+| `ACCOUNT_INSUFFICIENT_BALANCE` | Saldo insuficiente | 400 |
 | `INVALID_INPUT` | Dados de entrada inválidos | 400 |
 | `INTERNAL_SERVER_ERROR` | Erro interno do servidor | 500 |
 

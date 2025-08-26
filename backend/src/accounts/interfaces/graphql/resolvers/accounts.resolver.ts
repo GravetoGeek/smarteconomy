@@ -14,7 +14,7 @@ export class AccountsResolver {
     @Query(() => [Account])
     async accountsByUser(@Args('userId') userId: string) {
         this.logger.logOperation('GRAPHQL_GET_ACCOUNTS_BY_USER_START', { userId }, 'AccountsResolver')
-        const accounts = await this.accountsService.findAllByUser(userId)
+        const accounts = await this.accountsService.findAccountsByUser(userId)
         this.logger.logOperation('GRAPHQL_GET_ACCOUNTS_BY_USER_SUCCESS', { count: accounts.length }, 'AccountsResolver')
         return accounts
     }
@@ -22,7 +22,7 @@ export class AccountsResolver {
     @Query(() => Account, { nullable: true })
     async accountById(@Args('id') id: string) {
         this.logger.logOperation('GRAPHQL_GET_ACCOUNT_BY_ID_START', { id }, 'AccountsResolver')
-        const acc = await this.accountsService.findById(id)
+        const acc = await this.accountsService.findAccountById(id)
         if (acc) this.logger.logOperation('GRAPHQL_GET_ACCOUNT_BY_ID_SUCCESS', { id: acc.id }, 'AccountsResolver')
         else this.logger.logOperation('GRAPHQL_GET_ACCOUNT_BY_ID_NOT_FOUND', { id }, 'AccountsResolver')
         return acc
@@ -31,8 +31,13 @@ export class AccountsResolver {
     @Mutation(() => Account)
     async createAccount(@Args('input') input: CreateAccountInput) {
         this.logger.logOperation('GRAPHQL_CREATE_ACCOUNT_START', input, 'AccountsResolver')
-        const result = await this.accountsService.createAccount(input)
-        this.logger.logOperation('GRAPHQL_CREATE_ACCOUNT_SUCCESS', { id: result.account.id }, 'AccountsResolver')
-        return result.account
+        const result = await this.accountsService.createAccount({
+            name: input.name,
+            type: input.type as any, // Will be fixed with proper GraphQL enum
+            balance: input.balance,
+            userId: input.userId
+        })
+        this.logger.logOperation('GRAPHQL_CREATE_ACCOUNT_SUCCESS', { id: result.id }, 'AccountsResolver')
+        return result
     }
 }

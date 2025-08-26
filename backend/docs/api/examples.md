@@ -6,7 +6,8 @@
 
 - [🎯 Visão Geral](#-visão-geral)
 - [🚀 Fluxo de Criação de Usuário](#-fluxo-de-criação-de-usuário)
-- [🔍 Operações de Busca](#-operações-de-busca)
+- [� Gestão de Contas Financeiras](#-gestão-de-contas-financeiras)
+- [�🔍 Operações de Busca](#-operações-de-busca)
 - [✏️ Operações de Atualização](#️-operações-de-atualização)
 - [🗑️ Operações de Remoção](#️-operações-de-remoção)
 - [🧪 Testando com cURL](#-testando-com-curl)
@@ -106,6 +107,232 @@ query {
     status
     createdAt
   }
+}
+```
+
+  }
+}
+```
+
+## 💰 **Gestão de Contas Financeiras**
+
+### **Criar Conta Corrente**
+
+```graphql
+mutation CreateCheckingAccount($input: CreateAccountInput!) {
+  createAccount(input: $input) {
+    id
+    name
+    type
+    balance
+    userId
+    createdAt
+  }
+}
+```
+
+**Variables:**
+```json
+{
+  "input": {
+    "name": "Conta Corrente Principal",
+    "type": "CHECKING",
+    "balance": 1500.50,
+    "userId": "user-uuid-here"
+  }
+}
+```
+
+### **Criar Conta Poupança**
+
+```graphql
+mutation CreateSavingsAccount($input: CreateAccountInput!) {
+  createAccount(input: $input) {
+    id
+    name
+    type
+    balance
+    userId
+    createdAt
+  }
+}
+```
+
+**Variables:**
+```json
+{
+  "input": {
+    "name": "Conta Poupança",
+    "type": "SAVINGS",
+    "balance": 5000.00,
+    "userId": "user-uuid-here"
+  }
+}
+```
+
+### **Criar Cartão de Crédito**
+
+```graphql
+mutation CreateCreditCard($input: CreateAccountInput!) {
+  createAccount(input: $input) {
+    id
+    name
+    type
+    balance
+    userId
+    createdAt
+  }
+}
+```
+
+**Variables:**
+```json
+{
+  "input": {
+    "name": "Cartão Visa Gold",
+    "type": "CREDIT_CARD",
+    "balance": 0.00,
+    "userId": "user-uuid-here"
+  }
+}
+```
+
+### **Buscar Contas do Usuário**
+
+```graphql
+query GetUserAccounts($userId: String!) {
+  accountsByUser(userId: $userId) {
+    id
+    name
+    type
+    balance
+    createdAt
+    updatedAt
+  }
+}
+```
+
+**Variables:**
+```json
+{
+  "userId": "user-uuid-here"
+}
+```
+
+**Resposta esperada:**
+```json
+{
+  "data": {
+    "accountsByUser": [
+      {
+        "id": "account-uuid-1",
+        "name": "Conta Corrente Principal",
+        "type": "CHECKING",
+        "balance": 1500.50,
+        "createdAt": "2025-08-26T12:00:00Z",
+        "updatedAt": "2025-08-26T12:00:00Z"
+      },
+      {
+        "id": "account-uuid-2",
+        "name": "Conta Poupança",
+        "type": "SAVINGS",
+        "balance": 5000.00,
+        "createdAt": "2025-08-26T12:05:00Z",
+        "updatedAt": "2025-08-26T12:05:00Z"
+      }
+    ]
+  }
+}
+```
+
+### **Buscar Conta Específica**
+
+```graphql
+query GetAccountById($id: String!) {
+  accountById(id: $id) {
+    id
+    name
+    type
+    balance
+    userId
+    createdAt
+    updatedAt
+  }
+}
+```
+
+**Variables:**
+```json
+{
+  "id": "account-uuid-here"
+}
+```
+
+### **Fluxo Completo: Usuário + Contas**
+
+```graphql
+# 1. Criar usuário
+mutation CreateUser($userInput: CreateUserInput!) {
+  createUser(input: $userInput) {
+    id
+    email
+    name
+    lastname
+  }
+}
+
+# 2. Criar conta corrente
+mutation CreateAccount1($accountInput: CreateAccountInput!) {
+  createAccount(input: $accountInput) {
+    id
+    name
+    type
+    balance
+  }
+}
+
+# 3. Criar conta poupança
+mutation CreateAccount2($accountInput: CreateAccountInput!) {
+  createAccount(input: $accountInput) {
+    id
+    name
+    type
+    balance
+  }
+}
+
+# 4. Listar todas as contas do usuário
+query GetAllUserAccounts($userId: String!) {
+  accountsByUser(userId: $userId) {
+    id
+    name
+    type
+    balance
+    createdAt
+  }
+}
+```
+
+**Exemplo de Variables para o fluxo:**
+```json
+{
+  "userInput": {
+    "email": "maria.santos@example.com",
+    "name": "Maria",
+    "lastname": "Santos",
+    "birthdate": "1985-03-20",
+    "role": "USER",
+    "genderId": "gender-uuid-2",
+    "professionId": "profession-uuid-2",
+    "password": "SecurePass456!"
+  },
+  "accountInput": {
+    "name": "Conta Corrente Principal",
+    "type": "CHECKING",
+    "balance": 2500.00,
+    "userId": "user-uuid-created-above"
+  },
+  "userId": "user-uuid-created-above"
 }
 ```
 
@@ -334,6 +561,49 @@ curl -X POST \
         "password": "TestPass123!"
       }
     }
+  }' \
+  http://localhost:3000/graphql
+```
+
+### **💰 Criar Conta Financeira**
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "mutation CreateAccount($input: CreateAccountInput!) { createAccount(input: $input) { id name type balance createdAt } }",
+    "variables": {
+      "input": {
+        "name": "Conta Teste",
+        "type": "CHECKING",
+        "balance": 1000.0,
+        "userId": "user-uuid-here"
+      }
+    }
+  }' \
+  http://localhost:3000/graphql
+```
+
+### **💰 Buscar Contas do Usuário**
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "query AccountsByUser($userId: String!) { accountsByUser(userId: $userId) { id name type balance } }",
+    "variables": {"userId": "user-uuid-here"}
+  }' \
+  http://localhost:3000/graphql
+```
+
+### **💰 Buscar Conta Específica**
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "query AccountById($id: String!) { accountById(id: $id) { id name type balance userId } }",
+    "variables": {"id": "account-uuid-here"}
   }' \
   http://localhost:3000/graphql
 ```

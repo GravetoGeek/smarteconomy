@@ -19,7 +19,8 @@
 ### 🔧 **Módulos e Funcionalidades**
 
 - **[👥 Módulo Users](../../src/users/README.md)** - Módulo de usuários com arquitetura hexagonal
-- **[🔧 Guia de Adapters](../../src/users/infrastructure/adapters/README.md)** - Como estender e adicionar novos adapters
+- **[� Módulo Accounts](../../src/accounts/README.md)** - Módulo de contas financeiras com DDD
+- **[�🔧 Guia de Adapters](../../src/users/infrastructure/adapters/README.md)** - Como estender e adicionar novos adapters
 - **[📋 Guia Postman](../../GUIA_POSTMAN.md)** - Guia completo para testar a API
 
 ### 🚀 **Desenvolvimento e Deploy**
@@ -41,7 +42,8 @@
 1. **Comece pela [Arquitetura Hexagonal](architecture/hexagonal.md)** para entender os princípios
 2. **Leia o [Domain-Driven Design](architecture/ddd.md)** para compreender as estratégias
 3. **Explore a [API GraphQL](api/graphql.md)** para usar a API
-4. **Consulte o [Módulo Users](../../src/users/README.md)** como referência
+4. **Consulte o [Módulo Users](../../src/users/README.md)** como referência de implementação
+5. **Veja o [Módulo Accounts](../../src/accounts/README.md)** para gestão financeira
 
 ### **Para DevOps**
 
@@ -112,6 +114,7 @@ curl -s http://localhost:3000/graphql -H "Content-Type: application/json" -d '{"
 ### **Por Funcionalidade**
 
 - **Usuários**: [Módulo Users](../../src/users/README.md), [API GraphQL](api/graphql.md)
+- **Contas Financeiras**: [Módulo Accounts](../../src/accounts/README.md), [API GraphQL](api/graphql.md)
 - **Autenticação**: [Segurança](security/overview.md), [API GraphQL](api/graphql.md#-autenticação)
 - **Banco de Dados**: [Arquitetura Hexagonal](architecture/hexagonal.md), [DDD](architecture/ddd.md)
 
@@ -184,6 +187,7 @@ curl -s http://localhost:3000/graphql -H "Content-Type: application/json" -d '{"
 | **Domain-Driven Design** | ✅ Completo | 100% |
 | **API GraphQL** | ✅ Completo | 100% |
 | **Módulo Users** | ✅ Completo | 100% |
+| **Módulo Accounts** | ✅ Completo | 100% |
 | **Guia Postman** | ✅ Completo | 100% |
 | **Ports & Adapters** | 🔄 Em Desenvolvimento | 30% |
 | **API Endpoints** | 🔄 Em Desenvolvimento | 20% |
