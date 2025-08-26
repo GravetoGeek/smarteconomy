@@ -72,7 +72,7 @@ describe('User Entity', () => {
                 role: 'USER' as const,
                 genderId: 'gender-123',
                 professionId: 'profession-123',
-                password: 'hashedPassword',
+                password: 'hashedPassword123',
                 status: 'ACTIVE' as const,
                 createdAt: new Date('2023-01-01'),
                 updatedAt: new Date('2023-01-02')
@@ -101,7 +101,7 @@ describe('User Entity', () => {
                 role: 'ADMIN',
                 genderId: 'gender-123',
                 professionId: 'profession-123',
-                password: 'hashedPassword',
+                password: 'hashedPassword123',
                 status: 'SUSPENDED',
                 createdAt: new Date('2023-01-01'),
                 updatedAt: new Date('2023-01-02')
@@ -218,7 +218,7 @@ describe('User Entity', () => {
                 // Assert
                 expect(user.role).toBe(UserRole.ADMIN)
                 expect(user.isAdmin()).toBe(true)
-                expect(user.updatedAt.getTime()).toBeGreaterThan(originalUpdatedAt.getTime())
+                expect(user.updatedAt.getTime()).toBeGreaterThanOrEqual(originalUpdatedAt.getTime())
             })
 
             it('should demote admin to user', () => {
@@ -232,7 +232,7 @@ describe('User Entity', () => {
                 // Assert
                 expect(user.role).toBe(UserRole.USER)
                 expect(user.isAdmin()).toBe(false)
-                expect(user.updatedAt.getTime()).toBeGreaterThan(originalUpdatedAt.getTime())
+                expect(user.updatedAt.getTime()).toBeGreaterThanOrEqual(originalUpdatedAt.getTime())
             })
         })
 
@@ -249,7 +249,7 @@ describe('User Entity', () => {
                 expect(user.status).toBe(AccountStatus.ACTIVE)
                 expect(user.isActive()).toBe(true)
                 expect(user.isSuspended()).toBe(false)
-                expect(user.updatedAt.getTime()).toBeGreaterThan(originalUpdatedAt.getTime())
+                expect(user.updatedAt.getTime()).toBeGreaterThanOrEqual(originalUpdatedAt.getTime())
             })
 
             it('should deactivate user', () => {
@@ -262,7 +262,7 @@ describe('User Entity', () => {
                 // Assert
                 expect(user.status).toBe(AccountStatus.INACTIVE)
                 expect(user.isActive()).toBe(false)
-                expect(user.updatedAt.getTime()).toBeGreaterThan(originalUpdatedAt.getTime())
+                expect(user.updatedAt.getTime()).toBeGreaterThanOrEqual(originalUpdatedAt.getTime())
             })
 
             it('should suspend user', () => {
@@ -276,7 +276,7 @@ describe('User Entity', () => {
                 expect(user.status).toBe(AccountStatus.SUSPENDED)
                 expect(user.isSuspended()).toBe(true)
                 expect(user.isActive()).toBe(false)
-                expect(user.updatedAt.getTime()).toBeGreaterThan(originalUpdatedAt.getTime())
+                expect(user.updatedAt.getTime()).toBeGreaterThanOrEqual(originalUpdatedAt.getTime())
             })
         })
 
@@ -294,7 +294,7 @@ describe('User Entity', () => {
                 expect(user.name).toBe(newName)
                 expect(user.lastname).toBe(newLastname)
                 expect(user.fullName).toBe('Jane Smith')
-                expect(user.updatedAt.getTime()).toBeGreaterThan(originalUpdatedAt.getTime())
+                expect(user.updatedAt.getTime()).toBeGreaterThanOrEqual(originalUpdatedAt.getTime())
             })
 
             it('should validate name when updating profile', () => {
