@@ -5,36 +5,36 @@ export class User {
     @Field(() => ID)
     id: string
 
-    @Field()
+    @Field(() => String)
     email: string
 
-    @Field()
+    @Field(() => String)
     name: string
 
-    @Field()
+    @Field(() => String)
     lastname: string
 
-    @Field()
+    @Field(() => Date)
     birthdate: Date
 
-    @Field()
+    @Field(() => String)
     role: string
 
-    @Field()
+    @Field(() => String)
     genderId: string
 
-    @Field()
+    @Field(() => String)
     professionId: string
 
-    @Field({ nullable: true })
-    profileId?: string
+    @Field(() => String, { nullable: true })
+    profileId?: string | null
 
-    @Field()
+    @Field(() => String)
     status: string
 
-    @Field()
+    @Field(() => Date)
     createdAt: Date
 
-    @Field()
+    @Field(() => Date)
     updatedAt: Date
 }
