@@ -115,7 +115,7 @@ describe('CreateUserUseCase', () => {
         it('should create user with admin role', async () => {
             // Arrange
             const adminRequest = { ...validRequest, role: UserRole.ADMIN }
-            const hashedPassword = 'hashedPassword'
+            const hashedPassword = 'hashedPassword123'
 
             mockUserRepository.existsByEmail.mockResolvedValue(false)
             mockHashService.hash.mockResolvedValue(hashedPassword)
@@ -135,7 +135,7 @@ describe('CreateUserUseCase', () => {
         it('should handle optional profileId', async () => {
             // Arrange
             const requestWithProfile = { ...validRequest, profileId: 'profile-456' }
-            const hashedPassword = 'hashedPassword'
+            const hashedPassword = 'hashedPassword123'
 
             mockUserRepository.existsByEmail.mockResolvedValue(false)
             mockHashService.hash.mockResolvedValue(hashedPassword)
@@ -156,7 +156,7 @@ describe('CreateUserUseCase', () => {
             // Arrange
             const repositoryError = new Error('Database connection failed')
             mockUserRepository.existsByEmail.mockResolvedValue(false)
-            mockHashService.hash.mockResolvedValue('hashedPassword')
+            mockHashService.hash.mockResolvedValue('hashedPassword123')
             mockUserRepository.save.mockRejectedValue(repositoryError)
 
             // Act & Assert
@@ -176,7 +176,7 @@ describe('CreateUserUseCase', () => {
 
         it('should preserve all user properties in saved entity', async () => {
             // Arrange
-            const hashedPassword = 'hashedCompletePassword'
+            const hashedPassword = 'hashedCompletePassword123'
             const completeRequest: CreateUserRequest = {
                 email: 'complete@example.com',
                 name: 'Complete',
@@ -214,7 +214,7 @@ describe('CreateUserUseCase', () => {
         it('should call all dependencies in correct order', async () => {
             // Arrange
             mockUserRepository.existsByEmail.mockResolvedValue(false)
-            mockHashService.hash.mockResolvedValue('hashedPassword')
+            mockHashService.hash.mockResolvedValue('hashedPassword123')
             mockUserRepository.save.mockResolvedValue(expect.any(User))
 
             // Act
@@ -229,7 +229,7 @@ describe('CreateUserUseCase', () => {
         it('should create user with default status ACTIVE', async () => {
             // Arrange
             mockUserRepository.existsByEmail.mockResolvedValue(false)
-            mockHashService.hash.mockResolvedValue('hashedPassword')
+            mockHashService.hash.mockResolvedValue('hashedPassword123')
 
             let savedUser: User
             mockUserRepository.save.mockImplementation(async (user: User) => {
@@ -246,9 +246,9 @@ describe('CreateUserUseCase', () => {
 
         it('should return user in correct response format', async () => {
             // Arrange
-            const savedUser = User.create({ ...validRequest, password: 'hashedPassword' })
+            const savedUser = User.create({ ...validRequest, password: 'hashedPassword123' })
             mockUserRepository.existsByEmail.mockResolvedValue(false)
-            mockHashService.hash.mockResolvedValue('hashedPassword')
+            mockHashService.hash.mockResolvedValue('hashedPassword123')
             mockUserRepository.save.mockResolvedValue(savedUser)
 
             // Act
@@ -274,7 +274,7 @@ describe('CreateUserUseCase', () => {
             for (const email of emailFormats) {
                 const request = { ...TestDataFactory.createUserData(), email }
                 mockUserRepository.existsByEmail.mockResolvedValue(false)
-                mockHashService.hash.mockResolvedValue('hashedPassword')
+                mockHashService.hash.mockResolvedValue('hashedPassword123')
                 mockUserRepository.save.mockResolvedValue(expect.any(User))
 
                 await useCase.execute(request)
@@ -287,7 +287,7 @@ describe('CreateUserUseCase', () => {
             // Arrange
             const request = { ...TestDataFactory.createUserData(), birthdate: '1990-12-25' }
             mockUserRepository.existsByEmail.mockResolvedValue(false)
-            mockHashService.hash.mockResolvedValue('hashedPassword')
+            mockHashService.hash.mockResolvedValue('hashedPassword123')
             mockUserRepository.save.mockResolvedValue(expect.any(User))
 
             // Act
@@ -309,7 +309,7 @@ describe('CreateUserUseCase', () => {
                 lastname: 'García-López'
             }
             mockUserRepository.existsByEmail.mockResolvedValue(false)
-            mockHashService.hash.mockResolvedValue('hashedPassword')
+            mockHashService.hash.mockResolvedValue('hashedPassword123')
             mockUserRepository.save.mockResolvedValue(expect.any(User))
 
             // Act
@@ -331,7 +331,7 @@ describe('CreateUserUseCase', () => {
             const plainPassword = 'PlainTextPassword123!'
             const request = { ...TestDataFactory.createUserData(), password: plainPassword }
             mockUserRepository.existsByEmail.mockResolvedValue(false)
-            mockHashService.hash.mockResolvedValue('hashedPassword')
+            mockHashService.hash.mockResolvedValue('hashedPassword123')
 
             let savedUser: User
             mockUserRepository.save.mockImplementation(async (user: User) => {
@@ -344,7 +344,7 @@ describe('CreateUserUseCase', () => {
 
             // Assert
             expect(savedUser!.password).not.toBe(plainPassword)
-            expect(savedUser!.password).toBe('hashedPassword')
+            expect(savedUser!.password).toBe('hashedPassword123')
         })
 
         it('should call hash service with correct algorithm strength', async () => {
@@ -352,7 +352,7 @@ describe('CreateUserUseCase', () => {
             const password = 'TestPassword123!'
             const request = { ...TestDataFactory.createUserData(), password }
             mockUserRepository.existsByEmail.mockResolvedValue(false)
-            mockHashService.hash.mockResolvedValue('stronglyHashedPassword')
+            mockHashService.hash.mockResolvedValue('stronglyHashedPassword123')
             mockUserRepository.save.mockResolvedValue(expect.any(User))
 
             // Act
