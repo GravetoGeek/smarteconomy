@@ -1,8 +1,8 @@
-import {ObjectType,Field,ID,Float} from '@nestjs/graphql'
+import { ObjectType, Field, ID, Float } from '@nestjs/graphql'
 
 @ObjectType()
 export class Account {
-    @Field(()=>ID)
+    @Field(() => ID)
     id: string
 
     @Field()
@@ -11,7 +11,7 @@ export class Account {
     @Field()
     type: string
 
-    @Field(()=>Float)
+    @Field(() => Float)
     balance: number
 
     @Field()

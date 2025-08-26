@@ -21,6 +21,7 @@ model User {
     birthdate    DateTime      @db.Date
     role         String        @default("USER")
     posts        Post[]
+    accounts     Account[]
     gender       Gender        @relation(fields: [genderId], references: [id])
     genderId     String
     password     String        @db.VarChar(255)
@@ -156,4 +157,16 @@ enum Role {
 enum AccountStatus {
     ACTIVE
     INACTIVE
+}
+
+model Account {
+    id        String      @id @default(uuid())
+    name      String      @db.VarChar(100)
+    type      String
+    balance   Float       @default(0)
+    user      User        @relation(fields: [userId], references: [id])
+    userId    String
+    status    AccountStatus @default(ACTIVE)
+    createdAt DateTime    @default(now())
+    updatedAt DateTime    @updatedAt
 }
