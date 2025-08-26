@@ -1,28 +1,28 @@
-import {Module} from '@nestjs/common'
-import {DatabaseModule} from '@/database/database.module'
-import {SharedModule} from '../shared/shared.module'
+import { Module } from '@nestjs/common'
+import { DatabaseModule } from '@/database/database.module'
+import { SharedModule } from '../shared/shared.module'
 
 // Domain
-import {AccountRepositoryPort} from './domain/ports/account-repository.port'
+import { AccountRepositoryPort } from './domain/ports/account-repository.port'
 
 // Application
-import {AccountsApplicationService} from './application/services/accounts-application.service'
-import {CreateAccountUseCase} from './application/use-cases/create-account.use-case'
-import {FindAccountByIdUseCase} from './application/use-cases/find-account-by-id.use-case'
-import {FindAccountsByUserUseCase} from './application/use-cases/find-accounts-by-user.use-case'
-import {SearchAccountsUseCase} from './application/use-cases/search-accounts.use-case'
+import { AccountsApplicationService } from './application/services/accounts-application.service'
+import { CreateAccountUseCase } from './application/use-cases/create-account.use-case'
+import { FindAccountByIdUseCase } from './application/use-cases/find-account-by-id.use-case'
+import { FindAccountsByUserUseCase } from './application/use-cases/find-accounts-by-user.use-case'
+import { SearchAccountsUseCase } from './application/use-cases/search-accounts.use-case'
 
 // Infrastructure
-import {AccountsPrismaRepository} from './infrastructure/repositories/accounts-prisma.repository'
+import { AccountsPrismaRepository } from './infrastructure/repositories/accounts-prisma.repository'
 
 // Interfaces
-import {AccountsResolver} from './interfaces/graphql/resolvers/accounts.resolver'
+import { AccountsResolver } from './interfaces/graphql/resolvers/accounts.resolver'
 
 // Tokens para injeção de dependência
-import {ACCOUNT_REPOSITORY} from './domain/tokens'
+import { ACCOUNT_REPOSITORY } from './domain/tokens'
 
 @Module({
-    imports: [SharedModule,DatabaseModule],
+    imports: [SharedModule, DatabaseModule],
     providers: [
         // Infrastructure Adapters (primeiro para garantir que estão disponíveis)
         {
@@ -47,4 +47,4 @@ import {ACCOUNT_REPOSITORY} from './domain/tokens'
         ACCOUNT_REPOSITORY
     ]
 })
-export class AccountsModule {}
+export class AccountsModule { }
