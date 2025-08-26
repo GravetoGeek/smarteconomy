@@ -1,9 +1,9 @@
-import {Inject,Injectable} from '@nestjs/common'
-import {UserEmailAlreadyExistsException} from '../../domain/exceptions/user-domain.exception'
-import {HashServicePort} from '../../domain/ports/hash-service.port'
-import {UserRepositoryPort} from '../../domain/ports/user-repository.port'
-import {User,UserRole} from '../../domain/user.entity'
-import {HASH_SERVICE,USER_REPOSITORY} from '../../domain/tokens'
+import { Inject, Injectable } from '@nestjs/common'
+import { UserEmailAlreadyExistsException } from '../../domain/exceptions/user-domain.exception'
+import { HashServicePort } from '../../domain/ports/hash-service.port'
+import { UserRepositoryPort } from '../../domain/ports/user-repository.port'
+import { User, UserRole } from '../../domain/user.entity'
+import { HASH_SERVICE, USER_REPOSITORY } from '../../domain/tokens'
 
 export interface CreateUserRequest {
     email: string
@@ -28,20 +28,17 @@ export class CreateUserUseCase {
         private readonly userRepository: UserRepositoryPort,
         @Inject(HASH_SERVICE)
         private readonly hashService: HashServicePort
-    ) {}
+    ) { }
 
     async execute(request: CreateUserRequest): Promise<CreateUserResponse> {
         // Check if user already exists
-        const emailExists=await this.userRepository.existsByEmail(request.email)
-        if(emailExists) {
+        const emailExists = await this.userRepository.existsByEmail(request.email)
+        if (emailExists) {
             throw new UserEmailAlreadyExistsException(request.email)
         }
 
-        // Hash password
-        const hashedPassword=await this.hashService.hash(request.password)
-
-        // Create user entity
-        const user=User.create({
+        // Validate user data by creating entity first (this will validate password complexity)
+        const tempUser = User.create({
             email: request.email,
             name: request.name,
             lastname: request.lastname,
@@ -50,12 +47,32 @@ export class CreateUserUseCase {
             genderId: request.genderId,
             professionId: request.professionId,
             profileId: request.profileId,
-            password: hashedPassword
+            password: request.password // Use original password for validation
+        })
+
+        // Hash password after validation
+        const hashedPassword = await this.hashService.hash(request.password)
+
+        // Create user entity with hashed password
+        const user = User.reconstitute({
+            id: tempUser.id,
+            email: request.email,
+            name: request.name,
+            lastname: request.lastname,
+            birthdate: typeof request.birthdate === 'string' ? new Date(request.birthdate) : request.birthdate,
+            role: request.role,
+            genderId: request.genderId,
+            professionId: request.professionId,
+            profileId: request.profileId,
+            password: hashedPassword,
+            status: tempUser.status,
+            createdAt: tempUser.createdAt,
+            updatedAt: tempUser.updatedAt
         })
 
         // Save to repository
-        const savedUser=await this.userRepository.save(user)
+        const savedUser = await this.userRepository.save(user)
 
-        return {user: savedUser}
+        return { user: savedUser }
     }
 }
