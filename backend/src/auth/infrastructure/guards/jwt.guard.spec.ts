@@ -253,6 +253,10 @@ describe('JwtGuard', () => {
                 getContext: () => ({ req })
             } as any)
 
+            jwtService.verify.mockImplementation(() => {
+                throw new Error('Empty token')
+            })
+
             // Act
             const result = await guard.canActivate(mockContext)
 
