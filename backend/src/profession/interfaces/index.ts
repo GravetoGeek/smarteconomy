@@ -1,3 +1,3 @@
 // GraphQL
-export {ProfessionResolver} from '../graphql/resolvers/profession.resolver';
+export {ProfessionResolver} from './graphql/resolvers/profession.resolver';
 
