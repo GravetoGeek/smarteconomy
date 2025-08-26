@@ -1,11 +1,11 @@
 export enum AccountType {
-    CHECKING='CHECKING',
-    SAVINGS='SAVINGS'
+    CHECKING = 'CHECKING',
+    SAVINGS = 'SAVINGS'
 }
 
 export enum AccountStatus {
-    ACTIVE='ACTIVE',
-    INACTIVE='INACTIVE'
+    ACTIVE = 'ACTIVE',
+    INACTIVE = 'INACTIVE'
 }
 
 export class Account {
@@ -28,34 +28,34 @@ export class Account {
         createdAt?: Date
         updatedAt?: Date
     }) {
-        this._id=props.id||this.generateId()
-        this._name=this.validateName(props.name)
-        this._type=props.type
-        this._balance=props.balance||0
-        this._userId=props.userId
-        this._status=props.status||AccountStatus.ACTIVE
-        this._createdAt=props.createdAt||new Date()
-        this._updatedAt=props.updatedAt||new Date()
+        this._id = props.id || this.generateId()
+        this._name = this.validateName(props.name)
+        this._type = props.type
+        this._balance = props.balance || 0
+        this._userId = props.userId
+        this._status = props.status || AccountStatus.ACTIVE
+        this._createdAt = props.createdAt || new Date()
+        this._updatedAt = props.updatedAt || new Date()
     }
 
     private validateName(name: string): string {
-        if(!name||name.trim().length<2) throw new Error('Nome da conta inválido')
+        if (!name || name.trim().length < 2) throw new Error('Nome da conta inválido')
         return name.trim()
     }
 
     private generateId(): string {
         // simples uuid placeholder
-        return 'acc_'+Math.random().toString(36).slice(2,11)
+        return 'acc_' + Math.random().toString(36).slice(2, 11)
     }
 
-    get id(){return this._id}
-    get name(){return this._name}
-    get type(){return this._type}
-    get balance(){return this._balance}
-    get userId(){return this._userId}
-    get status(){return this._status}
-    get createdAt(){return this._createdAt}
-    get updatedAt(){return this._updatedAt}
+    get id() { return this._id }
+    get name() { return this._name }
+    get type() { return this._type }
+    get balance() { return this._balance }
+    get userId() { return this._userId }
+    get status() { return this._status }
+    get createdAt() { return this._createdAt }
+    get updatedAt() { return this._updatedAt }
 
     static reconstitute(data: any): Account {
         return new Account({
@@ -70,7 +70,7 @@ export class Account {
         })
     }
 
-    toPrisma(){
+    toPrisma() {
         return {
             id: this.id,
             name: this.name,
@@ -83,16 +83,16 @@ export class Account {
         }
     }
 
-    credit(amount: number){
-        if(amount<=0) throw new Error('Valor inválido')
-        this._balance+=amount
-        this._updatedAt=new Date()
+    credit(amount: number) {
+        if (amount <= 0) throw new Error('Valor inválido')
+        this._balance += amount
+        this._updatedAt = new Date()
     }
 
-    debit(amount: number){
-        if(amount<=0) throw new Error('Valor inválido')
-        if(this._balance<amount) throw new Error('Saldo insuficiente')
-        this._balance-=amount
-        this._updatedAt=new Date()
+    debit(amount: number) {
+        if (amount <= 0) throw new Error('Valor inválido')
+        if (this._balance < amount) throw new Error('Saldo insuficiente')
+        this._balance -= amount
+        this._updatedAt = new Date()
     }
 }

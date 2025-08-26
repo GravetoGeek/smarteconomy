@@ -1,11 +1,11 @@
-import {Account} from '../account.entity'
+import { Account } from '../account.entity'
 
 export interface SearchParams {
     page: number
     limit: number
     filter?: string
     sort?: string
-    sortDirection?: 'asc'|'desc'
+    sortDirection?: 'asc' | 'desc'
 }
 
 export interface SearchResult {
@@ -21,7 +21,7 @@ export interface AccountRepositoryPort {
     readonly sortableFields: string[]
 
     save(account: Account): Promise<Account>
-    findById(id: string): Promise<Account|null>
+    findById(id: string): Promise<Account | null>
     findAllByUser(userId: string): Promise<Account[]>
     delete(id: string): Promise<void>
 
