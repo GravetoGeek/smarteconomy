@@ -2,13 +2,13 @@ import {LoggerService} from '@/shared/services/logger.service'
 import {Args,Mutation,Query,Resolver} from '@nestjs/graphql'
 import {UsersApplicationService} from '../../../application/services/users-application.service'
 import {UserRole} from '../../../domain/user.entity'
-import {CreateUserInput} from '../../../graphql/inputs/create-user.input'
-import {SearchUsersInput} from '../../../graphql/inputs/search-users.input'
-import {UpdateUserInput} from '../../../graphql/inputs/update-user.input'
-import {DeleteUserResponse} from '../../../graphql/models/delete-user-response.model'
-import {SearchResult} from '../../../graphql/models/search-result.model'
-import {UpdateUserResponse} from '../../../graphql/models/update-user-response.model'
-import {User} from '../../../graphql/models/User'
+import {CreateUserInput} from '../inputs/create-user.input'
+import {SearchUsersInput} from '../inputs/search-users.input'
+import {UpdateUserInput} from '../inputs/update-user.input'
+import {DeleteUserResponse} from '../models/delete-user-response.model'
+import {SearchResult} from '../models/search-result.model'
+import {UpdateUserResponse} from '../models/update-user-response.model'
+import {User} from '../models/User'
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -118,10 +118,10 @@ export class UsersResolver {
 
             if(user) {
                 this.loggerService.logOperation('GRAPHQL_UPDATE_USER_SUCCESS',{id: user.id,email: user.email},'UsersResolver')
-                return {user,success: true}
+                return {user,success: true,message: 'User updated successfully'}
             } else {
                 this.loggerService.logOperation('GRAPHQL_UPDATE_USER_NOT_FOUND',{id},'UsersResolver')
-                return {user: null,success: false}
+                return {user: null,success: false,message: 'User not found'}
             }
         } catch(error) {
             this.loggerService.logError('GRAPHQL_UPDATE_USER_ERROR',error,'UsersResolver')
@@ -141,7 +141,7 @@ export class UsersResolver {
                 this.loggerService.logOperation('GRAPHQL_DELETE_USER_NOT_FOUND',{id},'UsersResolver')
             }
 
-            return {success}
+            return {success,message: success ? 'User deleted successfully' : 'User not found'}
         } catch(error) {
             this.loggerService.logError('GRAPHQL_DELETE_USER_ERROR',error,'UsersResolver')
             throw error
