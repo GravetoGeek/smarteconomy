@@ -94,7 +94,7 @@ type SearchResult {
 
 type UpdateUserResponse {
   success: Boolean!
-  user: User!
+  user: User
   message: String!
 }
 
@@ -110,8 +110,18 @@ type Query {
   gender(id: String!): GenderModel!
   professions: [ProfessionModel!]!
   profession(id: String!): ProfessionModel!
+  searchTransactions(userId: String!, filters: String, sortBy: String, sortOrder: String, page: Float, limit: Float): String!
+  transactionById(id: String!): String
+  transactionsByAccount(accountId: String!): [String!]!
+  transactionSummary(accountId: String!, dateFrom: String!, dateTo: String!): String!
   categories: [Category!]!
   category(id: String!): Category!
+  dashboardMetrics(userId: String!, period: String, dateFrom: String, dateTo: String, accountIds: [String!], categoryIds: [String!]): String!
+  financialTrends(userId: String!, months: Float): String!
+  accountsSummary(userId: String!): String!
+  financialAlerts(userId: String!): String!
+  categoryAnalysis(userId: String!, period: String): String!
+  periodComparison(userId: String!, period: String!): String!
   validateToken(input: ValidateTokenInput!): ValidateTokenResponse!
 }
 
