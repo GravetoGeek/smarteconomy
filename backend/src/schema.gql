@@ -146,6 +146,7 @@ type Mutation {
   createProfession(input: CreateProfessionInput!): ProfessionModel!
   createCategory(input: CreateCategoryInput!): Category!
   login(input: LoginInput!): AuthResponse!
+  signup(input: SignupInput!): AuthResponse!
   refreshToken(input: RefreshTokenInput!): AuthResponse!
   logout(input: LogoutInput!): LogoutResponse!
 }
@@ -196,6 +197,16 @@ input CreateCategoryInput {
 input LoginInput {
   email: String!
   password: String!
+}
+
+input SignupInput {
+  email: String!
+  password: String!
+  name: String!
+  lastname: String!
+  birthdate: String!
+  genderId: String!
+  professionId: String!
 }
 
 input RefreshTokenInput {
