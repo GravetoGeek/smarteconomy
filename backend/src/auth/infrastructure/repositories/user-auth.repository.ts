@@ -4,7 +4,7 @@ import { UserRepositoryPort, UserAuthData, CreateUserData } from '../../domain/p
 
 @Injectable()
 export class UserAuthRepository implements UserRepositoryPort {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(private readonly prisma: PrismaService) { }
 
     async findByEmail(email: string): Promise<UserAuthData | null> {
         const user = await this.prisma.user.findUnique({

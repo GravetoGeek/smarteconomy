@@ -46,7 +46,7 @@ export class SignupUseCase {
         private readonly hashService: HashServicePort,
         @Inject(JWT_SERVICE)
         private readonly jwtService: JwtServicePort
-    ) {}
+    ) { }
 
     async execute(request: SignupRequest): Promise<SignupResponse> {
         const { email, password, name, lastname, birthdate, genderId, professionId } = request

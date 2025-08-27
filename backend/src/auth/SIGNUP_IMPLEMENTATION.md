@@ -124,7 +124,7 @@ src/auth/
 
 ---
 
-✅ **Status**: Implementação completa e funcional  
-🏗️ **Arquitetura**: DDD + Hexagonal  
-🔧 **Framework**: NestJS 11 + GraphQL  
+✅ **Status**: Implementação completa e funcional
+🏗️ **Arquitetura**: DDD + Hexagonal
+🔧 **Framework**: NestJS 11 + GraphQL
 📦 **Versão**: v2.0.0
