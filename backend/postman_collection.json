@@ -108,6 +108,44 @@
                     }
                 },
                 {
+                    "name": "Signup",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const response = pm.response.json();",
+                                    "    if (response.data && response.data.signup) {",
+                                    "        pm.collectionVariables.set('access_token', response.data.signup.accessToken);",
+                                    "        pm.collectionVariables.set('refresh_token', response.data.signup.refreshToken);",
+                                    "        pm.collectionVariables.set('user_id', response.data.signup.user.id);",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation Signup($input: SignupInput!) { signup(input: $input) { accessToken refreshToken expiresIn tokenType user { id email role } } }\",\n  \"variables\": {\n    \"input\": {\n      \"email\": \"newuser@smarteconomy.com\",\n      \"password\": \"NewUser123!\",\n      \"name\": \"Novo\",\n      \"lastname\": \"Usuário\",\n      \"birthdate\": \"1990-01-01T00:00:00.000Z\",\n      \"genderId\": \"123e4567-e89b-12d3-a456-426614174000\",\n      \"professionId\": \"123e4567-e89b-12d3-a456-426614174001\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Criar nova conta de usuário"
+                    }
+                },
+                {
                     "name": "Refresh Token",
                     "event": [
                         {
@@ -663,396 +701,6 @@
             ]
         },
         {
-            "name": "� Transactions",
-            "description": "Gestão completa de transações financeiras",
-            "item": [
-                {
-                    "name": "Search Transactions",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"query SearchTransactions($userId: String!, $filters: String, $sortBy: String, $sortOrder: String, $page: Float, $limit: Float) { searchTransactions(userId: $userId, filters: $filters, sortBy: $sortBy, sortOrder: $sortOrder, page: $page, limit: $limit) }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\",\n    \"filters\": \"{\\\"type\\\": [\\\"INCOME\\\", \\\"EXPENSE\\\"], \\\"dateFrom\\\": \\\"2024-01-01\\\", \\\"dateTo\\\": \\\"2024-12-31\\\"}\",\n    \"sortBy\": \"date\",\n    \"sortOrder\": \"DESC\",\n    \"page\": 1,\n    \"limit\": 20\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Buscar transações com filtros avançados"
-                    }
-                },
-                {
-                    "name": "Get Transaction by ID",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"query GetTransactionById($id: String!) { transactionById(id: $id) }\",\n  \"variables\": {\n    \"id\": \"SUBSTITUIR_POR_TRANSACTION_ID\"\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Buscar transação específica por ID"
-                    }
-                },
-                {
-                    "name": "Get Transactions by Account",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"query GetTransactionsByAccount($accountId: String!) { transactionsByAccount(accountId: $accountId) }\",\n  \"variables\": {\n    \"accountId\": \"{{account_id}}\"\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Buscar todas as transações de uma conta específica"
-                    }
-                },
-                {
-                    "name": "Get Transaction Summary",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"query GetTransactionSummary($accountId: String!, $dateFrom: String!, $dateTo: String!) { transactionSummary(accountId: $accountId, dateFrom: $dateFrom, dateTo: $dateTo) }\",\n  \"variables\": {\n    \"accountId\": \"{{account_id}}\",\n    \"dateFrom\": \"2024-01-01\",\n    \"dateTo\": \"2024-12-31\"\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Obter resumo financeiro de uma conta em período específico"
-                    }
-                },
-                {
-                    "name": "Create Income Transaction",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"mutation CreateTransaction($input: CreateTransactionInput!) { createTransaction(input: $input) { id description amount type accountId categoryId status date createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"description\": \"Salário mensal\",\n      \"amount\": 5000.00,\n      \"type\": \"INCOME\",\n      \"accountId\": \"{{account_id}}\",\n      \"categoryId\": \"SUBSTITUIR_POR_CATEGORY_ID\",\n      \"date\": \"2024-03-01T00:00:00Z\"\n    }\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Criar transação de receita"
-                    }
-                },
-                {
-                    "name": "Create Expense Transaction",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"mutation CreateTransaction($input: CreateTransactionInput!) { createTransaction(input: $input) { id description amount type accountId categoryId status date createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"description\": \"Compras no supermercado\",\n      \"amount\": 350.75,\n      \"type\": \"EXPENSE\",\n      \"accountId\": \"{{account_id}}\",\n      \"categoryId\": \"SUBSTITUIR_POR_CATEGORY_ID\",\n      \"date\": \"2024-03-15T14:30:00Z\"\n    }\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Criar transação de despesa"
-                    }
-                },
-                {
-                    "name": "Create Transfer Transaction",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"mutation CreateTransaction($input: CreateTransactionInput!) { createTransaction(input: $input) { id description amount type accountId destinationAccountId categoryId status date createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"description\": \"Transferência para poupança\",\n      \"amount\": 1000.00,\n      \"type\": \"TRANSFER\",\n      \"accountId\": \"{{account_id}}\",\n      \"destinationAccountId\": \"SUBSTITUIR_POR_DESTINATION_ACCOUNT_ID\",\n      \"categoryId\": \"SUBSTITUIR_POR_CATEGORY_ID\",\n      \"date\": \"2024-03-20T10:00:00Z\"\n    }\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Criar transação de transferência entre contas"
-                    }
-                },
-                {
-                    "name": "Update Transaction",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"mutation UpdateTransaction($id: String!, $input: UpdateTransactionInput!) { updateTransaction(id: $id, input: $input) { id description status updatedAt } }\",\n  \"variables\": {\n    \"id\": \"SUBSTITUIR_POR_TRANSACTION_ID\",\n    \"input\": {\n      \"description\": \"Compras no supermercado - atualizado\",\n      \"status\": \"COMPLETED\"\n    }\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Atualizar transação existente"
-                    }
-                },
-                {
-                    "name": "Complete Transaction",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"mutation CompleteTransaction($id: String!) { completeTransaction(id: $id) { id status updatedAt } }\",\n  \"variables\": {\n    \"id\": \"SUBSTITUIR_POR_TRANSACTION_ID\"\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Completar transação pendente"
-                    }
-                },
-                {
-                    "name": "Cancel Transaction",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"mutation CancelTransaction($id: String!) { cancelTransaction(id: $id) { id status updatedAt } }\",\n  \"variables\": {\n    \"id\": \"SUBSTITUIR_POR_TRANSACTION_ID\"\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Cancelar transação pendente"
-                    }
-                },
-                {
-                    "name": "Reverse Transaction",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"mutation ReverseTransaction($id: String!, $reason: String) { reverseTransaction(id: $id, reason: $reason) { id status updatedAt } }\",\n  \"variables\": {\n    \"id\": \"SUBSTITUIR_POR_TRANSACTION_ID\",\n    \"reason\": \"Pagamento duplicado\"\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Reverter transação completada (até 30 dias)"
-                    }
-                }
-            ]
-        },
-        {
-            "name": "📊 Dashboards",
-            "description": "Métricas e análises financeiras",
-            "item": [
-                {
-                    "name": "Get Dashboard Metrics",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"query GetDashboardMetrics($userId: String!, $period: String, $dateFrom: String, $dateTo: String, $accountIds: [String!], $categoryIds: [String!]) { dashboardMetrics(userId: $userId, period: $period, dateFrom: $dateFrom, dateTo: $dateTo, accountIds: $accountIds, categoryIds: $categoryIds) }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\",\n    \"period\": \"month\",\n    \"accountIds\": [],\n    \"categoryIds\": []\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Obter métricas completas do dashboard financeiro"
-                    }
-                },
-                {
-                    "name": "Get Financial Trends",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"query GetFinancialTrends($userId: String!, $months: Float) { financialTrends(userId: $userId, months: $months) }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\",\n    \"months\": 6\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Analisar tendências financeiras dos últimos meses"
-                    }
-                },
-                {
-                    "name": "Get Accounts Summary",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"query GetAccountsSummary($userId: String!) { accountsSummary(userId: $userId) }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\"\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Obter resumo consolidado de todas as contas"
-                    }
-                },
-                {
-                    "name": "Get Financial Alerts",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"query GetFinancialAlerts($userId: String!) { financialAlerts(userId: $userId) }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\"\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Obter alertas e notificações financeiras inteligentes"
-                    }
-                },
-                {
-                    "name": "Get Category Analysis",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"query GetCategoryAnalysis($userId: String!, $period: String) { categoryAnalysis(userId: $userId, period: $period) }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\",\n    \"period\": \"month\"\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Análise detalhada de gastos por categoria"
-                    }
-                },
-                {
-                    "name": "Get Period Comparison",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"query GetPeriodComparison($userId: String!, $period: String!) { periodComparison(userId: $userId, period: $period) }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\",\n    \"period\": \"month\"\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Comparar métricas entre períodos atual e anterior"
-                    }
-                },
-                {
-                    "name": "Dashboard Custom Period",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"query GetDashboardCustomPeriod($userId: String!, $dateFrom: String, $dateTo: String, $accountIds: [String!], $categoryIds: [String!]) { dashboardMetrics(userId: $userId, dateFrom: $dateFrom, dateTo: $dateTo, accountIds: $accountIds, categoryIds: $categoryIds) }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\",\n    \"dateFrom\": \"2024-01-01\",\n    \"dateTo\": \"2024-12-31\",\n    \"accountIds\": [],\n    \"categoryIds\": []\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Dashboard com período customizado e filtros específicos"
-                    }
-                }
-            ]
-        },
-        {
             "name": "📂 Categories",
             "description": "Gestão de categorias",
             "item": [
@@ -1099,7 +747,7 @@
                     }
                 },
                 {
-                    "name": "Create Category - Alimentação",
+                    "name": "Create Category",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -1116,98 +764,14 @@
                             "raw": "{{graphql_endpoint}}",
                             "host": ["{{graphql_endpoint}}"]
                         },
-                        "description": "Criar categoria Alimentação"
-                    }
-                },
-                {
-                    "name": "Create Category - Transporte",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"mutation CreateCategory($input: CreateCategoryInput!) { createCategory(input: $input) { id category createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"category\": \"Transporte\"\n    }\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Criar categoria Transporte"
-                    }
-                },
-                {
-                    "name": "Create Category - Moradia",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"mutation CreateCategory($input: CreateCategoryInput!) { createCategory(input: $input) { id category createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"category\": \"Moradia\"\n    }\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Criar categoria Moradia"
-                    }
-                },
-                {
-                    "name": "Create Category - Lazer",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"mutation CreateCategory($input: CreateCategoryInput!) { createCategory(input: $input) { id category createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"category\": \"Lazer\"\n    }\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Criar categoria Lazer"
-                    }
-                },
-                {
-                    "name": "Create Category - Transferência",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"mutation CreateCategory($input: CreateCategoryInput!) { createCategory(input: $input) { id category createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"category\": \"Transferência\"\n    }\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Criar categoria Transferência"
+                        "description": "Criar nova categoria"
                     }
                 }
             ]
         },
         {
             "name": "🎯 Complete Workflow Examples",
-            "description": "Exemplos de fluxos completos da aplicação SmartEconomy",
+            "description": "Exemplos de fluxos completos da aplicação",
             "item": [
                 {
                     "name": "Setup: Get Support Data",
@@ -1242,7 +806,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"query\": \"query CompleteUserData($userId: String!) { userById(id: $userId) { id email name lastname role status createdAt } accountsByUser(userId: $userId) { id name type balance status createdAt } }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\"\n  }\n}"
+                            "raw": "{\n  \"query\": \"query CompleteUserData($userId: String!) { userById(id: $userId) { id email name lastname role status createdAt } accountsByUser(userId: $userId) { id name type balance createdAt } }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\"\n  }\n}"
                         },
                         "url": {
                             "raw": "{{graphql_endpoint}}",
@@ -1263,97 +827,13 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"query\": \"query FinancialOverview($userId: String!) { accountsByUser(userId: $userId) { id name type balance status } dashboardMetrics(userId: $userId, period: \\\"month\\\") accountsSummary(userId: $userId) financialAlerts(userId: $userId) }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\"\n  }\n}"
+                            "raw": "{\n  \"query\": \"query FinancialOverview($userId: String!) { accountsByUser(userId: $userId) { id name type balance status } }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\"\n  }\n}"
                         },
                         "url": {
                             "raw": "{{graphql_endpoint}}",
                             "host": ["{{graphql_endpoint}}"]
                         },
-                        "description": "Visão geral financeira completa do usuário"
-                    }
-                },
-                {
-                    "name": "Monthly Financial Report",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"query MonthlyReport($userId: String!, $accountId: String!) { dashboardMetrics(userId: $userId, period: \\\"month\\\") categoryAnalysis(userId: $userId, period: \\\"month\\\") financialTrends(userId: $userId, months: 3) transactionSummary(accountId: $accountId, dateFrom: \\\"2024-01-01\\\", dateTo: \\\"2024-12-31\\\") periodComparison(userId: $userId, period: \\\"month\\\") }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\",\n    \"accountId\": \"{{account_id}}\"\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Relatório financeiro completo mensal"
-                    }
-                },
-                {
-                    "name": "Transaction Workflow",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"query TransactionWorkflow($userId: String!, $accountId: String!) { searchTransactions(userId: $userId, filters: \\\"{\\\\\\\"status\\\\\\\": [\\\\\\\"PENDING\\\\\\\"], \\\\\\\"type\\\\\\\": [\\\\\\\"EXPENSE\\\\\\\"]}\\\", page: 1, limit: 10) transactionsByAccount(accountId: $accountId) transactionSummary(accountId: $accountId, dateFrom: \\\"2024-01-01\\\", dateTo: \\\"2024-12-31\\\") }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\",\n    \"accountId\": \"{{account_id}}\"\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Fluxo completo de gestão de transações"
-                    }
-                },
-                {
-                    "name": "Analytics Dashboard Data",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"query AnalyticsDashboard($userId: String!) { financialTrends(userId: $userId, months: 12) categoryAnalysis(userId: $userId, period: \\\"year\\\") periodComparison(userId: $userId, period: \\\"quarter\\\") financialAlerts(userId: $userId) }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\"\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Dados completos para dashboard de analytics"
-                    }
-                },
-                {
-                    "name": "Account Management Flow",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"query\": \"query AccountManagement($userId: String!, $accountId: String!) { accountsByUser(userId: $userId) { id name type balance status lastTransaction: updatedAt } accountById(id: $accountId) { id name type balance status createdAt updatedAt } transactionsByAccount(accountId: $accountId) }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\",\n    \"accountId\": \"{{account_id}}\"\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{graphql_endpoint}}",
-                            "host": ["{{graphql_endpoint}}"]
-                        },
-                        "description": "Fluxo completo de gestão de contas"
+                        "description": "Visão geral financeira do usuário"
                     }
                 }
             ]
