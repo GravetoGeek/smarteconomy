@@ -68,21 +68,100 @@ export class User {
 export class Transaction {
     private readonly _id: string
     private readonly _amount: Money
+    private readonly _type: TransactionType
     private readonly _category: Category
     private readonly _date: TransactionDate
     private _status: TransactionStatus
 
     // Regras de negócio específicas do contexto financeiro
     isExpense(): boolean {
-        return this._amount.isNegative()
+        return this._type === TransactionType.EXPENSE
     }
 
     isIncome(): boolean {
-        return this._amount.isPositive()
+        return this._type === TransactionType.INCOME
+    }
+
+    isTransfer(): boolean {
+        return this._type === TransactionType.TRANSFER
     }
 
     canBeReversed(): boolean {
-        return this._status === TransactionStatus.COMPLETED
+        return this._status === TransactionStatus.COMPLETED &&
+            this.daysSinceCreation() <= 30
+    }
+
+    canBeCompleted(): boolean {
+        return this._status === TransactionStatus.PENDING
+    }
+
+    canBeCancelled(): boolean {
+        return this._status === TransactionStatus.PENDING ||
+            this._status === TransactionStatus.FAILED
+    }
+}
+
+export class Account {
+    private readonly _id: string
+    private _name: string
+    private readonly _type: AccountType
+    private _balance: Money
+    private readonly _userId: string
+    private _status: AccountStatus
+
+    // Regras de negócio específicas das contas
+    canReceiveDeposit(): boolean {
+        return this._status === AccountStatus.ACTIVE &&
+            this._type !== AccountType.CREDIT_CARD
+    }
+
+    canMakeWithdrawal(amount: Money): boolean {
+        return this._status === AccountStatus.ACTIVE &&
+            this.hasEnoughBalance(amount)
+    }
+
+    hasEnoughBalance(amount: Money): boolean {
+        if (this._type === AccountType.CREDIT_CARD) {
+            return this._balance.add(amount).getValue() <= this.getCreditLimit()
+        }
+        return this._balance.isGreaterThanOrEqual(amount)
+    }
+}
+```
+
+#### **Dashboard Context**
+```typescript
+// Bounded Context: Financial Analytics
+export class DashboardMetrics {
+    private readonly _userId: string
+    private readonly _period: TimePeriod
+    private readonly _totalBalance: Money
+    private readonly _totalIncome: Money
+    private readonly _totalExpenses: Money
+    private readonly _expensesByCategory: CategoryExpense[]
+
+    // Regras de negócio específicas do contexto de analytics
+    getNetWorth(): Money {
+        return this._totalIncome.subtract(this._totalExpenses)
+    }
+
+    getMonthlyGrowth(): number {
+        // Lógica específica para cálculo de crescimento
+        return this.calculateGrowthPercentage()
+    }
+
+    getFinancialHealth(): FinancialHealthScore {
+        const savings = this.getSavingsRate()
+        const debt = this.getDebtRatio()
+        const emergency = this.getEmergencyFundRatio()
+
+        return FinancialHealthScore.calculate(savings, debt, emergency)
+    }
+
+    getSpendingTrends(): SpendingTrend[] {
+        return this._expensesByCategory.map(category =>
+            SpendingTrend.fromCategoryExpense(category)
+        )
     }
 }
 ```
@@ -136,6 +215,42 @@ export class User {
         this.validateGenderReference(props.genderId)
         this.validateProfessionReference(props.professionId)
     }
+}
+
+// Financial Context depende de Users Context
+export class Account {
+    constructor(props: {
+        // ... outros campos
+        userId: string        // Referência ao Users Context
+    }) {
+        this.validateUserReference(props.userId)
+    }
+}
+
+// Transactions Context depende de Accounts e Categories Context
+export class Transaction {
+    constructor(props: {
+        // ... outros campos
+        accountId: string     // Referência ao Accounts Context
+        categoryId: string    // Referência ao Categories Context
+        destinationAccountId?: string // Para transferências
+    }) {
+        this.validateAccountReference(props.accountId)
+        this.validateCategoryReference(props.categoryId)
+        if (props.destinationAccountId) {
+            this.validateDestinationAccount(props.destinationAccountId)
+        }
+    }
+}
+
+// Dashboard Context depende de múltiplos contextos
+export class DashboardMetrics {
+    constructor(
+        private readonly userId: string,           // Users Context
+        private readonly accountService: any,     // Accounts Context
+        private readonly transactionService: any, // Transactions Context
+        private readonly categoryService: any     // Categories Context
+    ) {}
 }
 ```
 
@@ -191,7 +306,154 @@ export class Email {
 }
 ```
 
-#### **Password Value Object**
+#### **TransactionAmount Value Object**
+```typescript
+// domain/value-objects/transaction-amount.vo.ts
+export class TransactionAmount {
+    private readonly value: number
+
+    constructor(amount: number) {
+        this.validate(amount)
+        this.value = Math.round(amount * 100) / 100 // Garantir 2 casas decimais
+    }
+
+    private validate(amount: number): void {
+        if (amount <= 0) {
+            throw new Error('Transaction amount must be positive')
+        }
+
+        if (amount > 999999.99) {
+            throw new Error('Transaction amount exceeds maximum limit')
+        }
+
+        if (!Number.isFinite(amount)) {
+            throw new Error('Transaction amount must be a valid number')
+        }
+    }
+
+    getValue(): number {
+        return this.value
+    }
+
+    // Métodos de negócio específicos para transações
+    isLarge(): boolean {
+        return this.value > 10000
+    }
+
+    isMicro(): boolean {
+        return this.value < 1
+    }
+
+    getFormattedValue(currency: string = 'BRL'): string {
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: currency
+        }).format(this.value)
+    }
+
+    multiply(factor: number): TransactionAmount {
+        return new TransactionAmount(this.value * factor)
+    }
+
+    add(other: TransactionAmount): TransactionAmount {
+        return new TransactionAmount(this.value + other.value)
+    }
+
+    subtract(other: TransactionAmount): TransactionAmount {
+        return new TransactionAmount(this.value - other.value)
+    }
+
+    equals(other: TransactionAmount): boolean {
+        return this.value === other.value
+    }
+
+    isGreaterThan(other: TransactionAmount): boolean {
+        return this.value > other.value
+    }
+
+    isLessThan(other: TransactionAmount): boolean {
+        return this.value < other.value
+    }
+}
+```
+
+#### **AccountBalance Value Object**
+```typescript
+// domain/value-objects/account-balance.vo.ts
+export class AccountBalance {
+    private readonly value: number
+    private readonly accountType: AccountType
+
+    constructor(balance: number, accountType: AccountType) {
+        this.accountType = accountType
+        this.validate(balance)
+        this.value = Math.round(balance * 100) / 100
+    }
+
+    private validate(balance: number): void {
+        if (!Number.isFinite(balance)) {
+            throw new Error('Balance must be a valid number')
+        }
+
+        // Contas de crédito podem ter saldo negativo
+        if (this.accountType !== AccountType.CREDIT_CARD && balance < 0) {
+            throw new Error('Balance cannot be negative for this account type')
+        }
+
+        if (Math.abs(balance) > 9999999.99) {
+            throw new Error('Balance exceeds maximum limit')
+        }
+    }
+
+    getValue(): number {
+        return this.value
+    }
+
+    isPositive(): boolean {
+        return this.value > 0
+    }
+
+    isNegative(): boolean {
+        return this.value < 0
+    }
+
+    isZero(): boolean {
+        return this.value === 0
+    }
+
+    // Métodos específicos para diferentes tipos de conta
+    isLowBalance(): boolean {
+        if (this.accountType === AccountType.CHECKING) {
+            return this.value < 100
+        }
+        if (this.accountType === AccountType.SAVINGS) {
+            return this.value < 500
+        }
+        return false
+    }
+
+    canCoverAmount(amount: TransactionAmount): boolean {
+        if (this.accountType === AccountType.CREDIT_CARD) {
+            // Para cartão de crédito, verificar limite disponível
+            return Math.abs(this.value) + amount.getValue() <= this.getCreditLimit()
+        }
+        return this.value >= amount.getValue()
+    }
+
+    add(amount: TransactionAmount): AccountBalance {
+        return new AccountBalance(this.value + amount.getValue(), this.accountType)
+    }
+
+    subtract(amount: TransactionAmount): AccountBalance {
+        return new AccountBalance(this.value - amount.getValue(), this.accountType)
+    }
+
+    private getCreditLimit(): number {
+        // Lógica para obter limite do cartão de crédito
+        return 5000 // Exemplo
+    }
+}
+```
 ```typescript
 // domain/value-objects/password.vo.ts
 export class Password {
@@ -324,6 +586,65 @@ export class Birthdate {
         const diffTime = birthday.getTime() - today.getTime()
         return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
     }
+}
+```
+
+#### **Password Value Object**
+```typescript
+// domain/value-objects/password.vo.ts
+export class Password {
+    private readonly value: string
+
+    constructor(value: string) {
+        this.validatePassword(value)
+        this.value = value
+    }
+
+    private validatePassword(password: string): void {
+        if (!password || password.length < 6) {
+            throw new InvalidPasswordException('Senha deve ter no mínimo 6 caracteres')
+        }
+
+        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+            throw new InvalidPasswordException('Senha deve ter ao menos 1 letra maiúscula, 1 minúscula e 1 número')
+        }
+    }
+
+    getHashed(): string {
+        return bcrypt.hashSync(this.value, 10)
+    }
+
+    equals(other: Password): boolean {
+        return this.value === other.value
+    }
+
+    getValue(): string {
+        return this.value
+    }
+
+    getStrength(): PasswordStrength {
+        let score = 0
+
+        if (this.value.length >= 8) score++
+        if (/[a-z]/.test(this.value)) score++
+        if (/[A-Z]/.test(this.value)) score++
+        if (/\d/.test(this.value)) score++
+        if (/[^a-zA-Z0-9]/.test(this.value)) score++
+
+        if (score < 3) return PasswordStrength.WEAK
+        if (score < 4) return PasswordStrength.MEDIUM
+        return PasswordStrength.STRONG
+    }
+
+    isStrong(): boolean {
+        return this.getStrength() === PasswordStrength.STRONG
+    }
+}
+
+enum PasswordStrength {
+    WEAK = 'weak',
+    MEDIUM = 'medium',
+    STRONG = 'strong'
 }
 ```
 
@@ -729,10 +1050,78 @@ src/users/
 ├── 📁 application/               # 📋 Use Cases
 ├── 📁 infrastructure/            # 🔧 Implementações
 └── 📁 interfaces/                # 🌐 APIs
+
+src/transactions/
+├── 📁 domain/                    # 🎯 Core Domain
+│   ├── 📁 entities/             # 🏗️ Entidades principais
+│   │   └── transaction.entity.ts # Entidade Transaction
+│   ├── 📁 value-objects/        # 💎 Objetos de valor
+│   │   ├── transaction-amount.vo.ts # Valor da transação
+│   │   └── transaction-date.vo.ts   # Data da transação
+│   ├── 📁 services/             # 🔧 Serviços de domínio
+│   │   └── transaction-domain.service.ts
+│   ├── 📁 events/               # 📢 Eventos de domínio
+│   │   ├── transaction-created.event.ts
+│   │   └── transaction-completed.event.ts
+│   ├── 📁 exceptions/           # ⚠️ Exceções de domínio
+│   │   └── transaction-domain.exception.ts
+│   └── 📁 ports/                # 🔌 Contratos (interfaces)
+│       ├── transaction-repository.port.ts
+│       └── account-service.port.ts
+├── 📁 application/               # 📋 Use Cases
+│   ├── 📁 use-cases/            # Casos de uso específicos
+│   │   ├── create-transaction.use-case.ts
+│   │   ├── search-transactions.use-case.ts
+│   │   ├── update-transaction.use-case.ts
+│   │   ├── reverse-transaction.use-case.ts
+│   │   └── get-transaction-summary.use-case.ts
+│   └── 📁 services/             # Application Services
+├── 📁 infrastructure/            # 🔧 Implementações
+└── 📁 interfaces/                # 🌐 APIs
+
+src/accounts/
+├── 📁 domain/                    # 🎯 Core Domain
+│   ├── 📁 entities/             # 🏗️ Entidades principais
+│   │   └── account.entity.ts    # Entidade Account
+│   ├── 📁 value-objects/        # 💎 Objetos de valor
+│   │   ├── account-balance.vo.ts # Saldo da conta
+│   │   └── account-name.vo.ts   # Nome da conta
+│   ├── 📁 services/             # 🔧 Serviços de domínio
+│   │   └── account-balance.service.ts
+│   ├── 📁 events/               # 📢 Eventos de domínio
+│   │   ├── account-created.event.ts
+│   │   └── balance-updated.event.ts
+│   └── 📁 ports/                # 🔌 Contratos (interfaces)
+│       └── account-repository.port.ts
+├── 📁 application/               # 📋 Use Cases
+├── 📁 infrastructure/            # 🔧 Implementações
+└── 📁 interfaces/                # 🌐 APIs
+
+src/dashboards/
+├── 📁 domain/                    # 🎯 Core Domain
+│   ├── 📁 entities/             # 🏗️ Entidades principais
+│   │   └── financial-metrics.entity.ts
+│   ├── 📁 value-objects/        # 💎 Objetos de valor
+│   │   ├── period.vo.ts         # Período de análise
+│   │   └── growth-rate.vo.ts    # Taxa de crescimento
+│   ├── 📁 services/             # 🔧 Serviços de domínio
+│   │   └── dashboard-domain.service.ts
+│   └── 📁 ports/                # 🔌 Contratos (interfaces)
+│       ├── metrics-calculator.port.ts
+│       └── trend-analyzer.port.ts
+├── 📁 application/               # 📋 Use Cases
+│   ├── 📁 use-cases/            # Casos de uso específicos
+│   │   ├── get-dashboard-metrics.use-case.ts
+│   │   ├── get-financial-trends.use-case.ts
+│   │   └── get-financial-alerts.use-case.ts
+│   └── 📁 services/             # Application Services
+├── 📁 infrastructure/            # 🔧 Implementações
+└── 📁 interfaces/                # 🌐 APIs
 ```
 
 ### **2. Use Cases com DDD**
 
+#### **User Use Case**
 ```typescript
 // application/use-cases/create-user.use-case.ts
 @Injectable()
@@ -775,6 +1164,124 @@ export class CreateUserUseCase {
         this.eventBus.publish(UserCreatedEvent.fromUser(savedUser))
 
         return { user: savedUser }
+    }
+}
+```
+
+#### **Transaction Use Case**
+```typescript
+// application/use-cases/create-transaction.use-case.ts
+@Injectable()
+export class CreateTransactionUseCase {
+    constructor(
+        @Inject(TRANSACTION_REPOSITORY)
+        private readonly transactionRepository: TransactionRepositoryPort,
+        @Inject(ACCOUNT_SERVICE)
+        private readonly accountService: AccountServicePort,
+        private readonly eventBus: EventBus
+    ) {}
+
+    async execute(request: CreateTransactionRequest): Promise<CreateTransactionResponse> {
+        // Validação da conta
+        const account = await this.accountService.findById(request.accountId)
+        if (!account) {
+            throw new AccountNotFoundException(request.accountId)
+        }
+
+        // Validação de saldo para despesas
+        if (request.amount < 0 && account.balance + request.amount < 0) {
+            throw new InsufficientBalanceException(account.id)
+        }
+
+        // Criação da transação (DDD)
+        const transaction = Transaction.create({
+            amount: new TransactionAmount(request.amount),
+            description: request.description,
+            accountId: request.accountId,
+            categoryId: request.categoryId,
+            type: request.amount > 0 ? TransactionType.INCOME : TransactionType.EXPENSE,
+            status: TransactionStatus.COMPLETED,
+            destinationAccountId: request.destinationAccountId
+        })
+
+        // Persistência
+        const savedTransaction = await this.transactionRepository.save(transaction)
+
+        // Atualização do saldo da conta
+        await this.accountService.updateBalance(
+            account.id,
+            account.balance + request.amount
+        )
+
+        // Publicação de evento
+        this.eventBus.publish(TransactionCreatedEvent.fromTransaction(savedTransaction))
+
+        return { transaction: savedTransaction }
+    }
+}
+```
+
+#### **Dashboard Use Case**
+```typescript
+// application/use-cases/get-dashboard-metrics.use-case.ts
+@Injectable()
+export class GetDashboardMetricsUseCase {
+    constructor(
+        @Inject(TRANSACTION_REPOSITORY)
+        private readonly transactionRepository: TransactionRepositoryPort,
+        @Inject(ACCOUNT_SERVICE)
+        private readonly accountService: AccountServicePort,
+        private readonly metricsCalculator: MetricsCalculatorPort,
+        private readonly trendAnalyzer: TrendAnalyzerPort
+    ) {}
+
+    async execute(request: GetDashboardMetricsRequest): Promise<GetDashboardMetricsResponse> {
+        // Buscar dados financeiros
+        const accounts = await this.accountService.findByUserId(request.userId)
+        const transactions = await this.transactionRepository.findByUserIdAndPeriod(
+            request.userId,
+            request.startDate,
+            request.endDate
+        )
+
+        // Calcular métricas financeiras
+        const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0)
+        const totalIncome = transactions
+            .filter(t => t.amount > 0)
+            .reduce((sum, t) => sum + t.amount, 0)
+        const totalExpenses = transactions
+            .filter(t => t.amount < 0)
+            .reduce((sum, t) => sum + Math.abs(t.amount), 0)
+
+        // Análise de tendências
+        const trends = await this.trendAnalyzer.analyzeTrends(transactions)
+
+        // Alertas financeiros
+        const alerts = this.generateFinancialAlerts(totalBalance, totalExpenses, totalIncome)
+
+        return {
+            totalBalance,
+            totalIncome,
+            totalExpenses,
+            netFlow: totalIncome - totalExpenses,
+            trends,
+            alerts,
+            period: { startDate: request.startDate, endDate: request.endDate }
+        }
+    }
+
+    private generateFinancialAlerts(balance: number, expenses: number, income: number): Alert[] {
+        const alerts: Alert[] = []
+
+        if (balance < 0) {
+            alerts.push(new Alert('NEGATIVE_BALANCE', 'Saldo negativo detectado', AlertLevel.CRITICAL))
+        }
+
+        if (expenses > income * 0.8) {
+            alerts.push(new Alert('HIGH_EXPENSES', 'Gastos altos detectados', AlertLevel.WARNING))
+        }
+
+        return alerts
     }
 }
 ```
