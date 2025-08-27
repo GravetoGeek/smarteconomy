@@ -1,6 +1,6 @@
 import { Resolver, Mutation, Args, Query } from '@nestjs/graphql'
 import { AuthResponse, LogoutResponse, ValidateTokenResponse } from '../models/auth.model'
-import { LoginInput, RefreshTokenInput, LogoutInput, ValidateTokenInput } from '../inputs/auth.input'
+import { LoginInput, SignupInput, RefreshTokenInput, LogoutInput, ValidateTokenInput } from '../inputs/auth.input'
 import { AuthApplicationService } from '../../../application/services/auth-application.service'
 import { Logger } from '@nestjs/common'
 
@@ -26,6 +26,29 @@ export class AuthResolver {
             return result
         } catch (error) {
             this.logger.error(`Login failed for email: ${input.email}`, error.stack)
+            throw error
+        }
+    }
+
+    @Mutation(() => AuthResponse)
+    async signup(@Args('input') input: SignupInput): Promise<AuthResponse> {
+        try {
+            this.logger.log(`Signup attempt for email: ${input.email}`)
+            
+            const result = await this.authApplicationService.signup({
+                email: input.email,
+                password: input.password,
+                name: input.name,
+                lastname: input.lastname,
+                birthdate: new Date(input.birthdate),
+                genderId: input.genderId,
+                professionId: input.professionId
+            })
+
+            this.logger.log(`Signup successful for user: ${result.user.id}`)
+            return result
+        } catch (error) {
+            this.logger.error(`Signup failed for email: ${input.email}`, error.stack)
             throw error
         }
     }

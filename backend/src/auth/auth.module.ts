@@ -6,6 +6,7 @@ import { UserAuthRepository } from './infrastructure/repositories/user-auth.repo
 import { HashBcryptService } from './infrastructure/services/hash-bcrypt.service'
 import { JwtCryptoService } from './infrastructure/services/jwt-crypto.service'
 import { LoginUseCase } from './application/use-cases/login.use-case'
+import { SignupUseCase } from './application/use-cases/signup.use-case'
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case'
 import { LogoutUseCase } from './application/use-cases/logout.use-case'
 import { ValidateTokenUseCase } from './application/use-cases/validate-token.use-case'
@@ -32,6 +33,7 @@ import { AuthResolver } from './interfaces/graphql/resolvers/auth.resolver'
             useClass: JwtCryptoService
         },
         LoginUseCase,
+        SignupUseCase,
         RefreshTokenUseCase,
         LogoutUseCase,
         ValidateTokenUseCase,

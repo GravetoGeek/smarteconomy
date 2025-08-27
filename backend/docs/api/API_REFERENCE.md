@@ -27,6 +27,58 @@
 
 ## 🔐 **Autenticação**
 
+### **Signup (Registro)**
+
+```graphql
+mutation Signup($input: SignupInput!) {
+  signup(input: $input) {
+    accessToken
+    refreshToken
+    expiresIn
+    tokenType
+    user {
+      id
+      email
+      role
+    }
+  }
+}
+```
+
+**Variáveis:**
+```json
+{
+  "input": {
+    "email": "newuser@smarteconomy.com",
+    "password": "SecurePass123!",
+    "name": "João",
+    "lastname": "Silva",
+    "birthdate": "1990-01-15T00:00:00.000Z",
+    "genderId": "123e4567-e89b-12d3-a456-426614174000",
+    "professionId": "123e4567-e89b-12d3-a456-426614174001"
+  }
+}
+```
+
+**Resposta:**
+```json
+{
+  "data": {
+    "signup": {
+      "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "expiresIn": 86400,
+      "tokenType": "Bearer",
+      "user": {
+        "id": "123e4567-e89b-12d3-a456-426614174001",
+        "email": "newuser@smarteconomy.com",
+        "role": "USER"
+      }
+    }
+  }
+}
+```
+
 ### **Login**
 
 ```graphql
