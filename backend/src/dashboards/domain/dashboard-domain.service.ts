@@ -1,6 +1,6 @@
 /**
  * 📊 Dashboard Domain Service
- * 
+ *
  * Serviço de domínio para agregação de dados financeiros
  * e geração de métricas para dashboards.
  */

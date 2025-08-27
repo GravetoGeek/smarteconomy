@@ -1,6 +1,6 @@
 /**
  * 🔄 Update Transaction Use Case
- * 
+ *
  * Caso de uso para atualização de transações
  * com validações de negócio.
  */

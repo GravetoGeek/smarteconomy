@@ -1,6 +1,6 @@
 /**
  * 💾 Prisma Transaction Repository
- * 
+ *
  * Implementação do repositório de transações usando Prisma ORM
  * seguindo os princípios da arquitetura hexagonal.
  */

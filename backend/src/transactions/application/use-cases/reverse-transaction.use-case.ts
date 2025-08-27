@@ -1,6 +1,6 @@
 /**
  * ↩️ Reverse Transaction Use Case
- * 
+ *
  * Caso de uso para reversão de transações
  * com validações e auditoria.
  */
