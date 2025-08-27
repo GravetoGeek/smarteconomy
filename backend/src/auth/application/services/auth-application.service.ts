@@ -90,7 +90,7 @@ export class AuthApplicationService {
         private readonly refreshTokenUseCase: RefreshTokenUseCase,
         private readonly logoutUseCase: LogoutUseCase,
         private readonly validateTokenUseCase: ValidateTokenUseCase
-    ) {}
+    ) { }
 
     async login(request: LoginRequest): Promise<LoginResponse> {
         return await this.loginUseCase.execute(request)
