@@ -137,31 +137,12 @@ backend/
 │   │   ├── 📁 application/          # Use Cases, Application Services
 │   │   ├── 📁 infrastructure/       # Account Repository (Prisma)
 │   │   └── 📁 interfaces/           # GraphQL Resolvers, Inputs, Models
-│   ├── 📁 transactions/             # 💰 Módulo de transações financeiras (Arquitetura Hexagonal)
-│   │   ├── 📁 domain/              # Transaction Entity, Value Objects, Domain Services
-│   │   ├── 📁 application/          # Use Cases para transações (Create, Search, Update, Reverse)
-│   │   ├── 📁 infrastructure/       # Transaction Repository (Prisma), Account Service
-│   │   └── 📁 interfaces/           # GraphQL Resolvers, Inputs, Models
-│   ├── 📁 categories/               # 📂 Módulo de categorias financeiras (Arquitetura Hexagonal)
-│   │   ├── 📁 domain/              # Category Entity, Repository Port
-│   │   ├── 📁 application/          # Use Cases para categorias (Create, Find, Search)
-│   │   ├── 📁 infrastructure/       # Category Repository (Prisma)
-│   │   └── 📁 interfaces/           # GraphQL Resolvers, Inputs, Models
-│   ├── 📁 dashboards/               # 📊 Módulo de dashboards e métricas (Arquitetura Hexagonal)
-│   │   ├── 📁 domain/              # Dashboard Domain Service, Financial Metrics
-│   │   ├── 📁 application/          # Use Cases para dashboards (Metrics, Trends, Alerts)
-│   │   └── 📁 interfaces/           # GraphQL Resolvers, Inputs, Models
-│   ├── 📁 profiles/                 # 👤 Módulo de perfis de usuário
-│   ├── 📁 gender/                   # ⚧ Módulo de gêneros (Arquitetura Hexagonal)
-│   │   ├── 📁 domain/              # Gender Entity, Repository Port
-│   │   ├── 📁 application/          # Use Cases para gêneros (Create, Find)
-│   │   ├── 📁 infrastructure/       # Gender Repository (Prisma)
-│   │   └── 📁 interfaces/           # GraphQL Resolvers, Inputs, Models
-│   ├── 📁 profession/               # 💼 Módulo de profissões (Arquitetura Hexagonal)
-│   │   ├── 📁 domain/              # Profession Entity, Repository Port
-│   │   ├── 📁 application/          # Use Cases para profissões (Create, Find)
-│   │   ├── 📁 infrastructure/       # Profession Repository (Prisma)
-│   │   └── 📁 interfaces/           # GraphQL Resolvers, Inputs, Models
+│   ├── 📁 transactions/             # Módulo de transações
+│   ├── 📁 categories/               # Módulo de categorias
+│   ├── 📁 dashboards/               # Módulo de dashboards
+│   ├── 📁 profiles/                 # Módulo de perfis
+│   ├── 📁 gender/                   # Módulo de gêneros
+│   ├── 📁 profession/               # Módulo de profissões
 │   ├── 📁 database/                 # Configuração do banco de dados
 │   ├── 📁 shared/                   # Serviços e utilitários compartilhados
 │   └── 📁 app.module.ts             # Módulo principal da aplicação
@@ -272,15 +253,9 @@ docker-compose logs -f     # Visualiza logs
 
 ### **Documentação por Módulo**
 
-- **[� Users Module](src/users/README.md)** - Módulo de usuários com arquitetura hexagonal
-- **[� Auth Module](src/auth/README.md)** - Módulo de autenticação JWT completo
-- **[💰 Accounts Module](src/accounts/README.md)** - Módulo de contas financeiras
-- **[💳 Transactions Module](src/transactions/README.md)** - Módulo de transações financeiras completo
-- **[📊 Dashboards Module](src/dashboards/README.md)** - Módulo de dashboards e métricas financeiras
-- **[� Categories Module](src/categories/README.md)** - Módulo de categorias financeiras
-- **[⚧ Gender Module](src/gender/README.md)** - Módulo de gêneros
-- **[💼 Profession Module](src/profession/README.md)** - Módulo de profissões
+- **[📖 Users Module](src/users/README.md)** - Módulo de usuários com arquitetura hexagonal
 - **[🔧 Adapters Guide](src/users/infrastructure/adapters/README.md)** - Guia de extensão de adapters
+- **[📋 Postman Guide](GUIA_POSTMAN.md)** - Guia completo para testar a API
 
 ### **Arquitetura e Padrões**
 
@@ -372,9 +347,6 @@ type User {
   lastname: String!
   birthdate: DateTime!
   role: String!
-  genderId: String!
-  professionId: String!
-  profileId: String
   status: String!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -386,118 +358,35 @@ type Account {
   type: String!
   balance: Float!
   userId: String!
-  status: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-}
-
-type Category {
-  id: String!
-  category: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-type GenderModel {
-  id: ID!
-  gender: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-type ProfessionModel {
-  id: ID!
-  profession: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-# 🔐 Autenticação
-type AuthResponse {
-  accessToken: String!
-  refreshToken: String!
-  expiresIn: Float!
-  tokenType: String!
-  user: AuthUser!
 }
 
 type Query {
-  # 👥 Usuários
   users: [User!]!
   userById(id: String!): User
   userByEmail(email: String!): User
   searchUsers(input: SearchUsersInput!): SearchResult!
 
-  # 💰 Contas Financeiras
+  # 💰 Queries de Contas Financeiras
   accountsByUser(userId: String!): [Account!]!
   accountById(id: String!): Account
-
-  # 💳 Transações
-  searchTransactions(userId: String!, filters: String, sortBy: String, sortOrder: String, page: Float, limit: Float): String!
-  transactionById(id: String!): String
-  transactionsByAccount(accountId: String!): [String!]!
-  transactionSummary(accountId: String!, dateFrom: String!, dateTo: String!): String!
-
-  # 📂 Categorias
-  categories: [Category!]!
-  category(id: String!): Category!
-
-  # 📊 Dashboards e Métricas
-  dashboardMetrics(userId: String!, period: String, dateFrom: String, dateTo: String, accountIds: [String!], categoryIds: [String!]): String!
-  financialTrends(userId: String!, months: Float): String!
-  accountsSummary(userId: String!): String!
-  financialAlerts(userId: String!): String!
-  categoryAnalysis(userId: String!, period: String): String!
-  periodComparison(userId: String!, period: String!): String!
-
-  # ⚧ Gêneros
-  genders: [GenderModel!]!
-  gender(id: String!): GenderModel!
-
-  # 💼 Profissões
-  professions: [ProfessionModel!]!
-  profession(id: String!): ProfessionModel!
-
-  # 🔐 Autenticação
-  validateToken(input: ValidateTokenInput!): ValidateTokenResponse!
 }
 
 type Mutation {
-  # 👥 Usuários
   createUser(input: CreateUserInput!): User!
-  updateUser(id: String!, input: UpdateUserInput!): UpdateUserResponse!
-  deleteUser(id: String!): DeleteUserResponse!
+  updateUser(id: String!, input: UpdateUserInput!): User
+  deleteUser(id: String!): Boolean!
 
-  # 💰 Contas Financeiras
+  # 💰 Mutations de Contas Financeiras
   createAccount(input: CreateAccountInput!): Account!
-
-  # � Transações
-  createTransaction(input: CreateTransactionInput!): Transaction!
-  updateTransaction(id: String!, input: UpdateTransactionInput!): Transaction!
-  cancelTransaction(id: String!): Transaction!
-  completeTransaction(id: String!): Transaction!
-  reverseTransaction(id: String!, reason: String): Transaction!
-
-  # 📂 Categorias
-  createCategory(input: CreateCategoryInput!): Category!
-
-  # ⚧ Gêneros
-  createGender(input: CreateGenderInput!): GenderModel!
-
-  # 💼 Profissões
-  createProfession(input: CreateProfessionInput!): ProfessionModel!
-
-  # 🔐 Autenticação
-  login(input: LoginInput!): AuthResponse!
-  refreshToken(input: RefreshTokenInput!): AuthResponse!
-  logout(input: LogoutInput!): LogoutResponse!
 }
 ```
 
 ### **Exemplo de Uso**
 
 ```graphql
-# 👥 Criar usuário
+# Criar usuário
 mutation CreateUser($input: CreateUserInput!) {
   createUser(input: $input) {
     id
@@ -505,14 +394,12 @@ mutation CreateUser($input: CreateUserInput!) {
     name
     lastname
     role
-    genderId
-    professionId
     status
     createdAt
   }
 }
 
-# 🔍 Buscar usuários
+# Buscar usuários
 query SearchUsers($input: SearchUsersInput!) {
   searchUsers(input: $input) {
     items {
@@ -521,8 +408,6 @@ query SearchUsers($input: SearchUsersInput!) {
       name
       lastname
       role
-      genderId
-      professionId
     }
     total
     currentPage
@@ -538,99 +423,30 @@ mutation CreateAccount($input: CreateAccountInput!) {
     type
     balance
     userId
-    status
     createdAt
   }
 }
 
-# 🏦 Buscar contas por usuário
+# 💰 Buscar contas por usuário
 query AccountsByUser($userId: String!) {
   accountsByUser(userId: $userId) {
     id
     name
     type
     balance
-    status
     createdAt
     updatedAt
   }
 }
 
-# � Criar transação
-mutation CreateTransaction($input: CreateTransactionInput!) {
-  createTransaction(input: $input) {
+# 💰 Buscar conta específica
+query AccountById($id: String!) {
+  accountById(id: $id) {
     id
-    description
-    amount
+    name
     type
-    accountId
-    categoryId
-    status
-    date
-    createdAt
-  }
-}
-
-# 📊 Buscar transações com filtros
-query SearchTransactions($userId: String!, $filters: String) {
-  searchTransactions(
-    userId: $userId
-    filters: $filters
-    sortBy: "date"
-    sortOrder: "DESC"
-    page: 1
-    limit: 20
-  )
-}
-
-# 📈 Métricas do dashboard
-query DashboardMetrics($userId: String!, $period: String) {
-  dashboardMetrics(
-    userId: $userId
-    period: $period
-  )
-}
-
-# 📂 Listar categorias
-query Categories {
-  categories {
-    id
-    category
-    createdAt
-    updatedAt
-  }
-}
-
-# 🔐 Login de usuário
-mutation Login($input: LoginInput!) {
-  login(input: $input) {
-    accessToken
-    refreshToken
-    expiresIn
-    tokenType
-    user {
-      id
-      email
-      role
-    }
-  }
-}
-
-# ⚧ Listar gêneros
-query Genders {
-  genders {
-    id
-    gender
-    createdAt
-    updatedAt
-  }
-}
-
-# 💼 Listar profissões
-query Professions {
-  professions {
-    id
-    profession
+    balance
+    userId
     createdAt
     updatedAt
   }
