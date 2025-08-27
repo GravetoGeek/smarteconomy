@@ -1,14 +1,4 @@
-# 📚 Documentação ### 🔧 **Módulos e Funcionalidades**
-
-- **[👥 Módulo Users](../../src/users/README.md)** - Módulo de usuários com arquitetura hexagonal
-- **[💰 Módulo Accounts](../../src/accounts/README.md)** - Módulo de contas financeiras com DDD
-- **[💸 Módulo Transactions](../../src/transactions/README.md)** - Módulo de transações financeiras
-- **[📊 Módulo Dashboards](../../src/dashboards/README.md)** - Módulo de dashboards e métricas financeiras
-- **[🏷️ Módulo Categories](../../src/categories/README.md)** - Módulo de categorias de transações
-- **[⚤ Módulo Gender](../../src/gender/README.md)** - Módulo de gêneros
-- **[💼 Módulo Profession](../../src/profession/README.md)** - Módulo de profissões
-- **[🔧 Guia de Adapters](../../src/users/infrastructure/adapters/README.md)** - Como estender e adicionar novos adapters
-- **[📋 Guia Postman](../../GUIA_POSTMAN.md)** - Guia completo para testar a APIconomy Backend
+# 📚 Documentação SmartEconomy Backend
 
 > **Documentação Completa e Organizada do Sistema**
 
@@ -54,8 +44,6 @@
 3. **Explore a [API GraphQL](api/graphql.md)** para usar a API
 4. **Consulte o [Módulo Users](../../src/users/README.md)** como referência de implementação
 5. **Veja o [Módulo Accounts](../../src/accounts/README.md)** para gestão financeira
-6. **Explore o [Módulo Transactions](../../src/transactions/README.md)** para transações
-7. **Consulte o [Módulo Dashboards](../../src/dashboards/README.md)** para analytics
 
 ### **Para DevOps**
 
@@ -127,9 +115,6 @@ curl -s http://localhost:3000/graphql -H "Content-Type: application/json" -d '{"
 
 - **Usuários**: [Módulo Users](../../src/users/README.md), [API GraphQL](api/graphql.md)
 - **Contas Financeiras**: [Módulo Accounts](../../src/accounts/README.md), [API GraphQL](api/graphql.md)
-- **Transações**: [Módulo Transactions](../../src/transactions/README.md), [API GraphQL](api/graphql.md)
-- **Dashboards**: [Módulo Dashboards](../../src/dashboards/README.md), [API GraphQL](api/graphql.md)
-- **Categorias**: [Módulo Categories](../../src/categories/README.md), [API GraphQL](api/graphql.md)
 - **Autenticação**: [Segurança](security/overview.md), [API GraphQL](api/graphql.md#-autenticação)
 - **Banco de Dados**: [Arquitetura Hexagonal](architecture/hexagonal.md), [DDD](architecture/ddd.md)
 
@@ -203,10 +188,7 @@ curl -s http://localhost:3000/graphql -H "Content-Type: application/json" -d '{"
 | **API GraphQL** | ✅ Completo | 100% |
 | **Módulo Users** | ✅ Completo | 100% |
 | **Módulo Accounts** | ✅ Completo | 100% |
-| **Módulo Transactions** | ✅ Completo | 100% |
-| **Módulo Dashboards** | ✅ Completo | 100% |
-| **API Endpoints** | ✅ Completo | 100% |
-| **Postman Collection** | ✅ Completo | 100% |
+| **Guia Postman** | ✅ Completo | 100% |
 | **Ports & Adapters** | 🔄 Em Desenvolvimento | 30% |
 | **API Endpoints** | 🔄 Em Desenvolvimento | 20% |
 | **Docker** | 🔄 Em Desenvolvimento | 40% |
