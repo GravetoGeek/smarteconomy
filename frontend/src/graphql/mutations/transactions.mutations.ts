@@ -1,15 +1,15 @@
-import { gql } from '@apollo/client';
+import {gql} from '@apollo/client'
 
 /**
  * 💸 Transactions Mutations
- * 
+ *
  * Mutations GraphQL para criar e gerenciar transações
  */
 
 /**
  * Mutation para criar nova transação
  */
-export const CREATE_TRANSACTION = gql`
+export const CREATE_TRANSACTION=gql`
   mutation CreateTransaction($input: CreateTransactionInput!) {
     createTransaction(input: $input) {
       transaction {
@@ -28,12 +28,12 @@ export const CREATE_TRANSACTION = gql`
       warnings
     }
   }
-`;
+`
 
 /**
  * Mutation para atualizar transação existente
  */
-export const UPDATE_TRANSACTION = gql`
+export const UPDATE_TRANSACTION=gql`
   mutation UpdateTransaction($id: String!, $input: UpdateTransactionInput!) {
     updateTransaction(id: $id, input: $input) {
       id
@@ -49,12 +49,12 @@ export const UPDATE_TRANSACTION = gql`
       updatedAt
     }
   }
-`;
+`
 
 /**
  * Mutation para reverter/estornar transação
  */
-export const REVERSE_TRANSACTION = gql`
+export const REVERSE_TRANSACTION=gql`
   mutation ReverseTransaction(
     $transactionId: String!
     $reason: String!
@@ -78,4 +78,4 @@ export const REVERSE_TRANSACTION = gql`
       updatedAt
     }
   }
-`;
+`
