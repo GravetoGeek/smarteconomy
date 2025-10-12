@@ -83,6 +83,10 @@ export default function Login() {
                             <Input
                                 placeholder="seu@email.com"
                                 onChangeText={(text) => setEmail(text)}
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                autoComplete="email"
                                 InputLeftElement={
                                     <Icon
                                         as={<MaterialIcons name="person" />}
@@ -97,6 +101,9 @@ export default function Login() {
                                 secureTextEntry={true}
                                 placeholder="sua senha"
                                 onChangeText={(text) => setPassword(text)}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                autoComplete="password"
                                 InputLeftElement={
                                     <Icon
                                         as={<MaterialIcons name="lock" />}

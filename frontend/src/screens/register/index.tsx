@@ -183,6 +183,10 @@ export default function Register() {
               placeholder="exemplo@exemplo.com"
               value={formData.email}
               onChangeText={(text) => setData({ ...formData, email: text })}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="email"
               InputLeftElement={
                 <Icon
                   as={<MaterialIcons name="email" />}
