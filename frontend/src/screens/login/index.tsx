@@ -12,16 +12,16 @@ import {
     Text,
     VStack
 } from "native-base"
-import React,{useContext,useState} from "react"
+import React,{useState} from "react"
 import cover from '../../assets/cover.png'
-import {Store} from "../../contexts/StoreProvider"
 import {useLogin} from "../../hooks/auth/useLogin"
+import {useStore} from "../../hooks/useStore"
 import {styles} from "./style"
 
 
 
 export default function Login() {
-    const {setUser,setToken,setProfile}=useContext(Store)
+    const {setUser,setToken,setProfile}=useStore()
     const [email,setEmail]=useState("")
     const [password,setPassword]=useState("")
     const [errorMessage,setErrorMessage]=useState("")
@@ -49,7 +49,7 @@ export default function Login() {
             const user=await login({email,password})
 
             if(user) {
-                setUser(user)
+                setUser({...user, id: Number(user.id)})
                 handleDashboard()
             } else {
                 setErrorMessage("Email ou senha inválidos")

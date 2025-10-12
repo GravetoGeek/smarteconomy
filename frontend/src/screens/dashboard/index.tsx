@@ -2,7 +2,7 @@ import {useQuery} from '@apollo/client'
 import {MaterialIcons} from '@expo/vector-icons'
 import {useFocusEffect,useNavigation} from "@react-navigation/native"
 import {Box,HStack,Icon,List,ScrollView,Spacer,Text,VStack} from "native-base"
-import React,{useContext,useEffect,useState} from "react"
+import React,{useEffect,useState} from "react"
 import {TouchableOpacity} from "react-native"
 import {VictoryPie} from 'victory-native'
 import CategoryIcon from "../../components/Dashboard/Icons/CategoryIcon"
@@ -11,7 +11,7 @@ import FloatingBottomMenu from "../../components/FloatingBottomMenu"
 import Header from "../../components/Header"
 import {Icons} from '../../components/Icons/Icons'
 import ListTransactionByCategory from '../../components/ListTransactionByCategory'
-import {Store} from '../../contexts/StoreProvider'
+import {useStore} from '../../hooks/useStore'
 import {GET_ACCOUNTS_BY_USER} from '../../graphql/queries/accounts.queries'
 import {GET_USER_BY_ID} from '../../graphql/queries/users.queries'
 import {useCategoryBreakdown} from '../../hooks/dashboard/useCategoryBreakdown'
@@ -39,7 +39,7 @@ interface DataCategory {
 }
 
 export default function Dashboard() {
-    const {user,profile,setProfile,startDate,endDate,despesaTotal,receitaTotal,setTransactionTypes}=useContext(Store)
+    const {user,profile,setProfile,startDate,endDate,despesaTotal,receitaTotal,setTransactionTypes}=useStore()
     const [selectedCategory,setSelectedCategory]=useState<string[]>([])
 
     const navigation=useNavigation()
@@ -56,7 +56,7 @@ export default function Dashboard() {
     })
 
     const {categoryBreakdown,loading: categoryLoading,refetch}=useCategoryBreakdown(
-        user?.id,
+        user?.id?.toString()||'',
         startDate,
         endDate
     )

@@ -3,13 +3,13 @@ import {MaterialIcons} from "@expo/vector-icons"
 import {useFocusEffect,useNavigation} from "@react-navigation/native"
 import moment from "moment"
 import {Avatar,Box,Center,Divider,HStack,Icon,List,ScrollView,Spacer,Spinner,Text,VStack} from "native-base"
-import React,{useContext,useEffect,useState} from "react"
+import React,{useEffect,useState} from "react"
 import {GestureResponderEvent,TouchableOpacity} from "react-native"
 import CategoryIcon from "../../components/Dashboard/Icons/CategoryIcon"
 import FloatingBottomMenu from "../../components/FloatingBottomMenu"
 import Header from "../../components/Header"
 import {Icons} from "../../components/Icons/Icons"
-import {Store} from "../../contexts/StoreProvider"
+import {useStore} from "../../hooks/useStore"
 import {GET_CATEGORIES} from "../../graphql/queries/categories.queries"
 import {useSearchTransactions} from "../../hooks/transactions/useSearchTransactions"
 import {Category,Transaction,TransactionTypes} from "../../models"
@@ -22,12 +22,12 @@ const TRANSACTION_TYPES=[
 ]
 
 const ListTransactions=() => {
-    const {user,startDate,endDate,receitaTotal,despesaTotal}=useContext(Store)
+    const {user,startDate,endDate,receitaTotal,despesaTotal}=useStore()
     const navigation=useNavigation()
 
     // Buscar transações usando GraphQL
     const {transactions,loading: transactionsLoading,refetch: refetchTransactions}=useSearchTransactions(
-        user?.id||'',
+        user?.id?.toString()||'',
         {
             filters: {
                 dateFrom: startDate,
