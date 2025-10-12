@@ -18,7 +18,7 @@ export interface CreateTransactionUseCaseInput {
     amount: number
     type: 'INCOME' | 'EXPENSE' | 'TRANSFER'
     accountId: string
-    categoryId: string
+    categoryId?: string
     destinationAccountId?: string
     date?: Date
 }

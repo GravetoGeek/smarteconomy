@@ -5,18 +5,18 @@
  * de dados de entrada e saída da API de transações.
  */
 
-import { Field, InputType, ObjectType, registerEnumType, ID, Float } from '@nestjs/graphql'
-import { IsEnum, IsString, IsNumber, IsOptional, IsDateString, Min, Max, Length, IsUUID } from 'class-validator'
-import { Transform } from 'class-transformer'
-import { TransactionType, TransactionStatus } from '../domain'
+import {Field,Float,ID,InputType,ObjectType,registerEnumType} from '@nestjs/graphql'
+import {Transform} from 'class-transformer'
+import {IsDateString,IsEnum,IsNumber,IsOptional,IsString,IsUUID,Length,Max,Min} from 'class-validator'
+import {TransactionStatus,TransactionType} from '../domain'
 
 // Registrar enums no GraphQL
-registerEnumType(TransactionType, {
+registerEnumType(TransactionType,{
     name: 'TransactionType',
     description: 'Tipos de transação disponíveis'
 })
 
-registerEnumType(TransactionStatus, {
+registerEnumType(TransactionStatus,{
     name: 'TransactionStatus',
     description: 'Status possíveis de uma transação'
 })
@@ -26,133 +26,133 @@ registerEnumType(TransactionStatus, {
 export class CreateTransactionInput {
     @Field()
     @IsString()
-    @Length(2, 255, { message: 'Descrição deve ter entre 2 e 255 caracteres' })
+    @Length(2,255,{message: 'Descrição deve ter entre 2 e 255 caracteres'})
     description: string
 
     @Field(() => Float)
-    @IsNumber({ maxDecimalPlaces: 2 }, { message: 'Valor deve ter no máximo 2 casas decimais' })
-    @Min(0.01, { message: 'Valor deve ser maior que zero' })
-    @Max(999999.99, { message: 'Valor não pode exceder R$ 999.999,99' })
-    @Transform(({ value }) => Math.round(value * 100) / 100)
+    @IsNumber({maxDecimalPlaces: 2},{message: 'Valor deve ter no máximo 2 casas decimais'})
+    @Min(0.01,{message: 'Valor deve ser maior que zero'})
+    @Max(999999.99,{message: 'Valor não pode exceder R$ 999.999,99'})
+    @Transform(({value}) => Math.round(value*100)/100)
     amount: number
 
     @Field(() => TransactionType)
-    @IsEnum(TransactionType, { message: 'Tipo de transação inválido' })
+    @IsEnum(TransactionType,{message: 'Tipo de transação inválido'})
     type: TransactionType
 
     @Field()
-    @IsUUID('4', { message: 'ID da conta deve ser um UUID válido' })
+    @IsUUID('4',{message: 'ID da conta deve ser um UUID válido'})
     accountId: string
 
-    @Field({ nullable: true })
+    @Field({nullable: true})
     @IsOptional()
-    @IsUUID('4', { message: 'ID da categoria deve ser um UUID válido' })
+    @IsUUID('4',{message: 'ID da categoria deve ser um UUID válido'})
     categoryId?: string
 
-    @Field({ nullable: true })
+    @Field({nullable: true})
     @IsOptional()
-    @IsUUID('4', { message: 'ID da conta de destino deve ser um UUID válido' })
+    @IsUUID('4',{message: 'ID da conta de destino deve ser um UUID válido'})
     destinationAccountId?: string
 
-    @Field({ nullable: true })
+    @Field({nullable: true})
     @IsOptional()
-    @IsDateString({}, { message: 'Data deve estar no formato ISO 8601' })
+    @IsDateString({},{message: 'Data deve estar no formato ISO 8601'})
     date?: string
 }
 
 @InputType()
 export class UpdateTransactionInput {
-    @Field({ nullable: true })
+    @Field({nullable: true})
     @IsOptional()
     @IsString()
-    @Length(2, 255, { message: 'Descrição deve ter entre 2 e 255 caracteres' })
+    @Length(2,255,{message: 'Descrição deve ter entre 2 e 255 caracteres'})
     description?: string
 
-    @Field(() => TransactionStatus, { nullable: true })
+    @Field(() => TransactionStatus,{nullable: true})
     @IsOptional()
-    @IsEnum(TransactionStatus, { message: 'Status de transação inválido' })
+    @IsEnum(TransactionStatus,{message: 'Status de transação inválido'})
     status?: TransactionStatus
 }
 
 @InputType()
 export class TransactionFiltersInput {
-    @Field({ nullable: true })
+    @Field({nullable: true})
     @IsOptional()
     @IsUUID('4')
     accountId?: string
 
-    @Field({ nullable: true })
+    @Field({nullable: true})
     @IsOptional()
     @IsUUID('4')
     categoryId?: string
 
-    @Field(() => TransactionType, { nullable: true })
+    @Field(() => TransactionType,{nullable: true})
     @IsOptional()
     @IsEnum(TransactionType)
     type?: TransactionType
 
-    @Field(() => TransactionStatus, { nullable: true })
+    @Field(() => TransactionStatus,{nullable: true})
     @IsOptional()
     @IsEnum(TransactionStatus)
     status?: TransactionStatus
 
-    @Field({ nullable: true })
+    @Field({nullable: true})
     @IsOptional()
     @IsDateString()
     dateFrom?: string
 
-    @Field({ nullable: true })
+    @Field({nullable: true})
     @IsOptional()
     @IsDateString()
     dateTo?: string
 
-    @Field(() => Float, { nullable: true })
+    @Field(() => Float,{nullable: true})
     @IsOptional()
     @IsNumber()
     @Min(0)
     minAmount?: number
 
-    @Field(() => Float, { nullable: true })
+    @Field(() => Float,{nullable: true})
     @IsOptional()
     @IsNumber()
     @Min(0)
     maxAmount?: number
 
-    @Field({ nullable: true })
+    @Field({nullable: true})
     @IsOptional()
     @IsString()
-    @Length(2, 100)
+    @Length(2,100)
     searchTerm?: string
 }
 
 @InputType()
 export class SearchTransactionsInput {
-    @Field(() => TransactionFiltersInput, { nullable: true })
+    @Field(() => TransactionFiltersInput,{nullable: true})
     @IsOptional()
     filters?: TransactionFiltersInput
 
-    @Field({ nullable: true, defaultValue: 1 })
+    @Field({nullable: true,defaultValue: 1})
     @IsOptional()
     @IsNumber()
     @Min(1)
     page?: number
 
-    @Field({ nullable: true, defaultValue: 20 })
+    @Field({nullable: true,defaultValue: 20})
     @IsOptional()
     @IsNumber()
     @Min(1)
     @Max(100)
     limit?: number
 
-    @Field({ nullable: true, defaultValue: 'date' })
+    @Field({nullable: true,defaultValue: 'date'})
     @IsOptional()
     @IsString()
-    sortBy?: 'date' | 'amount' | 'description' | 'createdAt'
+    sortBy?: 'date'|'amount'|'description'|'createdAt'
 
-    @Field({ nullable: true, defaultValue: 'desc' })
+    @Field({nullable: true,defaultValue: 'desc'})
     @IsOptional()
     @IsString()
-    sortOrder?: 'asc' | 'desc'
+    sortOrder?: 'asc'|'desc'
 }
 
 // Output DTOs
@@ -179,7 +179,7 @@ export class TransactionDto {
     @Field()
     categoryId: string
 
-    @Field({ nullable: true })
+    @Field({nullable: true})
     destinationAccountId?: string
 
     @Field()
@@ -294,7 +294,7 @@ export class ProcessTransactionResponseDto {
     @Field()
     message: string
 
-    @Field(() => [String], { nullable: true })
+    @Field(() => [String],{nullable: true})
     warnings?: string[]
 }
 
@@ -303,11 +303,11 @@ export class ProcessTransactionResponseDto {
 export class CreateIncomeInput {
     @Field()
     @IsString()
-    @Length(2, 255)
+    @Length(2,255)
     description: string
 
     @Field(() => Float)
-    @IsNumber({ maxDecimalPlaces: 2 })
+    @IsNumber({maxDecimalPlaces: 2})
     @Min(0.01)
     @Max(999999.99)
     amount: number
@@ -320,7 +320,7 @@ export class CreateIncomeInput {
     @IsUUID('4')
     categoryId: string
 
-    @Field({ nullable: true })
+    @Field({nullable: true})
     @IsOptional()
     @IsDateString()
     date?: string
@@ -330,11 +330,11 @@ export class CreateIncomeInput {
 export class CreateExpenseInput {
     @Field()
     @IsString()
-    @Length(2, 255)
+    @Length(2,255)
     description: string
 
     @Field(() => Float)
-    @IsNumber({ maxDecimalPlaces: 2 })
+    @IsNumber({maxDecimalPlaces: 2})
     @Min(0.01)
     @Max(999999.99)
     amount: number
@@ -347,7 +347,7 @@ export class CreateExpenseInput {
     @IsUUID('4')
     categoryId: string
 
-    @Field({ nullable: true })
+    @Field({nullable: true})
     @IsOptional()
     @IsDateString()
     date?: string
@@ -357,11 +357,11 @@ export class CreateExpenseInput {
 export class CreateTransferInput {
     @Field()
     @IsString()
-    @Length(2, 255)
+    @Length(2,255)
     description: string
 
     @Field(() => Float)
-    @IsNumber({ maxDecimalPlaces: 2 })
+    @IsNumber({maxDecimalPlaces: 2})
     @Min(0.01)
     @Max(999999.99)
     amount: number
@@ -378,7 +378,7 @@ export class CreateTransferInput {
     @IsUUID('4')
     categoryId: string
 
-    @Field({ nullable: true })
+    @Field({nullable: true})
     @IsOptional()
     @IsDateString()
     date?: string
