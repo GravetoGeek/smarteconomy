@@ -1,14 +1,15 @@
-import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../../../database/prisma/prisma.service'
-import { UserRepositoryPort, UserAuthData, CreateUserData } from '../../domain/ports/user-repository.port'
+import {Injectable} from '@nestjs/common'
+import type {AccountStatus,Role} from '@prisma/client'
+import {PrismaService} from '../../../database/prisma/prisma.service'
+import {CreateUserData,UserAuthData,UserRepositoryPort} from '../../domain/ports/user-repository.port'
 
 @Injectable()
 export class UserAuthRepository implements UserRepositoryPort {
-    constructor(private readonly prisma: PrismaService) { }
+    constructor(private readonly prisma: PrismaService) {}
 
-    async findByEmail(email: string): Promise<UserAuthData | null> {
-        const user = await this.prisma.user.findUnique({
-            where: { email },
+    async findByEmail(email: string): Promise<UserAuthData|null> {
+        const user=await this.prisma.user.findUnique({
+            where: {email},
             select: {
                 id: true,
                 email: true,
@@ -18,7 +19,7 @@ export class UserAuthRepository implements UserRepositoryPort {
             }
         })
 
-        if (!user) {
+        if(!user) {
             return null
         }
 
@@ -31,9 +32,9 @@ export class UserAuthRepository implements UserRepositoryPort {
         }
     }
 
-    async findById(id: string): Promise<UserAuthData | null> {
-        const user = await this.prisma.user.findUnique({
-            where: { id },
+    async findById(id: string): Promise<UserAuthData|null> {
+        const user=await this.prisma.user.findUnique({
+            where: {id},
             select: {
                 id: true,
                 email: true,
@@ -43,7 +44,7 @@ export class UserAuthRepository implements UserRepositoryPort {
             }
         })
 
-        if (!user) {
+        if(!user) {
             return null
         }
 
@@ -58,7 +59,7 @@ export class UserAuthRepository implements UserRepositoryPort {
 
     async updateLastLogin(userId: string): Promise<void> {
         await this.prisma.user.update({
-            where: { id: userId },
+            where: {id: userId},
             data: {
                 updatedAt: new Date()
             }
@@ -66,7 +67,7 @@ export class UserAuthRepository implements UserRepositoryPort {
     }
 
     async create(userData: CreateUserData): Promise<UserAuthData> {
-        const user = await this.prisma.user.create({
+        const user=await this.prisma.user.create({
             data: {
                 email: userData.email,
                 name: userData.name,
@@ -75,8 +76,8 @@ export class UserAuthRepository implements UserRepositoryPort {
                 password: userData.password,
                 genderId: userData.genderId,
                 professionId: userData.professionId,
-                role: userData.role || 'USER',
-                status: 'ACTIVE'
+                role: (userData.role||'USER') as Role,
+                status: 'ACTIVE' as AccountStatus
             },
             select: {
                 id: true,
