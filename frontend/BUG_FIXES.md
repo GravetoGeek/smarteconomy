@@ -149,6 +149,8 @@ https://go.apollo.dev/c/err#{"version":"3.14.0","message":104,"args":["cache.dif
 | Loop infinito (Maximum update depth) | 🔴 Crítico | ✅ Resolvido | 4c9621a |
 | JWT inválido (Forbidden resource) | 🔴 Crítico | ✅ Resolvido | 25a5469 |
 | JwtGuard dependency injection | 🔴 Crítico | ✅ Resolvido | 217ca8f |
+| Tabelas não existem + null handling | 🔴 Crítico | ✅ Resolvido | f93f1db |
+| Prisma sortOrder case sensitivity | 🟠 Alto | ✅ Resolvido | 44159c3 |
 | Apollo Client warning | 🟡 Baixo | ⚠️ Informativo | - |
 
 ---
