@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common'
+import * as crypto from 'crypto'
 import { JwtServicePort, JwtPayload } from '../../domain/ports/jwt-service.port'
 
 @Injectable()
@@ -76,21 +77,10 @@ export class JwtCryptoService implements JwtServicePort {
     }
 
     private createSignature(data: string): string {
-        // Implementação simples de HMAC-SHA256
-        // TODO: Usar crypto.createHmac quando @nestjs/jwt estiver disponível
-        return this.simpleHash(data + this.secret)
-    }
-
-    private simpleHash(data: string): string {
-        // Hash simples para desenvolvimento
-        // TODO: Substituir por HMAC-SHA256 real
-        let hash = 0
-        for (let i = 0; i < data.length; i++) {
-            const char = data.charCodeAt(i)
-            hash = ((hash << 5) - hash) + char
-            hash = hash & hash // Convert to 32bit integer
-        }
-        return hash.toString(16)
+        // Usando crypto.createHmac do Node.js (nativo)
+        const hmac = crypto.createHmac('sha256', this.secret)
+        hmac.update(data)
+        return hmac.digest('base64')
     }
 
     private base64UrlEncode(str: string): string {
