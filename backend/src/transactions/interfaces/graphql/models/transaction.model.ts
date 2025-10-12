@@ -68,19 +68,19 @@ export class Transaction {
 
 @ObjectType()
 export class TransactionSearchResult {
-    @Field(() => [Transaction], { defaultValue: [] })
+    @Field(() => [Transaction],{defaultValue: []})
     transactions: Transaction[]
 
-    @Field({ defaultValue: 0 })
+    @Field({defaultValue: 0})
     total: number
 
-    @Field({ defaultValue: 1 })
+    @Field({defaultValue: 1})
     page: number
 
-    @Field({ defaultValue: 10 })
+    @Field({defaultValue: 10})
     limit: number
 
-    @Field({ defaultValue: 0 })
+    @Field({defaultValue: 0})
     totalPages: number
 }
 

@@ -162,7 +162,9 @@ type Query {
   profession(id: String!): ProfessionModel!
   searchTransactions(userId: String!, input: SearchTransactionsInput): TransactionSearchResult!
   transactionSummary(accountId: String!, dateFrom: DateTime!, dateTo: DateTime!): TransactionSummary!
+  validateToken(input: ValidateTokenInput!): ValidateTokenResponse!
   categories: [Category!]!
+  categoriesByType(type: String!): [Category!]!
   category(id: String!): Category!
   dashboardMetrics(userId: String!, period: String, dateFrom: String, dateTo: String, accountIds: [String!], categoryIds: [String!]): String!
   financialTrends(userId: String!, months: Float): String!
@@ -170,7 +172,6 @@ type Query {
   financialAlerts(userId: String!): String!
   categoryAnalysis(userId: String!, period: String): String!
   periodComparison(userId: String!, period: String!): String!
-  validateToken(input: ValidateTokenInput!): ValidateTokenResponse!
 }
 
 input SearchUsersInput {
@@ -215,11 +216,11 @@ type Mutation {
   createTransaction(input: CreateTransactionInput!): CreateTransactionResponse!
   updateTransaction(id: String!, input: UpdateTransactionInput!): Transaction!
   reverseTransaction(transactionId: String!, reason: String!, requestedBy: String!): Transaction!
-  createCategory(input: CreateCategoryInput!): Category!
   login(input: LoginInput!): AuthResponse!
   signup(input: SignupInput!): AuthResponse!
   refreshToken(input: RefreshTokenInput!): AuthResponse!
   logout(input: LogoutInput!): LogoutResponse!
+  createCategory(input: CreateCategoryInput!): Category!
 }
 
 input CreateUserInput {
@@ -276,10 +277,6 @@ input UpdateTransactionInput {
   status: TransactionStatus
 }
 
-input CreateCategoryInput {
-  category: String!
-}
-
 input LoginInput {
   email: String!
   password: String!
@@ -301,4 +298,8 @@ input RefreshTokenInput {
 
 input LogoutInput {
   accessToken: String!
+}
+
+input CreateCategoryInput {
+  category: String!
 }
