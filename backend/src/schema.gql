@@ -49,6 +49,56 @@ type Category {
   updatedAt: DateTime!
 }
 
+type Transaction {
+  id: ID!
+  description: String!
+  amount: Float!
+  type: TransactionType!
+  status: TransactionStatus!
+  accountId: String!
+  categoryId: String!
+  destinationAccountId: String
+  date: DateTime!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""Tipo da transação"""
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER
+}
+
+"""Status da transação"""
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+  FAILED
+}
+
+type TransactionSearchResult {
+  transactions: [Transaction!]!
+  total: Float!
+  page: Float!
+  limit: Float!
+  totalPages: Float!
+}
+
+type TransactionSummary {
+  totalIncome: Float!
+  totalExpense: Float!
+  totalTransfer: Float!
+  balance: Float!
+  period: String!
+}
+
+type CreateTransactionResponse {
+  transaction: Transaction!
+  warnings: [String!]!
+}
+
 type GenderModel {
   id: ID!
   gender: String!
@@ -110,10 +160,8 @@ type Query {
   gender(id: String!): GenderModel!
   professions: [ProfessionModel!]!
   profession(id: String!): ProfessionModel!
-  searchTransactions(userId: String!, filters: String, sortBy: String, sortOrder: String, page: Float, limit: Float): String!
-  transactionById(id: String!): String
-  transactionsByAccount(accountId: String!): [String!]!
-  transactionSummary(accountId: String!, dateFrom: String!, dateTo: String!): String!
+  searchTransactions(userId: String!, input: SearchTransactionsInput): TransactionSearchResult!
+  transactionSummary(accountId: String!, dateFrom: DateTime!, dateTo: DateTime!): TransactionSummary!
   categories: [Category!]!
   category(id: String!): Category!
   dashboardMetrics(userId: String!, period: String, dateFrom: String, dateTo: String, accountIds: [String!], categoryIds: [String!]): String!
@@ -133,6 +181,26 @@ input SearchUsersInput {
   sortDirection: String
 }
 
+input SearchTransactionsInput {
+  filters: TransactionFiltersInput
+  page: Float
+  limit: Float
+  sortBy: String
+  sortOrder: String
+}
+
+input TransactionFiltersInput {
+  accountId: String
+  categoryId: String
+  type: TransactionType
+  status: TransactionStatus
+  dateFrom: DateTime
+  dateTo: DateTime
+  minAmount: Float
+  maxAmount: Float
+  searchTerm: String
+}
+
 input ValidateTokenInput {
   accessToken: String!
 }
@@ -144,6 +212,9 @@ type Mutation {
   createAccount(input: CreateAccountInput!): Account!
   createGender(input: CreateGenderInput!): GenderModel!
   createProfession(input: CreateProfessionInput!): ProfessionModel!
+  createTransaction(input: CreateTransactionInput!): CreateTransactionResponse!
+  updateTransaction(id: String!, input: UpdateTransactionInput!): Transaction!
+  reverseTransaction(transactionId: String!, reason: String!, requestedBy: String!): Transaction!
   createCategory(input: CreateCategoryInput!): Category!
   login(input: LoginInput!): AuthResponse!
   signup(input: SignupInput!): AuthResponse!
@@ -188,6 +259,21 @@ input CreateGenderInput {
 
 input CreateProfessionInput {
   profession: String!
+}
+
+input CreateTransactionInput {
+  description: String!
+  amount: Float!
+  type: TransactionType!
+  accountId: String!
+  categoryId: String!
+  destinationAccountId: String
+  date: DateTime
+}
+
+input UpdateTransactionInput {
+  description: String
+  status: TransactionStatus
 }
 
 input CreateCategoryInput {

@@ -34,6 +34,25 @@ export class UsersPrismaRepository implements UserRepositoryPort {
                 updatedAt: user.updatedAt
             }
 
+            // Validações de integridade referencial: checar se gender/profession existem
+            if(user.genderId) {
+                const gender=await this.prisma.gender.findUnique({where: {id: user.genderId}})
+                if(!gender) {
+                    const err=new Error(`Gender with id ${user.genderId} not found`)
+                    this.loggerService.logError('SAVE_USER_ERROR',err,'UsersPrismaRepository')
+                    throw err
+                }
+            }
+
+            if(user.professionId) {
+                const profession=await this.prisma.profession.findUnique({where: {id: user.professionId}})
+                if(!profession) {
+                    const err=new Error(`Profession with id ${user.professionId} not found`)
+                    this.loggerService.logError('SAVE_USER_ERROR',err,'UsersPrismaRepository')
+                    throw err
+                }
+            }
+
             const savedUser=await this.prisma.user.upsert({
                 where: {id: user.id},
                 update: userData,
@@ -71,7 +90,7 @@ export class UsersPrismaRepository implements UserRepositoryPort {
                 where: {id}
             })
 
-            if (!user) {
+            if(!user) {
                 throw new Error(`User with id ${id} not found`)
             }
 

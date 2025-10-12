@@ -23,7 +23,7 @@ export class User {
     private readonly _genderId: string
     private readonly _professionId: string
     private readonly _profileId?: string|null
-    private readonly _password: Password
+    private _password: Password
     private _status: AccountStatus
     private readonly _createdAt: Date
     private _updatedAt: Date
@@ -138,6 +138,12 @@ export class User {
     updateProfile(name: string,lastname: string): void {
         this._name=this.validateName(name)
         this._lastname=this.validateName(lastname)
+        this._updatedAt=new Date()
+    }
+
+    updatePassword(hashedPassword: string): void {
+        // Usar Password.fromHash para aceitar hashed values sem validação
+        this._password=Password.fromHash(hashedPassword)
         this._updatedAt=new Date()
     }
 

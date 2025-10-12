@@ -1,9 +1,9 @@
-import { BACKEND_HOST, BACKEND_PORT } from "@env";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
-import jwtDecode from 'jwt-decode';
-import moment from "moment";
+import {BACKEND_HOST,BACKEND_PORT} from "@env"
+import {MaterialIcons} from "@expo/vector-icons"
+import {useNavigation} from "@react-navigation/native"
+import axios from "axios"
+import jwtDecode from 'jwt-decode'
+import moment from "moment"
 import {
     Box,
     Button,
@@ -15,12 +15,13 @@ import {
     Input,
     Text,
     VStack
-} from "native-base";
-import React, { useContext, useState } from "react";
-import cover from '../../assets/cover.png';
-import { Store } from "../../contexts/StoreProvider";
-import { Account, Category, Gender, Profile, Transaction, User } from "../../models";
-import { styles } from "./style";
+} from "native-base"
+import React,{useContext,useState} from "react"
+import cover from '../../assets/cover.png'
+import {GraphQLTest} from "../../components/GraphQLTest"
+import {Store} from "../../contexts/StoreProvider"
+import {Account,Category,Gender,Profile,Transaction,User} from "../../models"
+import {styles} from "./style"
 
 // import { useDispatch } from "react-redux";
 // import { setUser } from "../../store/user/thunks";
@@ -28,10 +29,10 @@ import { styles } from "./style";
 
 
 export default function Login() {
-    const { user, setUser, token, setToken, setProfile } = useContext(Store);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [errors, setErrors] = useState({});
+    const {user,setUser,token,setToken,setProfile}=useContext(Store)
+    const [email,setEmail]=useState("")
+    const [password,setPassword]=useState("")
+    const [errors,setErrors]=useState({})
 
     // let hoje = moment().format('YYYY-MM-DD')
 
@@ -40,74 +41,74 @@ export default function Login() {
     // setEndDate(moment(hoje).endOf('month').format('YYYY-MM-DD'));
     // setMesAtual(meses[moment(hoje).month()]?.month)
 
-    const navigation = useNavigation();
+    const navigation=useNavigation()
     // const dispatch = useDispatch();
 
     function handleDashboard() {
-        navigation.navigate('Dashboard');
+        navigation.navigate('Dashboard')
     }
     function handleRegister() {
-        navigation.navigate('Register');
+        navigation.navigate('Register')
     }
 
 
-    const submit = async () => {
-        if (!email || !password) {
-            alert("Preencha todos os campos");
-            return;
+    const submit=async () => {
+        if(!email||!password) {
+            alert("Preencha todos os campos")
+            return
         }
 
-        const url = `http://${BACKEND_HOST}:${BACKEND_PORT}/auth/login`;
-        const signData = JSON.stringify({ email, password });
+        const url=`http://${BACKEND_HOST}:${BACKEND_PORT}/auth/login`
+        const signData=JSON.stringify({email,password})
 
         try {
-            const loginResponse = await fetch(url, {
+            const loginResponse=await fetch(url,{
                 method: 'POST',
                 body: signData,
-                headers: { "Content-Type": "application/json" },
-            });
+                headers: {"Content-Type": "application/json"},
+            })
 
             // if (!loginResponse.ok) {
             //     throw new Error('Erro no Login');
             // }
 
 
-            const { access_token, auth, refresh_token } = await loginResponse.json();
+            const {access_token,auth,refresh_token}=await loginResponse.json()
 
-            setToken({ access_token, auth, refresh_token });
+            setToken({access_token,auth,refresh_token})
 
-            const { id, email, exp, iat } = jwtDecode(access_token);
-            setUser({ id, email });
+            const {id,email,exp,iat}=jwtDecode(access_token)
+            setUser({id,email})
 
-            let profileResponse = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/profile/byUser/${id}`, {
+            let profileResponse=await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/profile/byUser/${id}`,{
                 method: 'GET',
-                headers: { "Content-Type": "application/json" },
+                headers: {"Content-Type": "application/json"},
             })
 
-            if (!profileResponse.ok) {
-                throw new Error('Erro ao buscar perfil');
+            if(!profileResponse.ok) {
+                throw new Error('Erro ao buscar perfil')
             }
 
-            profileResponse = await profileResponse.json();
+            profileResponse=await profileResponse.json()
 
 
-            setProfile(profileResponse);
+            setProfile(profileResponse)
 
-            handleDashboard();
+            handleDashboard()
 
-        } catch (error) {
-            console.log(error);
-            const status = error.response ? error.response.status : 500;
+        } catch(error) {
+            console.log(error)
+            const status=error.response? error.response.status:500
 
-            if ([404, 401].includes(status)) {
-                setErrors({ ...errors, emailOrPassword: "Email ou senha inválido" });
-            } else if (status === 408) {
-                setErrors({ ...errors, requestTimeout: "Tempo de requisição expirado." });
+            if([404,401].includes(status)) {
+                setErrors({...errors,emailOrPassword: "Email ou senha inválido"})
+            } else if(status===408) {
+                setErrors({...errors,requestTimeout: "Tempo de requisição expirado."})
             } else {
-                setErrors({ ...errors, unknown: "Um erro desconhecido ocorreu." });
+                setErrors({...errors,unknown: "Um erro desconhecido ocorreu."})
             }
         }
-    };
+    }
 
 
     return (
@@ -124,6 +125,9 @@ export default function Login() {
                         />
                     </Box>
                     <Box width="full">
+
+                        {/* Componente de teste GraphQL - REMOVER DEPOIS */}
+                        <GraphQLTest />
 
                         <Heading color="coolGray.700">Entrar</Heading>
 
@@ -156,8 +160,8 @@ export default function Login() {
                                 }
                             />
                         </FormControl>
-                        {'emailOrPassword' in errors ? (<Text color="red.500">{errors.emailOrPassword}</Text>) : null}
-                        {'requestTimeout' in errors ? (<Text color="red.500">{errors.requestTimeout}</Text>) : null}
+                        {'emailOrPassword' in errors? (<Text color="red.500">{errors.emailOrPassword}</Text>):null}
+                        {'requestTimeout' in errors? (<Text color="red.500">{errors.requestTimeout}</Text>):null}
                         <Button mt="7" colorScheme="purple" onPress={submit}>
                             Entrar
                         </Button>
@@ -169,5 +173,5 @@ export default function Login() {
                 </VStack>
             </Center>
         </Box>
-    );
+    )
 }
