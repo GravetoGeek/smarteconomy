@@ -76,8 +76,8 @@ export const useLogin=() => {
                 await AsyncStorage.setItem('refreshToken',refreshToken)
                 await AsyncStorage.setItem('user',JSON.stringify(user))
 
-                console.log('[useLogin] Token saved to AsyncStorage:', accessToken.substring(0, 30) + '...')
-                console.log('[useLogin] Token length:', accessToken.length)
+                console.log('[useLogin] Token saved to AsyncStorage:',accessToken.substring(0,30)+'...')
+                console.log('[useLogin] Token length:',accessToken.length)
 
                 setUser(user)
 
