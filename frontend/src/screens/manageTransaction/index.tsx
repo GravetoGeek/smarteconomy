@@ -21,7 +21,7 @@ const TRANSACTION_TYPES=[
     {id: 3,type: 'TRANSFER'}
 ]
 
-export default function ManageTransaction({route}) {
+export default function ManageTransaction({route}: any) {
     const {profile}=useStore()
     const [transaction,setTransaction]=useState<Transaction>(route.params)
     const [date,setDate]=useState(moment(transaction.date).format("YYYY-MM-DD HH:mm:ss"))
@@ -80,7 +80,7 @@ export default function ManageTransaction({route}) {
     }
 
 
-    async function handleInputChange(field,value) {
+    async function handleInputChange(field: string,value: any) {
         setTransaction({...transaction,[field]: value})
         console.log('handleInputChange')
     }

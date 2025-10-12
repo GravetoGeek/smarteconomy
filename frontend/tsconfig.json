@@ -6,6 +6,6 @@
   },
   "include": [
     "src",
-    "types/env.d.ts"
+    "types"
   ],
 }
