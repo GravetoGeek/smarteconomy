@@ -1,15 +1,15 @@
-import { gql } from '@apollo/client';
+import {gql} from '@apollo/client'
 
 /**
  * 👤 Users Queries
- * 
+ *
  * Queries GraphQL para buscar dados de usuários
  */
 
 /**
  * Query para buscar todos os usuários
  */
-export const GET_USERS = gql`
+export const GET_USERS=gql`
   query GetUsers {
     users {
       id
@@ -26,12 +26,12 @@ export const GET_USERS = gql`
       updatedAt
     }
   }
-`;
+`
 
 /**
  * Query para buscar usuário por ID
  */
-export const GET_USER_BY_ID = gql`
+export const GET_USER_BY_ID=gql`
   query GetUserById($id: String!) {
     userById(id: $id) {
       id
@@ -48,12 +48,12 @@ export const GET_USER_BY_ID = gql`
       updatedAt
     }
   }
-`;
+`
 
 /**
  * Query para buscar usuário por email
  */
-export const GET_USER_BY_EMAIL = gql`
+export const GET_USER_BY_EMAIL=gql`
   query GetUserByEmail($email: String!) {
     userByEmail(email: $email) {
       id
@@ -70,12 +70,12 @@ export const GET_USER_BY_EMAIL = gql`
       updatedAt
     }
   }
-`;
+`
 
 /**
  * Query para buscar usuários com paginação e filtros
  */
-export const SEARCH_USERS = gql`
+export const SEARCH_USERS=gql`
   query SearchUsers($input: SearchUsersInput!) {
     searchUsers(input: $input) {
       items {
@@ -99,4 +99,4 @@ export const SEARCH_USERS = gql`
       lastPage
     }
   }
-`;
+`
