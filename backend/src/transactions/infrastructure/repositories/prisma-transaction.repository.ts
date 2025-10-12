@@ -307,7 +307,9 @@ export class PrismaTransactionRepository implements TransactionRepositoryPort {
     }
 
     private buildOrderBy(sortBy: string, sortOrder: string): any {
-        return { [sortBy]: sortOrder }
+        // Ensure sortOrder is lowercase ('asc' or 'desc') as required by Prisma
+        const order = sortOrder?.toLowerCase() === 'asc' ? 'asc' : 'desc'
+        return { [sortBy]: order }
     }
 
     private calculatePeriodStart(period: 'week' | 'month' | 'quarter' | 'year'): Date {
