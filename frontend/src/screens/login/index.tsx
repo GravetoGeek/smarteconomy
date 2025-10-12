@@ -49,7 +49,7 @@ export default function Login() {
             const user=await login({email,password})
 
             if(user) {
-                setUser({...user, id: Number(user.id)})
+                setUser({...user,id: Number(user.id)})
                 handleDashboard()
             } else {
                 setErrorMessage("Email ou senha inválidos")

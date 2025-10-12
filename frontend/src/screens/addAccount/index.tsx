@@ -5,8 +5,8 @@ import React,{useState} from "react"
 import DropDownPicker from "react-native-dropdown-picker"
 import FloatingBottomMenu from "../../components/FloatingBottomMenu"
 import Header from "../../components/Header"
-import {useStore} from '../../hooks/useStore'
 import {useCreateAccount} from '../../hooks/accounts/useCreateAccount'
+import {useStore} from '../../hooks/useStore'
 
 // Tipos de conta disponíveis (hardcoded pois não há endpoint GraphQL)
 const ACCOUNT_TYPES=[

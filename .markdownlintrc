@@ -1,10 +1,10 @@
 {
-  "default": true,
-  "MD022": false,
-  "MD032": false,
-  "MD031": false,
-  "line-length": false,
-  "no-trailing-spaces": false,
-  "no-hard-tabs": false,
-  "no-bare-urls": false
+    "default": true,
+    "MD022": false,
+    "MD032": false,
+    "MD031": false,
+    "line-length": false,
+    "no-trailing-spaces": false,
+    "no-hard-tabs": false,
+    "no-bare-urls": false
 }

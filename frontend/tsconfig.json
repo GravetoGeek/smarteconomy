@@ -1,12 +1,9 @@
 {
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "jsx": "react-native",
-    "strict": true,
-    "ignoreDeprecations": "6.0"
-  },
-  "include": [
-    "src",
-    "types"
-  ],
+    "extends": "expo/tsconfig.base",
+    "compilerOptions": {
+        "jsx": "react-native",
+        "strict": true,
+        "ignoreDeprecations": "6.0"
+    },
+    "include": ["src", "types"]
 }

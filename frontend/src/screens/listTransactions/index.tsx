@@ -9,9 +9,9 @@ import CategoryIcon from "../../components/Dashboard/Icons/CategoryIcon"
 import FloatingBottomMenu from "../../components/FloatingBottomMenu"
 import Header from "../../components/Header"
 import {Icons} from "../../components/Icons/Icons"
-import {useStore} from "../../hooks/useStore"
 import {GET_CATEGORIES} from "../../graphql/queries/categories.queries"
 import {useSearchTransactions} from "../../hooks/transactions/useSearchTransactions"
+import {useStore} from "../../hooks/useStore"
 import {Category,Transaction,TransactionTypes} from "../../models"
 
 // Transaction types hardcoded (no GraphQL endpoint)
