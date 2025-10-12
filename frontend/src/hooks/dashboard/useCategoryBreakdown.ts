@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/client';
+import { useMemo } from 'react';
 import { SEARCH_TRANSACTIONS } from '../../graphql/queries/transactions.queries';
 
 interface CategoryData {
@@ -32,7 +33,7 @@ export const useCategoryBreakdown = (
     skip: !userId,
   });
 
-  const calculateCategoryBreakdown = (): CategoryBreakdown => {
+  const categoryBreakdown = useMemo(() => {
     if (!data?.searchTransactions?.transactions) {
       return { expenses: [], income: [] };
     }
@@ -71,10 +72,10 @@ export const useCategoryBreakdown = (
     }));
 
     return { expenses, income };
-  };
+  }, [data]);
 
   return {
-    categoryBreakdown: calculateCategoryBreakdown(),
+    categoryBreakdown,
     loading,
     error,
     refetch,

@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/client';
+import { useMemo } from 'react';
 import { CATEGORY_ANALYSIS } from '../../graphql/queries/dashboard.queries';
 
 interface CategoryAnalysisVariables {
@@ -12,7 +13,7 @@ export const useCategoryAnalysis = (userId: string, period?: string) => {
     skip: !userId,
   });
 
-  const parseData = () => {
+  const categoryData = useMemo(() => {
     if (!data?.categoryAnalysis) return { expenses: [], income: [] };
     
     try {
@@ -25,10 +26,10 @@ export const useCategoryAnalysis = (userId: string, period?: string) => {
       console.error('Error parsing category analysis:', err);
       return { expenses: [], income: [] };
     }
-  };
+  }, [data]);
 
   return {
-    categoryData: parseData(),
+    categoryData,
     loading,
     error,
     refetch,
