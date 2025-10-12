@@ -3,6 +3,7 @@ import { Category } from '../../domain/entities/category'
 import { CreateCategoryUseCase } from '../use-cases/create-category.use-case'
 import { FindAllCategoriesUseCase } from '../use-cases/find-all-categories.use-case'
 import { FindCategoryByIdUseCase } from '../use-cases/find-category-by-id.use-case'
+import { FindCategoriesByTypeUseCase } from '../use-cases/find-categories-by-type.use-case'
 
 export interface CreateCategoryRequest {
     category: string
@@ -17,7 +18,8 @@ export class CategoryApplicationService {
     constructor(
         private readonly createCategoryUseCase: CreateCategoryUseCase,
         private readonly findAllCategoriesUseCase: FindAllCategoriesUseCase,
-        private readonly findCategoryByIdUseCase: FindCategoryByIdUseCase
+        private readonly findCategoryByIdUseCase: FindCategoryByIdUseCase,
+        private readonly findCategoriesByTypeUseCase: FindCategoriesByTypeUseCase
     ) {}
 
     async createCategory(request: CreateCategoryRequest): Promise<Category> {
@@ -30,5 +32,9 @@ export class CategoryApplicationService {
 
     async findCategoryById(request: FindCategoryByIdRequest): Promise<Category> {
         return await this.findCategoryByIdUseCase.execute(request)
+    }
+
+    async findCategoriesByType(type: string): Promise<Category[]> {
+        return await this.findCategoriesByTypeUseCase.execute(type)
     }
 }

@@ -24,6 +24,20 @@ export class CategoryResolver {
         }
     }
 
+    @Query(() => [Category])
+    async categoriesByType(
+        @Args('type', { type: () => String }) type: string
+    ): Promise<Category[]> {
+        try {
+            this.logger.log(`Fetching categories by type: ${type}`)
+            const categories = await this.categoryApplicationService.findCategoriesByType(type)
+            return categories
+        } catch (error) {
+            this.logger.error(`Error fetching categories by type: ${type}`, error.stack)
+            throw error
+        }
+    }
+
     @Query(() => Category)
     async category(@Args('id', { type: () => String }) id: string): Promise<Category> {
         try {

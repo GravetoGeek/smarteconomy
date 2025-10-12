@@ -5,6 +5,7 @@ export interface CategoryRepositoryPort {
     findById(id: string): Promise<Category | null>
     findByCategory(category: string): Promise<Category | null>
     findAll(): Promise<Category[]>
+    findByType(type: string): Promise<Category[]>
     delete(id: string): Promise<void>
     existsById(id: string): Promise<boolean>
     existsByCategory(category: string): Promise<boolean>
