@@ -26,25 +26,25 @@ interface LoginResponse {
 
 /**
  * 🔐 useLogin Hook
- * 
+ *
  * Custom hook para autenticação de usuário usando GraphQL
- * 
+ *
  * @example
  * ```tsx
  * const LoginScreen = () => {
  *   const { login, loading, error, user } = useLogin();
- * 
+ *
  *   const handleLogin = async () => {
  *     const result = await login({
  *       email: 'user@example.com',
  *       password: 'password123'
  *     });
- *     
+ *
  *     if (result) {
  *       navigation.navigate('Home');
  *     }
  *   };
- * 
+ *
  *   return (
  *     <Button onPress={handleLogin} isLoading={loading}>
  *       Login

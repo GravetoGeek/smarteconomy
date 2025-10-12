@@ -31,14 +31,14 @@ interface SignupResponse {
 
 /**
  * 🆕 useSignup Hook
- * 
+ *
  * Custom hook para registro de novo usuário usando GraphQL
- * 
+ *
  * @example
  * ```tsx
  * const RegisterScreen = () => {
  *   const { signup, loading, error, user } = useSignup();
- * 
+ *
  *   const handleSignup = async () => {
  *     const result = await signup({
  *       email: 'newuser@example.com',
@@ -49,12 +49,12 @@ interface SignupResponse {
  *       genderId: 'uuid-gender',
  *       professionId: 'uuid-profession'
  *     });
- *     
+ *
  *     if (result) {
  *       navigation.navigate('Home');
  *     }
  *   };
- * 
+ *
  *   return (
  *     <Button onPress={handleSignup} isLoading={loading}>
  *       Cadastrar
