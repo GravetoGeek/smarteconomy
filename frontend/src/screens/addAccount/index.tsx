@@ -47,7 +47,8 @@ export default function AddAccount() {
         })
 
         if(result) {
-            setAccounts([...accounts,result])
+            // Type conversion: GraphQL Account -> Model Account
+            setAccounts([...accounts,result as any])
             handleNavigateDashboard()
         }
     }
