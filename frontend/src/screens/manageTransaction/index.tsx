@@ -182,8 +182,7 @@ export default function ManageTransaction({ route }) {
                             >
                                 {categoryByTransactionTypes ? categoryByTransactionTypes.map((category) => (
                                     <Select.Item key={`${category.id}`} label={category.category} value={`${category.id}`} />
-
-                                ))}
+                                )) : null}
                             </Select>
                             <Button 
                                 onPress={updateTransaction} 
