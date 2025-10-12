@@ -1,17 +1,13 @@
-/**
- * 📊 Dashboards Module
- *
- * Módulo para funcionalidades de dashboard e métricas financeiras
- * seguindo arquitetura hexagonal com DDD.
- */
-
-import { Module } from '@nestjs/common'
-import { JwtModule } from '@nestjs/jwt'
-import { DatabaseModule } from '../database/database.module'
-import { SharedModule } from '../shared/shared.module'
+import {Module} from '@nestjs/common'
+import {JwtModule} from '@nestjs/jwt'
+import {AccountsModule} from '../accounts/accounts.module'
+import {CategoriesModule} from '../categories/categories.module'
+import {DatabaseModule} from '../database/database.module'
+import {SharedModule} from '../shared/shared.module'
+import {TransactionsModule} from '../transactions/transactions.module'
 
 // Domain Services
-import { DashboardDomainService } from './domain/dashboard-domain.service'
+import {DashboardDomainService} from './domain/dashboard-domain.service'
 
 // Application Use Cases
 import {
@@ -20,27 +16,23 @@ import {
 } from './application'
 
 // Interfaces
-import { DashboardResolver } from './interfaces/dashboard.resolver'
+import {DashboardResolver} from './interfaces/dashboard.resolver'
 
 @Module({
     imports: [
         DatabaseModule,
         SharedModule,
+        TransactionsModule, // ✅ Importar módulo de transações
+        AccountsModule,     // ✅ Importar módulo de contas
+        CategoriesModule,   // ✅ Importar módulo de categorias
         JwtModule.register({
-            secret: process.env.JWT_SECRET || 'fallback-secret',
-            signOptions: { expiresIn: '1h' }
+            secret: process.env.JWT_SECRET||'fallback-secret',
+            signOptions: {expiresIn: '1h'}
         })
     ],
     providers: [
-        // Domain Services
-        {
-            provide: DashboardDomainService,
-            useFactory: () => new DashboardDomainService(
-                null, // transactionRepository - será injetado quando disponível
-                null, // accountRepository - será injetado quando disponível
-                null  // categoryRepository - será injetado quando disponível
-            )
-        },
+        // Domain Services - agora conectado com os repositórios reais
+        DashboardDomainService,
 
         // Use Cases
         {
@@ -66,4 +58,4 @@ import { DashboardResolver } from './interfaces/dashboard.resolver'
         GetFinancialTrendsUseCase
     ]
 })
-export class DashboardsModule { }
+export class DashboardsModule {}

@@ -5,44 +5,50 @@
  * seguindo arquitetura hexagonal com DDD.
  */
 
-import { Module } from '@nestjs/common'
-import { JwtModule } from '@nestjs/jwt'
-import { DatabaseModule } from '../database/database.module'
-import { SharedModule } from '../shared/shared.module'
+import {Module} from '@nestjs/common'
+import {JwtModule} from '@nestjs/jwt'
+import {AccountsModule} from '../accounts/accounts.module'
+import {DatabaseModule} from '../database/database.module'
+import {SharedModule} from '../shared/shared.module'
 
 // Domain Services
-import { TransactionDomainService } from './domain/services/transaction-domain.service'
+import {TransactionDomainService} from './domain/services/transaction-domain.service'
 
 // Application Use Cases
 import {
     CreateTransactionUseCase,
-    SearchTransactionsUseCase,
     GetTransactionSummaryUseCase,
-    UpdateTransactionUseCase,
-    ReverseTransactionUseCase
+    ReverseTransactionUseCase,
+    SearchTransactionsUseCase,
+    UpdateTransactionUseCase
 } from './application'
 
 // Infrastructure
-import { PrismaTransactionRepository } from './infrastructure'
+import {PrismaTransactionRepository} from './infrastructure'
+import {AccountIntegrationServiceImpl} from './infrastructure/services/account-integration.service'
 
 // Interfaces
-import { TransactionResolver } from './interfaces/graphql/transaction.resolver'
+import {TransactionResolver} from './interfaces/graphql/transaction.resolver'
 
 // Ports
-import { TransactionRepositoryPort } from './domain'
+import {TransactionRepositoryPort} from './domain'
 
 @Module({
     imports: [
         DatabaseModule,
         SharedModule,
+        AccountsModule, // ✅ Importar módulo de contas
         JwtModule.register({
-            secret: process.env.JWT_SECRET || 'fallback-secret',
-            signOptions: { expiresIn: '1h' }
+            secret: process.env.JWT_SECRET||'fallback-secret',
+            signOptions: {expiresIn: '1h'}
         })
     ],
     providers: [
         // Domain Services
         TransactionDomainService,
+
+        // Integration Services
+        AccountIntegrationServiceImpl,
 
         // Repository Implementation
         {
@@ -55,13 +61,14 @@ import { TransactionRepositoryPort } from './domain'
             provide: CreateTransactionUseCase,
             useFactory: (
                 transactionRepository: TransactionRepositoryPort,
-                transactionDomainService: TransactionDomainService
+                transactionDomainService: TransactionDomainService,
+                accountIntegrationService: AccountIntegrationServiceImpl
             ) => new CreateTransactionUseCase(
                 transactionRepository,
                 transactionDomainService,
-                null // accountService - será injetado quando disponível
+                accountIntegrationService // ✅ Injetar serviço de integração
             ),
-            inject: ['TransactionRepositoryPort', TransactionDomainService]
+            inject: ['TransactionRepositoryPort',TransactionDomainService,AccountIntegrationServiceImpl]
         },
 
         {
@@ -95,7 +102,7 @@ import { TransactionRepositoryPort } from './domain'
                 transactionDomainService,
                 null // auditService - será injetado quando disponível
             ),
-            inject: ['TransactionRepositoryPort', TransactionDomainService]
+            inject: ['TransactionRepositoryPort',TransactionDomainService]
         },
 
         // GraphQL Resolver
@@ -111,4 +118,4 @@ import { TransactionRepositoryPort } from './domain'
         ReverseTransactionUseCase
     ]
 })
-export class TransactionsModule { }
+export class TransactionsModule {}

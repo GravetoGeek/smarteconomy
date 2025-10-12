@@ -35,4 +35,11 @@ export class Password {
     toString(): string {
         return this.value
     }
+
+    // Criar instância a partir de um hash (pula validação)
+    static fromHash(hash: string): Password {
+        const pw=Object.create(Password.prototype) as Password
+            ; (pw as any).value=hash
+        return pw
+    }
 }
