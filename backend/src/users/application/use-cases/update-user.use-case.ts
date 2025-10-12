@@ -1,8 +1,8 @@
 import {Inject,Injectable} from '@nestjs/common'
-import {UserRepositoryPort} from '../../domain/ports/user-repository.port'
 import {HashServicePort} from '../../domain/ports/hash-service.port'
+import {UserRepositoryPort} from '../../domain/ports/user-repository.port'
+import {HASH_SERVICE,USER_REPOSITORY} from '../../domain/tokens'
 import {User,UserRole} from '../../domain/user.entity'
-import {USER_REPOSITORY,HASH_SERVICE} from '../../domain/tokens'
 
 export interface UpdateUserRequest {
     id: string
@@ -31,7 +31,7 @@ export class UpdateUserUseCase {
         const existingUser=await this.userRepository.findById(request.id)
         if(!existingUser) {
             // ✅ Retornar resultado indicando que não foi possível atualizar
-            return {user: null, success: false}
+            return {user: null,success: false}
         }
 
         // Update user properties
@@ -53,13 +53,12 @@ export class UpdateUserUseCase {
         // Handle password update
         if(request.password) {
             const hashedPassword=await this.hashService.hash(request.password)
-            // Note: This would require a method in the User entity to update password
-            // For now, we'll need to create a new user instance with updated password
+            existingUser.updatePassword(hashedPassword)
         }
 
         // Save updated user
         const updatedUser=await this.userRepository.save(existingUser)
 
-        return {user: updatedUser, success: true}
+        return {user: updatedUser,success: true}
     }
 }
