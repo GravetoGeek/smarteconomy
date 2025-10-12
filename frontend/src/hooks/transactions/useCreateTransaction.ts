@@ -77,7 +77,7 @@ export const useCreateTransaction=() => {
 
             if(data?.createTransaction) {
                 console.log('[useCreateTransaction] Transaction created:',data.createTransaction.transaction.id)
-                
+
                 if(data.createTransaction.warnings.length>0) {
                     console.warn('[useCreateTransaction] Warnings:',data.createTransaction.warnings)
                 }

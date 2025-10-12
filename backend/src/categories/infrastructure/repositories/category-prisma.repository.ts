@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../../../database/prisma/prisma.service'
-import { Category } from '../../domain/entities/category'
-import { CategoryRepositoryPort } from '../../domain/ports/category-repository.port'
+import {Injectable} from '@nestjs/common'
+import {PrismaService} from '../../../database/prisma/prisma.service'
+import {Category} from '../../domain/entities/category'
+import {CategoryRepositoryPort} from '../../domain/ports/category-repository.port'
 
 @Injectable()
 export class CategoryPrismaRepository implements CategoryRepositoryPort {
@@ -9,75 +9,75 @@ export class CategoryPrismaRepository implements CategoryRepositoryPort {
 
     async save(category: Category): Promise<Category> {
         try {
-            const categoryData = {
+            const categoryData={
                 category: category.category,
                 createdAt: category.createdAt,
                 updatedAt: category.updatedAt
             }
 
-            const savedCategory = await this.prisma.postCategory.upsert({
-                where: { id: category.id },
+            const savedCategory=await this.prisma.postCategory.upsert({
+                where: {id: category.id},
                 update: categoryData,
-                create: { id: category.id, ...categoryData }
+                create: {id: category.id,...categoryData}
             })
 
             return Category.reconstitute(savedCategory)
-        } catch (error) {
+        } catch(error) {
             throw error
         }
     }
 
-    async findById(id: string): Promise<Category | null> {
+    async findById(id: string): Promise<Category|null> {
         try {
-            const category = await this.prisma.postCategory.findUnique({
-                where: { id }
+            const category=await this.prisma.postCategory.findUnique({
+                where: {id}
             })
 
-            if (!category) {
+            if(!category) {
                 return null
             }
 
             return Category.reconstitute(category)
-        } catch (error) {
+        } catch(error) {
             throw error
         }
     }
 
-    async findByCategory(category: string): Promise<Category | null> {
+    async findByCategory(category: string): Promise<Category|null> {
         try {
-            const foundCategory = await this.prisma.postCategory.findFirst({
-                where: { category }
+            const foundCategory=await this.prisma.postCategory.findFirst({
+                where: {category}
             })
 
-            if (!foundCategory) {
+            if(!foundCategory) {
                 return null
             }
 
             return Category.reconstitute(foundCategory)
-        } catch (error) {
+        } catch(error) {
             throw error
         }
     }
 
     async findAll(): Promise<Category[]> {
         try {
-            const categories = await this.prisma.postCategory.findMany({
-                orderBy: { category: 'asc' }
+            const categories=await this.prisma.postCategory.findMany({
+                orderBy: {category: 'asc'}
             })
 
             return categories.map(category => Category.reconstitute(category))
-        } catch (error) {
+        } catch(error) {
             throw error
         }
     }
 
     async findByType(type: string): Promise<Category[]> {
         try {
-            const categories = await this.prisma.category.findMany({
+            const categories=await this.prisma.category.findMany({
                 where: {
                     defaultType: type as any
                 },
-                orderBy: { name: 'asc' }
+                orderBy: {name: 'asc'}
             })
 
             return categories.map(cat => Category.reconstitute({
@@ -86,7 +86,7 @@ export class CategoryPrismaRepository implements CategoryRepositoryPort {
                 createdAt: cat.createdAt,
                 updatedAt: cat.updatedAt
             }))
-        } catch (error) {
+        } catch(error) {
             throw error
         }
     }
@@ -94,33 +94,33 @@ export class CategoryPrismaRepository implements CategoryRepositoryPort {
     async delete(id: string): Promise<void> {
         try {
             await this.prisma.postCategory.delete({
-                where: { id }
+                where: {id}
             })
-        } catch (error) {
+        } catch(error) {
             throw error
         }
     }
 
     async existsById(id: string): Promise<boolean> {
         try {
-            const count = await this.prisma.postCategory.count({
-                where: { id }
+            const count=await this.prisma.postCategory.count({
+                where: {id}
             })
 
-            return count > 0
-        } catch (error) {
+            return count>0
+        } catch(error) {
             throw error
         }
     }
 
     async existsByCategory(category: string): Promise<boolean> {
         try {
-            const count = await this.prisma.postCategory.count({
-                where: { category }
+            const count=await this.prisma.postCategory.count({
+                where: {category}
             })
 
-            return count > 0
-        } catch (error) {
+            return count>0
+        } catch(error) {
             throw error
         }
     }
