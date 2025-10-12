@@ -267,7 +267,7 @@ input CreateTransactionInput {
   amount: Float!
   type: TransactionType!
   accountId: String!
-  categoryId: String!
+  categoryId: String
   destinationAccountId: String
   date: DateTime
 }

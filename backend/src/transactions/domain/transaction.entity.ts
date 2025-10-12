@@ -26,7 +26,7 @@ export class Transaction {
     private readonly _type: TransactionType
     private _status: TransactionStatus
     private readonly _accountId: string
-    private readonly _categoryId: string
+    private readonly _categoryId?: string
     private readonly _destinationAccountId?: string // Para transferências
     private readonly _date: Date
     private readonly _createdAt: Date
@@ -38,7 +38,7 @@ export class Transaction {
         amount: number
         type: TransactionType
         accountId: string
-        categoryId: string
+        categoryId?: string
         destinationAccountId?: string
         date?: Date
         status?: TransactionStatus
@@ -103,7 +103,7 @@ export class Transaction {
     get type(): TransactionType { return this._type }
     get status(): TransactionStatus { return this._status }
     get accountId(): string { return this._accountId }
-    get categoryId(): string { return this._categoryId }
+    get categoryId(): string | undefined { return this._categoryId }
     get destinationAccountId(): string | undefined { return this._destinationAccountId }
     get date(): Date { return this._date }
     get createdAt(): Date { return this._createdAt }

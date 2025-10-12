@@ -319,9 +319,9 @@ model Transaction {
     /// Conta de origem (relacionamento N:1)
     account               Account           @relation("OriginAccount", fields: [accountId], references: [id])
     accountId             String
-    /// Categoria da transação (relacionamento N:1)
-    category              Category          @relation(fields: [categoryId], references: [id])
-    categoryId            String
+    /// Categoria da transação (relacionamento N:1, opcional para transferências)
+    category              Category?         @relation(fields: [categoryId], references: [id])
+    categoryId            String?
     /// Conta de destino para transferências (relacionamento N:1, opcional)
     destinationAccount    Account?          @relation("DestinationAccount", fields: [destinationAccountId], references: [id])
     destinationAccountId  String?
