@@ -1,18 +1,18 @@
-import { Module, Logger } from '@nestjs/common'
-import { DatabaseModule } from '../database/database.module'
-import { AUTH_REPOSITORY, USER_REPOSITORY, HASH_SERVICE, JWT_SERVICE } from './domain/tokens'
-import { AuthMemoryRepository } from './infrastructure/repositories/auth-memory.repository'
-import { UserAuthRepository } from './infrastructure/repositories/user-auth.repository'
-import { HashBcryptService } from './infrastructure/services/hash-bcrypt.service'
-import { JwtCryptoService } from './infrastructure/services/jwt-crypto.service'
-import { LoginUseCase } from './application/use-cases/login.use-case'
-import { SignupUseCase } from './application/use-cases/signup.use-case'
-import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case'
-import { LogoutUseCase } from './application/use-cases/logout.use-case'
-import { ValidateTokenUseCase } from './application/use-cases/validate-token.use-case'
-import { AuthApplicationService } from './application/services/auth-application.service'
-import { AuthResolver } from './interfaces/graphql/resolvers/auth.resolver'
-import { JwtGuard } from './infrastructure/guards/jwt.guard'
+import {Logger,Module} from '@nestjs/common'
+import {DatabaseModule} from '../database/database.module'
+import {AuthApplicationService} from './application/services/auth-application.service'
+import {LoginUseCase} from './application/use-cases/login.use-case'
+import {LogoutUseCase} from './application/use-cases/logout.use-case'
+import {RefreshTokenUseCase} from './application/use-cases/refresh-token.use-case'
+import {SignupUseCase} from './application/use-cases/signup.use-case'
+import {ValidateTokenUseCase} from './application/use-cases/validate-token.use-case'
+import {AUTH_REPOSITORY,HASH_SERVICE,JWT_SERVICE,USER_REPOSITORY} from './domain/tokens'
+import {JwtGuard} from './infrastructure/guards/jwt.guard'
+import {AuthMemoryRepository} from './infrastructure/repositories/auth-memory.repository'
+import {UserAuthRepository} from './infrastructure/repositories/user-auth.repository'
+import {HashBcryptService} from './infrastructure/services/hash-bcrypt.service'
+import {JwtCryptoService} from './infrastructure/services/jwt-crypto.service'
+import {AuthResolver} from './interfaces/graphql/resolvers/auth.resolver'
 
 @Module({
     imports: [DatabaseModule],
@@ -42,10 +42,10 @@ import { JwtGuard } from './infrastructure/guards/jwt.guard'
         AuthResolver,
         JwtGuard
     ],
-    exports: [AuthApplicationService, AUTH_REPOSITORY, USER_REPOSITORY, HASH_SERVICE, JWT_SERVICE, JwtGuard]
+    exports: [AuthApplicationService,AUTH_REPOSITORY,USER_REPOSITORY,HASH_SERVICE,JWT_SERVICE,JwtGuard]
 })
 export class AuthModule {
-    private readonly logger = new Logger(AuthModule.name)
+    private readonly logger=new Logger(AuthModule.name)
 
     constructor() {
         this.logger.log('AuthModule initialized')
