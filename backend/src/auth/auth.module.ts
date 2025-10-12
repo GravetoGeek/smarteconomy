@@ -12,6 +12,7 @@ import { LogoutUseCase } from './application/use-cases/logout.use-case'
 import { ValidateTokenUseCase } from './application/use-cases/validate-token.use-case'
 import { AuthApplicationService } from './application/services/auth-application.service'
 import { AuthResolver } from './interfaces/graphql/resolvers/auth.resolver'
+import { JwtGuard } from './infrastructure/guards/jwt.guard'
 
 @Module({
     imports: [DatabaseModule],
@@ -38,9 +39,10 @@ import { AuthResolver } from './interfaces/graphql/resolvers/auth.resolver'
         LogoutUseCase,
         ValidateTokenUseCase,
         AuthApplicationService,
-        AuthResolver
+        AuthResolver,
+        JwtGuard
     ],
-    exports: [AuthApplicationService, AUTH_REPOSITORY, USER_REPOSITORY, HASH_SERVICE, JWT_SERVICE]
+    exports: [AuthApplicationService, AUTH_REPOSITORY, USER_REPOSITORY, HASH_SERVICE, JWT_SERVICE, JwtGuard]
 })
 export class AuthModule {
     private readonly logger = new Logger(AuthModule.name)

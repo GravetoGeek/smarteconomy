@@ -8,6 +8,7 @@
 import {Module} from '@nestjs/common'
 import {JwtModule} from '@nestjs/jwt'
 import {AccountsModule} from '../accounts/accounts.module'
+import {AuthModule} from '../auth/auth.module'
 import {DatabaseModule} from '../database/database.module'
 import {SharedModule} from '../shared/shared.module'
 
@@ -37,6 +38,7 @@ import {TransactionRepositoryPort} from './domain'
     imports: [
         DatabaseModule,
         SharedModule,
+        AuthModule,     // ✅ Importar AuthModule para ter acesso ao JWT_SERVICE
         AccountsModule, // ✅ Importar módulo de contas
         JwtModule.register({
             secret: process.env.JWT_SECRET||'fallback-secret',

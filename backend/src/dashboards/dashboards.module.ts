@@ -1,6 +1,7 @@
 import {Module} from '@nestjs/common'
 import {JwtModule} from '@nestjs/jwt'
 import {AccountsModule} from '../accounts/accounts.module'
+import {AuthModule} from '../auth/auth.module'
 import {CategoriesModule} from '../categories/categories.module'
 import {DatabaseModule} from '../database/database.module'
 import {SharedModule} from '../shared/shared.module'
@@ -22,6 +23,7 @@ import {DashboardResolver} from './interfaces/dashboard.resolver'
     imports: [
         DatabaseModule,
         SharedModule,
+        AuthModule,         // ✅ Importar AuthModule para ter acesso ao JWT_SERVICE
         TransactionsModule, // ✅ Importar módulo de transações
         AccountsModule,     // ✅ Importar módulo de contas
         CategoriesModule,   // ✅ Importar módulo de categorias

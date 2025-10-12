@@ -14,6 +14,8 @@ const httpLink=createHttpLink({
 // Auth Link - adiciona token JWT nos headers
 const authLink=setContext(async (_,{headers}) => {
     const token=await AsyncStorage.getItem('token')
+    
+    console.log('[Apollo Auth Link] Token from AsyncStorage:', token ? `${token.substring(0, 20)}...` : 'NO TOKEN')
 
     return {
         headers: {
