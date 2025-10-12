@@ -132,7 +132,11 @@ backend/
 │   │   ├── 📁 interfaces/           # GraphQL Resolvers
 │   │   └── 📁 graphql/              # Types, Inputs, Models GraphQL
 │   ├── 📁 auth/                     # Módulo de autenticação
-│   ├── 📁 accounts/                 # Módulo de contas financeiras
+│   ├── 📁 accounts/                 # 💰 Módulo de contas financeiras (Arquitetura Hexagonal)
+│   │   ├── 📁 domain/              # Account Entity, Value Objects, Ports
+│   │   ├── 📁 application/          # Use Cases, Application Services
+│   │   ├── 📁 infrastructure/       # Account Repository (Prisma)
+│   │   └── 📁 interfaces/           # GraphQL Resolvers, Inputs, Models
 │   ├── 📁 transactions/             # Módulo de transações
 │   ├── 📁 categories/               # Módulo de categorias
 │   ├── 📁 dashboards/               # Módulo de dashboards
@@ -348,17 +352,34 @@ type User {
   updatedAt: DateTime!
 }
 
+type Account {
+  id: ID!
+  name: String!
+  type: String!
+  balance: Float!
+  userId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
 type Query {
   users: [User!]!
   userById(id: String!): User
   userByEmail(email: String!): User
   searchUsers(input: SearchUsersInput!): SearchResult!
+
+  # 💰 Queries de Contas Financeiras
+  accountsByUser(userId: String!): [Account!]!
+  accountById(id: String!): Account
 }
 
 type Mutation {
   createUser(input: CreateUserInput!): User!
   updateUser(id: String!, input: UpdateUserInput!): User
   deleteUser(id: String!): Boolean!
+
+  # 💰 Mutations de Contas Financeiras
+  createAccount(input: CreateAccountInput!): Account!
 }
 ```
 
@@ -391,6 +412,43 @@ query SearchUsers($input: SearchUsersInput!) {
     total
     currentPage
     totalPages
+  }
+}
+
+# 💰 Criar conta financeira
+mutation CreateAccount($input: CreateAccountInput!) {
+  createAccount(input: $input) {
+    id
+    name
+    type
+    balance
+    userId
+    createdAt
+  }
+}
+
+# 💰 Buscar contas por usuário
+query AccountsByUser($userId: String!) {
+  accountsByUser(userId: $userId) {
+    id
+    name
+    type
+    balance
+    createdAt
+    updatedAt
+  }
+}
+
+# 💰 Buscar conta específica
+query AccountById($id: String!) {
+  accountById(id: $id) {
+    id
+    name
+    type
+    balance
+    userId
+    createdAt
+    updatedAt
   }
 }
 ```

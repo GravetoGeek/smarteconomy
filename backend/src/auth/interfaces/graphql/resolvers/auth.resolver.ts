@@ -1,6 +1,6 @@
 import { Resolver, Mutation, Args, Query } from '@nestjs/graphql'
 import { AuthResponse, LogoutResponse, ValidateTokenResponse } from '../models/auth.model'
-import { LoginInput, RefreshTokenInput, LogoutInput, ValidateTokenInput } from '../inputs/auth.input'
+import { LoginInput, SignupInput, RefreshTokenInput, LogoutInput, ValidateTokenInput } from '../inputs/auth.input'
 import { AuthApplicationService } from '../../../application/services/auth-application.service'
 import { Logger } from '@nestjs/common'
 
@@ -10,13 +10,13 @@ export class AuthResolver {
 
     constructor(
         private readonly authApplicationService: AuthApplicationService
-    ) {}
+    ) { }
 
     @Mutation(() => AuthResponse)
     async login(@Args('input') input: LoginInput): Promise<AuthResponse> {
         try {
             this.logger.log(`Login attempt for email: ${input.email}`)
-            
+
             const result = await this.authApplicationService.login({
                 email: input.email,
                 password: input.password
@@ -31,10 +31,33 @@ export class AuthResolver {
     }
 
     @Mutation(() => AuthResponse)
+    async signup(@Args('input') input: SignupInput): Promise<AuthResponse> {
+        try {
+            this.logger.log(`Signup attempt for email: ${input.email}`)
+
+            const result = await this.authApplicationService.signup({
+                email: input.email,
+                password: input.password,
+                name: input.name,
+                lastname: input.lastname,
+                birthdate: new Date(input.birthdate),
+                genderId: input.genderId,
+                professionId: input.professionId
+            })
+
+            this.logger.log(`Signup successful for user: ${result.user.id}`)
+            return result
+        } catch (error) {
+            this.logger.error(`Signup failed for email: ${input.email}`, error.stack)
+            throw error
+        }
+    }
+
+    @Mutation(() => AuthResponse)
     async refreshToken(@Args('input') input: RefreshTokenInput): Promise<AuthResponse> {
         try {
             this.logger.log('Refresh token attempt')
-            
+
             const result = await this.authApplicationService.refreshToken({
                 refreshToken: input.refreshToken
             })
@@ -51,7 +74,7 @@ export class AuthResolver {
     async logout(@Args('input') input: LogoutInput): Promise<LogoutResponse> {
         try {
             this.logger.log('Logout attempt')
-            
+
             const result = await this.authApplicationService.logout({
                 accessToken: input.accessToken
             })
@@ -68,7 +91,7 @@ export class AuthResolver {
     async validateToken(@Args('input') input: ValidateTokenInput): Promise<ValidateTokenResponse> {
         try {
             this.logger.log('Token validation attempt')
-            
+
             const result = await this.authApplicationService.validateToken({
                 accessToken: input.accessToken
             })

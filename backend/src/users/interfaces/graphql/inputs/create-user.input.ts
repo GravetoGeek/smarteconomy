@@ -27,7 +27,7 @@ export class CreateUserInput {
     @IsNotEmpty()
     birthdate: string
 
-    @Field()
+    @Field(() => String)
     @IsNotEmpty()
     @IsEnum(UserRole)
     role: UserRole

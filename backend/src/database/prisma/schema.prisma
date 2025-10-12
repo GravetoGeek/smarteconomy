@@ -1,4 +1,6 @@
-// This is your Prisma schema file,
+// 🗃️ SmartEconomy Database Schema
+// Sistema de Gestão Financeira Pessoal
+// Arquitetura: Domain-Driven Design com Prisma ORM
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
@@ -13,146 +15,367 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+/// 👤 Entidade principal do sistema representando um usuário
+/// Contém informações pessoais, credenciais e relacionamentos
 model User {
+    /// Identificador único do usuário (UUID)
     id           String        @id @default(uuid())
+    /// Email único para login e comunicação
     email        String        @unique @db.VarChar(255)
+    /// Primeiro nome do usuário (máx. 30 caracteres)
     name         String        @db.VarChar(30)
+    /// Sobrenome do usuário (máx. 50 caracteres)
     lastname     String        @db.VarChar(50)
+    /// Data de nascimento para cálculo de idade e validações
     birthdate    DateTime      @db.Date
     role         Role          @default(USER)
     posts        Post[]
+    /// Contas financeiras do usuário (relacionamento 1:N)
+    accounts     Account[]
+    /// Gênero do usuário (relacionamento N:1)
     gender       Gender        @relation(fields: [genderId], references: [id])
     genderId     String
+    /// Senha hash com bcrypt (salt rounds = 12)
     password     String        @db.VarChar(255)
+    /// Timestamp de criação do registro
     createdAt    DateTime      @default(now())
+    /// Timestamp da última atualização
     updatedAt    DateTime      @updatedAt
     profile      Profile?
     profession   Profession?   @relation(fields: [professionId], references: [id])
     professionId String
+    /// Status da conta (ACTIVE, INACTIVE, SUSPENDED)
     status       AccountStatus @default(ACTIVE)
 }
 
+/// 📝 Posts/artigos criados pelos usuários
+/// Sistema de blog ou conteúdo educacional financeiro
 model Post {
+    /// Identificador único do post
     id           String         @id @default(uuid())
+    /// Título do post
     title        String
+    /// Slug único para URLs amigáveis
     slug         String         @unique
+    /// Conteúdo completo do post (markdown/html)
     content      String
+    /// Status de publicação (rascunho/publicado)
     published    Boolean        @default(false)
+    /// Autor do post (relacionamento N:1)
     author       User           @relation(fields: [authorId], references: [id])
     authorId     String
+    /// Categorias do post (relacionamento N:N)
     postCategory PostCategory[] @relation
+    /// Data de criação
     createdAt    DateTime       @default(now())
+    /// Data da última atualização
     updatedAt    DateTime       @updatedAt
 }
 
+/// 📂 Categorias para organização de posts
+/// Permite classificação de conteúdo educacional
 model PostCategory {
+    /// Identificador único da categoria
     id        String   @id @default(uuid())
+    /// Nome da categoria
     category  String
+    /// Posts associados a esta categoria
     posts     Post[]
+    /// Data de criação
     createdAt DateTime @default(now())
+    /// Data da última atualização
     updatedAt DateTime @updatedAt
 }
 
+/// 👤 Perfil detalhado do usuário
+/// Informações adicionais e personalizáveis
 model Profile {
+    /// Identificador único do perfil
     id        String   @id @default(uuid())
+    /// Biografia ou descrição pessoal
     bio       String   @default("")
+    /// Data de criação
     createdAt DateTime @default(now())
+    /// Data da última atualização
     updatedAt DateTime @updatedAt
+    /// Usuário proprietário do perfil (relacionamento 1:1)
     User      User     @relation(fields: [userId], references: [id])
     userId    String   @unique
 }
 
+/// ⚧️ Gêneros disponíveis no sistema
+/// Suporte a diversidade e inclusão
 model Gender {
+    /// Identificador único do gênero
     id        String   @id @default(uuid())
+    /// Descrição do gênero (Masculino, Feminino, Não-binário, etc.)
     gender    String   @unique
+    /// Data de criação
     createdAt DateTime @default(now())
+    /// Data da última atualização
     updatedAt DateTime @updatedAt
+    /// Usuários com este gênero
     user      User[]
 }
 
+/// 💼 Profissões catalogadas no sistema
+/// Base para análises financeiras por categoria profissional
 model Profession {
+    /// Identificador único da profissão
     id         String   @id @default(uuid())
+    /// Nome da profissão
     profession String   @unique
+    /// Data de criação
     createdAt  DateTime @default(now())
+    /// Data da última atualização
     updatedAt  DateTime @updatedAt
+    /// Usuários com esta profissão
     user       User[]
 }
 
+/// 👨‍💼 Tabelas CBO (Classificação Brasileira de Ocupações)
+/// Dados oficiais do Ministério do Trabalho para categorização profissional
+
+/// Famílias ocupacionais CBO
 model CBO_Familia {
+    /// Identificador único
     id        String   @id @default(uuid())
+    /// Código oficial CBO da família
     codigo    String   @unique
+    /// Título da família ocupacional
     titulo    String
+    /// Data de criação
     createdAt DateTime @default(now())
+    /// Data da última atualização
     updatedAt DateTime @updatedAt
 }
 
+/// Grandes grupos ocupacionais CBO
 model CBO_Grande_Grupo {
+    /// Identificador único
     id        String   @id @default(uuid())
+    /// Código oficial CBO do grande grupo
     codigo    String   @unique
+    /// Título do grande grupo
     titulo    String
+    /// Data de criação
     createdAt DateTime @default(now())
+    /// Data da última atualização
     updatedAt DateTime @updatedAt
 }
 
+/// Ocupações específicas CBO
 model CBO_Ocupacao {
+    /// Identificador único
     id        String   @id @default(uuid())
+    /// Código oficial CBO da ocupação
     codigo    String   @unique
+    /// Título da ocupação
     titulo    String
+    /// Data de criação
     createdAt DateTime @default(now())
+    /// Data da última atualização
     updatedAt DateTime @updatedAt
 }
 
+/// Perfis ocupacionais detalhados CBO
 model CBO_Perfil_Ocupacional {
+    /// Identificador único
     id                     String   @id @default(uuid())
+    /// Código do grande grupo
     cod_grande_grupo       String
+    /// Código do subgrupo principal
     cod_subgrupo_principal String
+    /// Código do subgrupo
     cod_subgrupo           String
+    /// Código da família
     cod_familia            String
+    /// Código da ocupação
     cod_ocupacao           String
+    /// Sigla da grande área
     sgl_grande_area        String
+    /// Nome da grande área
     nome_grande_area       String
+    /// Título do perfil ocupacional
     titulo                 String
+    /// Data de criação
     createdAt              DateTime @default(now())
+    /// Data da última atualização
     updatedAt              DateTime @updatedAt
 }
 
+/// Sinônimos de ocupações CBO
 model CBO_Sinonimo {
+    /// Identificador único
     id        String   @id @default(uuid())
+    /// Código oficial CBO
     codigo    String   @unique
+    /// Título do sinônimo
     titulo    String
+    /// Data de criação
     createdAt DateTime @default(now())
+    /// Data da última atualização
     updatedAt DateTime @updatedAt
 }
 
+/// Subgrupos principais CBO
 model CBO_Subgrupo_Principal {
+    /// Identificador único
     id        String   @id @default(uuid())
+    /// Código oficial CBO
     codigo    String   @unique
+    /// Título do subgrupo principal
     titulo    String
+    /// Data de criação
     createdAt DateTime @default(now())
+    /// Data da última atualização
     updatedAt DateTime @updatedAt
 }
 
+/// Subgrupos CBO
 model CBO_Subgrupo {
+    /// Identificador único
     id        String   @id @default(uuid())
+    /// Código oficial CBO
     codigo    String   @unique
+    /// Título do subgrupo
     titulo    String
+    /// Data de criação
     createdAt DateTime @default(now())
+    /// Data da última atualização
     updatedAt DateTime @updatedAt
 }
 
+/// ✍️ Autores de conteúdo (sistema futuro)
+/// Para expansão do sistema de conteúdo educacional
 model Author {
+    /// Identificador único do autor
     id        String   @id @default(uuid())
+    /// Nome do autor
     name      String
+    /// Data de criação
     createdAt DateTime @default(now())
+    /// Data da última atualização
     updatedAt DateTime @updatedAt
 }
 
+/// 🏷️ Enums para tipagem forte
+
+/// Papéis de usuário no sistema
 enum Role {
+    /// Usuário comum com permissões básicas
     USER
+    /// Administrador com permissões completas
     ADMIN
 }
 
+/// Status de contas no sistema
 enum AccountStatus {
+    /// Conta ativa e operacional
     ACTIVE
+    /// Conta inativa (temporariamente)
     INACTIVE
+}
+
+/// 💰 Contas financeiras dos usuários
+/// Core do sistema de gestão financeira
+model Account {
+    /// Identificador único da conta
+    id           String        @id @default(uuid())
+    /// Nome personalizado da conta (ex: "Conta Corrente Banco X")
+    name         String        @db.VarChar(100)
+    /// Tipo da conta (CHECKING, SAVINGS, CREDIT_CARD, INVESTMENT)
+    type         String
+    /// Saldo atual da conta (pode ser negativo para cartões)
+    balance      Float         @default(0)
+    /// Proprietário da conta (relacionamento N:1)
+    user         User          @relation(fields: [userId], references: [id])
+    userId       String
+    /// Status da conta (ACTIVE, INACTIVE)
+    status       AccountStatus @default(ACTIVE)
+    /// Data de criação
+    createdAt    DateTime      @default(now())
+    /// Data da última atualização
+    updatedAt    DateTime      @updatedAt
+    /// Transações originárias desta conta
+    transactions Transaction[] @relation("OriginAccount")
+    /// Transações destinadas a esta conta (transferências)
+    incomingTransactions Transaction[] @relation("DestinationAccount")
+}
+
+/// 💸 Transações financeiras
+/// Movimentações de entrada, saída e transferências entre contas
+model Transaction {
+    /// Identificador único da transação
+    id                    String            @id @default(uuid())
+    /// Descrição da transação
+    description           String            @db.VarChar(255)
+    /// Valor da transação (sempre positivo)
+    amount                Float
+    /// Tipo da transação (INCOME, EXPENSE, TRANSFER)
+    type                  TransactionType
+    /// Status da transação (PENDING, COMPLETED, CANCELLED, FAILED)
+    status                TransactionStatus @default(PENDING)
+    /// Conta de origem (relacionamento N:1)
+    account               Account           @relation("OriginAccount", fields: [accountId], references: [id])
+    accountId             String
+    /// Categoria da transação (relacionamento N:1)
+    category              Category          @relation(fields: [categoryId], references: [id])
+    categoryId            String
+    /// Conta de destino para transferências (relacionamento N:1, opcional)
+    destinationAccount    Account?          @relation("DestinationAccount", fields: [destinationAccountId], references: [id])
+    destinationAccountId  String?
+    /// Data da transação (pode ser diferente da criação)
+    date                  DateTime          @default(now())
+    /// Data de criação do registro
+    createdAt             DateTime          @default(now())
+    /// Data da última atualização
+    updatedAt             DateTime          @updatedAt
+}
+
+/// 🏷️ Categorias de transações
+/// Classificação para organização e relatórios financeiros
+model Category {
+    /// Identificador único da categoria
+    id           String        @id @default(uuid())
+    /// Nome da categoria (ex: "Alimentação", "Transporte")
+    name         String        @db.VarChar(50)
+    /// Descrição opcional da categoria
+    description  String?       @db.VarChar(255)
+    /// Cor para identificação visual (hex color)
+    color        String?       @db.VarChar(7)
+    /// Ícone da categoria (nome do ícone ou emoji)
+    icon         String?       @db.VarChar(50)
+    /// Tipo padrão para esta categoria (sugestão)
+    defaultType  TransactionType?
+    /// Status da categoria (ACTIVE, INACTIVE)
+    status       AccountStatus @default(ACTIVE)
+    /// Data de criação
+    createdAt    DateTime      @default(now())
+    /// Data da última atualização
+    updatedAt    DateTime      @updatedAt
+    /// Transações desta categoria
+    transactions Transaction[]
+}
+
+/// 📊 Tipos de transação
+enum TransactionType {
+    /// Receita/Entrada de dinheiro
+    INCOME
+    /// Despesa/Saída de dinheiro
+    EXPENSE
+    /// Transferência entre contas
+    TRANSFER
+}
+
+/// 🔄 Status de transação
+enum TransactionStatus {
+    /// Transação pendente de processamento
+    PENDING
+    /// Transação concluída com sucesso
+    COMPLETED
+    /// Transação cancelada pelo usuário
+    CANCELLED
+    /// Transação falhou durante processamento
+    FAILED
 }
