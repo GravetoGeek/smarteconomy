@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/client';
+import { useMemo } from 'react';
 import { SEARCH_TRANSACTIONS } from '../../graphql/queries/transactions.queries';
 
 interface BalanceData {
@@ -30,7 +31,7 @@ export const useBalance = (userId: string, dateFrom?: string, dateTo?: string) =
     skip: !userId,
   });
 
-  const calculateBalance = (): BalanceData => {
+  const balanceData = useMemo(() => {
     if (!data?.searchTransactions?.transactions) {
       return {
         totalExpenses: 0,
@@ -58,10 +59,10 @@ export const useBalance = (userId: string, dateFrom?: string, dateTo?: string) =
       balance: totalIncome - totalExpenses,
       transactions,
     };
-  };
+  }, [data]);
 
   return {
-    balanceData: calculateBalance(),
+    balanceData,
     loading,
     error,
     refetch,
