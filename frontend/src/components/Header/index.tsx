@@ -2,14 +2,14 @@ import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
 import { Box, HStack, IconButton, Menu, Pressable } from "native-base";
-import React, { useContext } from "react";
+import React from "react";
 import { Text } from "react-native";
-import { Store } from "../../contexts/StoreProvider";
+import { useStore } from "../../hooks/useStore";
 import { Account, Category, Gender, Profile, Transaction, User } from "../../models";
 import { styles } from "./style";
 
 export default function Header() {
-    const { bottomMenuSelected, setBottomMenuSelected, mesAtual, setMesAtual, setMeses, setEndDate, setStartDate, setHoje, receitaTotal, setReceitaTotal, despesaTotal, setDespesaTotal, transaction_types, setTransactionTypes, account_types, setAccountTypes, categories, setCategories, user, setUser, token, setToken, profile, setProfile, startDate, endDate, accounts, setAccounts, gender, setGender, transactions, setTransactions } = useContext(Store);
+    const { bottomMenuSelected, setBottomMenuSelected, mesAtual, setMesAtual, setMeses, setEndDate, setStartDate, setHoje, receitaTotal, setReceitaTotal, despesaTotal, setDespesaTotal, transaction_types, setTransactionTypes, account_types, setAccountTypes, categories, setCategories, user, setUser, token, setToken, profile, setProfile, startDate, endDate, accounts, setAccounts, gender, setGender, transactions, setTransactions } = useStore();
     const navigation = useNavigation();
 
     function handleManageProfile() {

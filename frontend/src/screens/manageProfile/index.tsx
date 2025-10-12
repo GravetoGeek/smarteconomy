@@ -5,11 +5,11 @@ import {Picker} from '@react-native-picker/picker'
 import {useFocusEffect,useNavigation} from "@react-navigation/native"
 import moment from 'moment'
 import {Box,Button,Center,FormControl,Icon,Input,ScrollView,Text,VStack} from "native-base"
-import React,{useContext,useEffect,useState} from 'react'
+import React,{useEffect,useState} from 'react'
 import DropDownPicker from 'react-native-dropdown-picker'
 import FloatingBottomMenu from '../../components/FloatingBottomMenu'
 import Header from '../../components/Header'
-import {Store} from '../../contexts/StoreProvider'
+import {useStore} from '../../hooks/useStore'
 import {GET_USER_BY_ID} from '../../graphql/queries/users.queries'
 import {useUpdateUser} from '../../hooks/users/useUpdateUser'
 import {Profile} from '../../models'
@@ -24,11 +24,11 @@ const GENDER_OPTIONS=[
 
 
 export default function ManageProfile() {
-    const {user,profile,setProfile}=useContext(Store)
+    const {user,profile,setProfile}=useStore()
     const [name,setName]=useState(profile?.name||'')
-    const [lastname,setLastName]=useState(profile?.lastName||'')
+    const [lastname,setLastName]=useState(profile?.lastname||'')
     const [birthday,setBirthday]=useState(profile?.birthday==null? moment().format("YYYY-MM-DD"):moment(profile.birthday).format("YYYY-MM-DD"))
-    const [monthly_income,setMonthly_income]=useState(profile?.monthly_income||'')
+    const [monthly_income,setMonthly_income]=useState(profile?.monthly_income?.toString()||'')
     const [profession,setProfession]=useState(profile?.profession||'')
     const [gender_id,setGender_id]=useState(profile?.gender_id? String(profile.gender_id):'')
     const [gender_items,setGender_items]=useState(GENDER_OPTIONS)
@@ -77,7 +77,7 @@ export default function ManageProfile() {
         try {
             // Note: Backend requires password, but we're not changing it
             // This might need adjustment based on backend validation
-            const result=await updateUser(user.id,{
+            const result=await updateUser(user?.id?.toString()||'',{
                 name,
                 lastname,
                 birthdate: birthday,

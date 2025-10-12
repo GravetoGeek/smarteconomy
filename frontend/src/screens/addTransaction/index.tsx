@@ -4,10 +4,10 @@ import {Picker} from "@react-native-picker/picker"
 import {useNavigation} from "@react-navigation/native"
 import moment from "moment"
 import {Box,Button,FormControl,Icon,Input,VStack} from "native-base"
-import React,{useContext,useEffect,useState} from "react"
+import React,{useEffect,useState} from "react"
 import FloatingBottomMenu from "../../components/FloatingBottomMenu"
 import Header from "../../components/Header"
-import {Store} from "../../contexts/StoreProvider"
+import {useStore} from "../../hooks/useStore"
 import {useGetAccountsByUser} from "../../hooks/accounts/useGetAccountsByUser"
 import {useGetCategoriesByType} from "../../hooks/categories/useGetCategoriesByType"
 import {useCreateTransaction} from "../../hooks/transactions/useCreateTransaction"
@@ -21,7 +21,7 @@ const TRANSACTION_TYPES=[
 ]
 
 const AddTransaction=() => {
-    const {user,profile}=useContext(Store)
+    const {user,profile}=useStore()
     const [description,setDescription]=useState("")
     const [amount,setAmount]=useState("")
     const [selectedCategory,setSelectedCategory]=useState<string>("")
@@ -33,7 +33,7 @@ const AddTransaction=() => {
     const navigation=useNavigation()
 
     // GraphQL hooks
-    const {accounts,loading: loadingAccounts}=useGetAccountsByUser(user?.id)
+    const {accounts,loading: loadingAccounts}=useGetAccountsByUser(user?.id?.toString())
     const {categories,loading: loadingCategories,refetch: refetchCategories}=useGetCategoriesByType(
         TRANSACTION_TYPES.find(t => t.id===type_id)?.type||''
     )

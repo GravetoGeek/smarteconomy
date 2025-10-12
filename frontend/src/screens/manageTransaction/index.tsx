@@ -4,11 +4,11 @@ import {DateTimePickerAndroid} from "@react-native-community/datetimepicker"
 import {useFocusEffect,useNavigation} from "@react-navigation/native"
 import moment from "moment"
 import {Box,Button,Divider,FormControl,HStack,Icon,Input,NativeBaseProvider,ScrollView,Select,Spacer,Text,VStack} from "native-base"
-import React,{useContext,useEffect,useState} from "react"
+import React,{useEffect,useState} from "react"
 import DropDownPicker from "react-native-dropdown-picker"
 import FloatingBottomMenu from "../../components/FloatingBottomMenu"
 import Header from "../../components/Header"
-import {Store} from "../../contexts/StoreProvider"
+import {useStore} from "../../hooks/useStore"
 import {GET_ACCOUNTS_BY_USER} from "../../graphql/queries/accounts.queries"
 import {GET_CATEGORIES} from "../../graphql/queries/categories.queries"
 import {useUpdateTransaction} from "../../hooks/transactions/useUpdateTransaction"
@@ -22,7 +22,7 @@ const TRANSACTION_TYPES=[
 ]
 
 export default function ManageTransaction({route}) {
-    const {profile}=useContext(Store)
+    const {profile}=useStore()
     const [transaction,setTransaction]=useState<Transaction>(route.params)
     const [date,setDate]=useState(moment(transaction.date).format("YYYY-MM-DD HH:mm:ss"))
     const [categoryByTransactionTypes,setCategoryByTransactionTypes]=useState<Category[]>([] as Category[])

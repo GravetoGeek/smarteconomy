@@ -1,11 +1,11 @@
 import {FontAwesome,MaterialIcons} from '@expo/vector-icons'
 import {useNavigation} from "@react-navigation/native"
 import {Box,Button,Center,FormControl,Icon,Input,Text,VStack} from "native-base"
-import React,{useContext,useState} from "react"
+import React,{useState} from "react"
 import DropDownPicker from "react-native-dropdown-picker"
 import FloatingBottomMenu from "../../components/FloatingBottomMenu"
 import Header from "../../components/Header"
-import {Store} from '../../contexts/StoreProvider'
+import {useStore} from '../../hooks/useStore'
 import {useCreateAccount} from '../../hooks/accounts/useCreateAccount'
 
 // Tipos de conta disponíveis (hardcoded pois não há endpoint GraphQL)
@@ -19,7 +19,7 @@ const ACCOUNT_TYPES=[
 ]
 
 export default function AddAccount() {
-    const {user,accounts,setAccounts}=useContext(Store)
+    const {user,accounts,setAccounts}=useStore()
     const {createAccount,loading,error}=useCreateAccount()
     const [name,setName]=useState("")
     const [description,setDescription]=useState("")
@@ -43,7 +43,7 @@ export default function AddAccount() {
             name,
             type,
             balance: 0,
-            userId: user.id
+            userId: user?.id?.toString()||''
         })
 
         if(result) {

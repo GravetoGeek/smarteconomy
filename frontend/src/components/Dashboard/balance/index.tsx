@@ -3,8 +3,8 @@ import {useFocusEffect} from "@react-navigation/native"
 import moment from 'moment'
 import {Box,Button,Center,Divider,HStack,Icon,Text,VStack} from "native-base"
 import React,{useContext,useEffect,useState} from "react"
-import {Store} from "../../../contexts/StoreProvider"
 import {useBalance} from '../../../hooks/dashboard/useBalance'
+import {useStore} from "../../../hooks/useStore"
 import {Transaction} from '../../../models'
 
 export default function Balance() {
@@ -19,11 +19,11 @@ export default function Balance() {
         setReceitaTotal,
         setTransactions,
         mesAtual
-    }=useContext(Store)
+    }=useStore()
 
     // Use GraphQL hook to fetch balance data
     const {balanceData,loading,refetch}=useBalance(
-        user?.id||profile?.user_id,
+        (user?.id||profile?.user_id)?.toString()||'',
         startDate,
         endDate
     )
