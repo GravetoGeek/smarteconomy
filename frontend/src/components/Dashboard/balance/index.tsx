@@ -1,14 +1,14 @@
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import { useFocusEffect } from "@react-navigation/native";
-import moment from 'moment';
-import { Box, Button, Center, Divider, HStack, Icon, Text, VStack } from "native-base";
-import React, { useContext, useEffect, useState } from "react";
-import { Store } from "../../../contexts/StoreProvider";
-import { Transaction } from '../../../models';
-import { useBalance } from '../../../hooks/dashboard/useBalance';
+import {FontAwesome,MaterialIcons} from '@expo/vector-icons'
+import {useFocusEffect} from "@react-navigation/native"
+import moment from 'moment'
+import {Box,Button,Center,Divider,HStack,Icon,Text,VStack} from "native-base"
+import React,{useContext,useEffect,useState} from "react"
+import {Store} from "../../../contexts/StoreProvider"
+import {useBalance} from '../../../hooks/dashboard/useBalance'
+import {Transaction} from '../../../models'
 
 export default function Balance() {
-    const moeda = Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+    const moeda=Intl.NumberFormat('pt-BR',{style: 'currency',currency: 'BRL'})
 
     const {
         user,
@@ -19,30 +19,30 @@ export default function Balance() {
         setReceitaTotal,
         setTransactions,
         mesAtual
-    } = useContext(Store);
+    }=useContext(Store)
 
     // Use GraphQL hook to fetch balance data
-    const { balanceData, loading, refetch } = useBalance(
-        user?.id || profile?.user_id,
+    const {balanceData,loading,refetch}=useBalance(
+        user?.id||profile?.user_id,
         startDate,
         endDate
-    );
+    )
 
     // Update Store context with totals when data changes
     useEffect(() => {
-        if (balanceData) {
-            setDespesaTotal(balanceData.totalExpenses);
-            setReceitaTotal(balanceData.totalIncome);
-            setTransactions(balanceData.transactions);
+        if(balanceData) {
+            setDespesaTotal(balanceData.totalExpenses)
+            setReceitaTotal(balanceData.totalIncome)
+            setTransactions(balanceData.transactions)
         }
-    }, [balanceData]);
+    },[balanceData])
 
     useFocusEffect(
         React.useCallback(() => {
-            if (refetch) {
-                refetch();
+            if(refetch) {
+                refetch()
             }
-        }, [refetch])
+        },[refetch])
     )
 
     return (
@@ -53,7 +53,7 @@ export default function Balance() {
                 <VStack space={0} alignItems="center">
                     <HStack alignItems="center" space={3}>
                         <Text fontSize="md">Saldo:</Text>
-                        <Text fontSize="md" fontWeight="bold" color={balanceData.balance >= 0 ? 'green.500' : 'red.500'}>
+                        <Text fontSize="md" fontWeight="bold" color={balanceData.balance>=0? 'green.500':'red.500'}>
                             {moeda.format(balanceData.balance)}
                         </Text>
                     </HStack>
