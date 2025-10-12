@@ -5,6 +5,7 @@ import { CategoryPrismaRepository } from './infrastructure/repositories/category
 import { CreateCategoryUseCase } from './application/use-cases/create-category.use-case'
 import { FindAllCategoriesUseCase } from './application/use-cases/find-all-categories.use-case'
 import { FindCategoryByIdUseCase } from './application/use-cases/find-category-by-id.use-case'
+import { FindCategoriesByTypeUseCase } from './application/use-cases/find-categories-by-type.use-case'
 import { CategoryApplicationService } from './application/services/category-application.service'
 import { CategoryResolver } from './interfaces/graphql/resolvers/category.resolver'
 
@@ -18,6 +19,7 @@ import { CategoryResolver } from './interfaces/graphql/resolvers/category.resolv
         CreateCategoryUseCase,
         FindAllCategoriesUseCase,
         FindCategoryByIdUseCase,
+        FindCategoriesByTypeUseCase,
         CategoryApplicationService,
         CategoryResolver
     ],

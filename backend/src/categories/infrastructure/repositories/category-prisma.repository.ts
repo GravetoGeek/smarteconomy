@@ -71,6 +71,26 @@ export class CategoryPrismaRepository implements CategoryRepositoryPort {
         }
     }
 
+    async findByType(type: string): Promise<Category[]> {
+        try {
+            const categories = await this.prisma.category.findMany({
+                where: {
+                    defaultType: type as any
+                },
+                orderBy: { name: 'asc' }
+            })
+
+            return categories.map(cat => Category.reconstitute({
+                id: cat.id,
+                category: cat.name,
+                createdAt: cat.createdAt,
+                updatedAt: cat.updatedAt
+            }))
+        } catch (error) {
+            throw error
+        }
+    }
+
     async delete(id: string): Promise<void> {
         try {
             await this.prisma.postCategory.delete({
