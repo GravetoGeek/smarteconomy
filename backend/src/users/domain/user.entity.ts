@@ -141,6 +141,12 @@ export class User {
         this._updatedAt=new Date()
     }
 
+    updatePassword(newPassword: string): void {
+        // Password VO revalida complexidade
+        ; (this as any)._password=new Password(newPassword)
+        this._updatedAt=new Date()
+    }
+
     // Factory method
     static create(props: {
         email: string

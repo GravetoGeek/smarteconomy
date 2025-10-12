@@ -19,15 +19,14 @@ model User {
     name         String        @db.VarChar(30)
     lastname     String        @db.VarChar(50)
     birthdate    DateTime      @db.Date
-    role         String        @default("USER")
+    role         Role          @default(USER)
     posts        Post[]
     gender       Gender        @relation(fields: [genderId], references: [id])
     genderId     String
     password     String        @db.VarChar(255)
     createdAt    DateTime      @default(now())
     updatedAt    DateTime      @updatedAt
-    profile      Profile?      @relation
-    profileId    String?       @db.VarChar(50)
+    profile      Profile?
     profession   Profession?   @relation(fields: [professionId], references: [id])
     professionId String
     status       AccountStatus @default(ACTIVE)

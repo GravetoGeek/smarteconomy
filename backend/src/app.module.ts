@@ -9,6 +9,7 @@ import {AppResolver} from './app.resolver'
 import {AppService} from './app.service'
 import {AuthModule} from './auth/auth.module'
 import {CategoriesModule} from './categories/categories.module'
+import {environmentConfig} from './config/environment.config'
 import {DashboardsModule} from './dashboards/dashboards.module'
 import {DatabaseModule} from './database/database.module'
 import {GenderModule} from './gender/gender.module'
@@ -34,7 +35,7 @@ import {UsersModule} from './users/users.module'
         GraphQLModule.forRoot<ApolloDriverConfig>({
             driver: ApolloDriver,
             autoSchemaFile: path.resolve(process.cwd(),'src/schema.gql'),
-            playground: true,
+            playground: environmentConfig.isProduction? false:true,
             // ✅ Configuração para respostas de erro limpas e profissionais
             formatError: (error) => {
                 // Remover apenas o stacktrace das extensions
@@ -51,8 +52,8 @@ import {UsersModule} from './users/users.module'
                 return cleanError
             },
             // ✅ Configurações para debug
-            debug: true,
-            introspection: true
+            debug: environmentConfig.isProduction? false:true,
+            introspection: environmentConfig.isProduction? false:true
         }
         ),
         SharedModule,

@@ -16,6 +16,7 @@ export class UsersResolver {
         private readonly usersApplicationService: UsersApplicationService,
         private readonly loggerService: LoggerService
     ) {}
+    // TODO: Aplicar AuthGuard e RBAC quando os guards JWT estiverem implementados no módulo auth
 
     @Query(() => [User])
     async users(): Promise<User[]> {
@@ -141,7 +142,7 @@ export class UsersResolver {
                 this.loggerService.logOperation('GRAPHQL_DELETE_USER_NOT_FOUND',{id},'UsersResolver')
             }
 
-            return {success,message: success ? 'User deleted successfully' : 'User not found'}
+            return {success,message: success? 'User deleted successfully':'User not found'}
         } catch(error) {
             this.loggerService.logError('GRAPHQL_DELETE_USER_ERROR',error,'UsersResolver')
             throw error
