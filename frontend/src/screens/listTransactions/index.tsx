@@ -1,33 +1,33 @@
-import { MaterialIcons } from "@expo/vector-icons";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { useQuery } from "@apollo/client";
-import moment from "moment";
-import { Avatar, Box, Center, Divider, HStack, Icon, List, ScrollView, Spacer, Spinner, Text, VStack } from "native-base";
-import React, { useContext, useState, useEffect } from "react";
-import { GestureResponderEvent, TouchableOpacity } from "react-native";
-import CategoryIcon from "../../components/Dashboard/Icons/CategoryIcon";
-import FloatingBottomMenu from "../../components/FloatingBottomMenu";
-import Header from "../../components/Header";
-import { Icons } from "../../components/Icons/Icons";
-import { Store } from "../../contexts/StoreProvider";
-import { Category, Transaction, TransactionTypes } from "../../models";
-import { GET_CATEGORIES } from "../../graphql/queries/categories.queries";
-import { useSearchTransactions } from "../../hooks/transactions/useSearchTransactions";
+import {useQuery} from "@apollo/client"
+import {MaterialIcons} from "@expo/vector-icons"
+import {useFocusEffect,useNavigation} from "@react-navigation/native"
+import moment from "moment"
+import {Avatar,Box,Center,Divider,HStack,Icon,List,ScrollView,Spacer,Spinner,Text,VStack} from "native-base"
+import React,{useContext,useEffect,useState} from "react"
+import {GestureResponderEvent,TouchableOpacity} from "react-native"
+import CategoryIcon from "../../components/Dashboard/Icons/CategoryIcon"
+import FloatingBottomMenu from "../../components/FloatingBottomMenu"
+import Header from "../../components/Header"
+import {Icons} from "../../components/Icons/Icons"
+import {Store} from "../../contexts/StoreProvider"
+import {GET_CATEGORIES} from "../../graphql/queries/categories.queries"
+import {useSearchTransactions} from "../../hooks/transactions/useSearchTransactions"
+import {Category,Transaction,TransactionTypes} from "../../models"
 
 // Transaction types hardcoded (no GraphQL endpoint)
-const TRANSACTION_TYPES = [
-    { id: 1, type: 'EXPENSE', label: 'Despesa' },
-    { id: 2, type: 'INCOME', label: 'Receita' },
-    { id: 3, type: 'TRANSFER', label: 'Transferência' }
-];
+const TRANSACTION_TYPES=[
+    {id: 1,type: 'EXPENSE',label: 'Despesa'},
+    {id: 2,type: 'INCOME',label: 'Receita'},
+    {id: 3,type: 'TRANSFER',label: 'Transferência'}
+]
 
-const ListTransactions = () => {
-    const { user, startDate, endDate, receitaTotal, despesaTotal } = useContext(Store);
-    const navigation = useNavigation();
+const ListTransactions=() => {
+    const {user,startDate,endDate,receitaTotal,despesaTotal}=useContext(Store)
+    const navigation=useNavigation()
 
     // Buscar transações usando GraphQL
-    const { transactions, loading: transactionsLoading, refetch: refetchTransactions } = useSearchTransactions(
-        user?.id || '',
+    const {transactions,loading: transactionsLoading,refetch: refetchTransactions}=useSearchTransactions(
+        user?.id||'',
         {
             filters: {
                 dateFrom: startDate,
@@ -36,48 +36,48 @@ const ListTransactions = () => {
             sortBy: 'date',
             sortOrder: 'DESC'
         }
-    );
+    )
 
     // Buscar categorias usando GraphQL
-    const { data: categoriesData, loading: categoriesLoading } = useQuery(GET_CATEGORIES);
-    const categories = categoriesData?.categories || [];
+    const {data: categoriesData,loading: categoriesLoading}=useQuery(GET_CATEGORIES)
+    const categories=categoriesData?.categories||[]
 
-    const isLoading = transactionsLoading || categoriesLoading;
-    const moeda = Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+    const isLoading=transactionsLoading||categoriesLoading
+    const moeda=Intl.NumberFormat('pt-BR',{style: 'currency',currency: 'BRL'})
 
     useFocusEffect(
         React.useCallback(() => {
-            refetchTransactions();
-        }, [startDate, endDate])
-    );
+            refetchTransactions()
+        },[startDate,endDate])
+    )
 
 
     function handleManageTransaction(item: any): void {
         // Converter GraphQL transaction para formato legacy
-        const transaction: Transaction = {
+        const transaction: Transaction={
             id: item.id,
             amount: item.amount,
             destination_account: item.destinationAccountId,
             description: item.description,
             date: item.date,
-            type_id: item.type === 'EXPENSE' ? 1 : (item.type === 'INCOME' ? 2 : 3),
+            type_id: item.type==='EXPENSE'? 1:(item.type==='INCOME'? 2:3),
             account_id: item.accountId,
             category_id: item.categoryId
-        };
+        }
 
-        navigation.navigate('ManageTransaction' as never, transaction as never);
+        navigation.navigate('ManageTransaction' as never,transaction as never)
     }
 
     // Helper para mapear tipo GraphQL para legacy
-    const getTypeId = (type: string): number => {
-        return type === 'EXPENSE' ? 1 : (type === 'INCOME' ? 2 : 3);
-    };
+    const getTypeId=(type: string): number => {
+        return type==='EXPENSE'? 1:(type==='INCOME'? 2:3)
+    }
 
     // Helper para obter label do tipo
-    const getTypeLabel = (type: string): string => {
-        const typeObj = TRANSACTION_TYPES.find(t => t.type === type);
-        return typeObj?.label || type;
-    };
+    const getTypeLabel=(type: string): string => {
+        const typeObj=TRANSACTION_TYPES.find(t => t.type===type)
+        return typeObj?.label||type
+    }
 
     return (
         <Box flex={1} bg="white">
@@ -85,16 +85,16 @@ const ListTransactions = () => {
             <Text fontSize="lg" fontWeight="bold" mb={3} color={'black'} bold textAlign={'center'}>Transações</Text>
             <VStack mb={100} >
                 <ScrollView height="85%">
-                    {isLoading ? (
+                    {isLoading? (
                         <Center flex={1}>
                             <Spinner />
                         </Center>
-                    ) : (
-                        transactions.map((transacao: any, index) => {
-                            const category = categories.find((cat: any) => cat.id === transacao.categoryId);
-                            const icon = Icons.find((icone) => icone.category === category?.category);
-                            const typeId = getTypeId(transacao.type);
-                            const typeLabel = getTypeLabel(transacao.type);
+                    ):(
+                        transactions.map((transacao: any,index) => {
+                            const category=categories.find((cat: any) => cat.id===transacao.categoryId)
+                            const icon=Icons.find((icone) => icone.category===category?.category)
+                            const typeId=getTypeId(transacao.type)
+                            const typeLabel=getTypeLabel(transacao.type)
 
                             return (
                                 <TouchableOpacity key={index} onPress={() => handleManageTransaction(transacao)}>
@@ -107,7 +107,7 @@ const ListTransactions = () => {
                                                 <HStack space={2} alignItems="center">
                                                     <Text color={icon?.color}>{category?.category}</Text>
                                                     <Spacer />
-                                                    <Text color={typeId === 1 ? "red.500" : (typeId === 2 ? "green.500" : "gray.500")}>
+                                                    <Text color={typeId===1? "red.500":(typeId===2? "green.500":"gray.500")}>
                                                         {typeLabel}
                                                     </Text>
                                                 </HStack>
@@ -115,7 +115,7 @@ const ListTransactions = () => {
                                                     <Text color="gray.500">{moment(transacao.date).format('DD/MM/YYYY')}</Text>
                                                     <Spacer />
                                                     <Text bold color="gray.500">
-                                                        {typeId === 1 ? (100 * transacao.amount / despesaTotal).toFixed(2) : (typeId === 2 ? (100 * transacao.amount / receitaTotal).toFixed(2) : "")}%    
+                                                        {typeId===1? (100*transacao.amount/despesaTotal).toFixed(2):(typeId===2? (100*transacao.amount/receitaTotal).toFixed(2):"")}%
                                                         {moeda.format(transacao.amount)}
                                                     </Text>
                                                 </HStack>
@@ -125,15 +125,15 @@ const ListTransactions = () => {
                                         </HStack>
                                     </List>
                                 </TouchableOpacity>
-                            );
+                            )
                         })
                     )}
                 </ScrollView>
             </VStack>
             <FloatingBottomMenu />
         </Box>
-    );
-};
+    )
+}
 
 
-export default ListTransactions;
+export default ListTransactions

@@ -1,54 +1,54 @@
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from "@react-navigation/native";
-import { Box, Button, Center, FormControl, Icon, Input, Text, VStack } from "native-base";
-import React, { useContext, useState } from "react";
-import DropDownPicker from "react-native-dropdown-picker";
-import FloatingBottomMenu from "../../components/FloatingBottomMenu";
-import Header from "../../components/Header";
-import { Store } from '../../contexts/StoreProvider';
-import { useCreateAccount } from '../../hooks/accounts/useCreateAccount';
+import {FontAwesome,MaterialIcons} from '@expo/vector-icons'
+import {useNavigation} from "@react-navigation/native"
+import {Box,Button,Center,FormControl,Icon,Input,Text,VStack} from "native-base"
+import React,{useContext,useState} from "react"
+import DropDownPicker from "react-native-dropdown-picker"
+import FloatingBottomMenu from "../../components/FloatingBottomMenu"
+import Header from "../../components/Header"
+import {Store} from '../../contexts/StoreProvider'
+import {useCreateAccount} from '../../hooks/accounts/useCreateAccount'
 
 // Tipos de conta disponíveis (hardcoded pois não há endpoint GraphQL)
-const ACCOUNT_TYPES = [
-    { label: 'Conta Corrente', value: 'checking', icon: () => <MaterialIcons name="account-balance" size={18} color="black" /> },
-    { label: 'Poupança', value: 'savings', icon: () => <MaterialIcons name="savings" size={18} color="black" /> },
-    { label: 'Investimento', value: 'investment', icon: () => <MaterialIcons name="trending-up" size={18} color="black" /> },
-    { label: 'Cartão de Crédito', value: 'credit_card', icon: () => <MaterialIcons name="credit-card" size={18} color="black" /> },
-    { label: 'Dinheiro', value: 'cash', icon: () => <MaterialIcons name="money" size={18} color="black" /> },
-    { label: 'Outra', value: 'other', icon: () => <FontAwesome name="mars" size={18} color="black" /> },
-];
+const ACCOUNT_TYPES=[
+    {label: 'Conta Corrente',value: 'checking',icon: () => <MaterialIcons name="account-balance" size={18} color="black" />},
+    {label: 'Poupança',value: 'savings',icon: () => <MaterialIcons name="savings" size={18} color="black" />},
+    {label: 'Investimento',value: 'investment',icon: () => <MaterialIcons name="trending-up" size={18} color="black" />},
+    {label: 'Cartão de Crédito',value: 'credit_card',icon: () => <MaterialIcons name="credit-card" size={18} color="black" />},
+    {label: 'Dinheiro',value: 'cash',icon: () => <MaterialIcons name="money" size={18} color="black" />},
+    {label: 'Outra',value: 'other',icon: () => <FontAwesome name="mars" size={18} color="black" />},
+]
 
 export default function AddAccount() {
-    const { user, accounts, setAccounts } = useContext(Store);
-    const { createAccount, loading, error } = useCreateAccount();
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
-    const [type, setType] = useState<string>("checking");
-    const [open, setOpen] = useState(false);
-    const [items, setItems] = useState(ACCOUNT_TYPES);
+    const {user,accounts,setAccounts}=useContext(Store)
+    const {createAccount,loading,error}=useCreateAccount()
+    const [name,setName]=useState("")
+    const [description,setDescription]=useState("")
+    const [type,setType]=useState<string>("checking")
+    const [open,setOpen]=useState(false)
+    const [items,setItems]=useState(ACCOUNT_TYPES)
 
-    const navigation = useNavigation();
+    const navigation=useNavigation()
 
-    const handleNavigateDashboard = () => {
-        navigation.navigate('Dashboard' as never);
+    const handleNavigateDashboard=() => {
+        navigation.navigate('Dashboard' as never)
     }
 
-    const submit = async () => {
-        if (!name || !type) {
-            alert('Por favor, preencha todos os campos obrigatórios');
-            return;
+    const submit=async () => {
+        if(!name||!type) {
+            alert('Por favor, preencha todos os campos obrigatórios')
+            return
         }
 
-        const result = await createAccount({
+        const result=await createAccount({
             name,
             type,
             balance: 0,
             userId: user.id
-        });
+        })
 
-        if (result) {
-            setAccounts([...accounts, result]);
-            handleNavigateDashboard();
+        if(result) {
+            setAccounts([...accounts,result])
+            handleNavigateDashboard()
         }
     }
 
@@ -104,21 +104,21 @@ export default function AddAccount() {
                             setOpen={setOpen}
                             setValue={setType}
                             setItems={setItems}
-                            containerStyle={{ height: 40 }}
+                            containerStyle={{height: 40}}
                             onSelectItem={item => setType(String(item.value))}
                         />
 
-                        {error && (
+                        {error&&(
                             <Text color="red.500" mt={2}>
-                                {error.message || 'Erro ao criar conta'}
+                                {error.message||'Erro ao criar conta'}
                             </Text>
                         )}
 
-                        <Button 
-                            onPress={submit} 
-                            mt={4} 
-                            colorScheme="purple" 
-                            _text={{ color: 'white' }}
+                        <Button
+                            onPress={submit}
+                            mt={4}
+                            colorScheme="purple"
+                            _text={{color: 'white'}}
                             isLoading={loading}
                             isLoadingText="Criando..."
                         >
