@@ -88,11 +88,11 @@ export class TransactionResolver {
 
         // Map domain result to GraphQL schema
         return {
-            transactions: (result.items || []) as any,
-            total: result.total || 0,
-            page: result.currentPage || 1,
-            limit: input?.limit || 10,
-            totalPages: result.totalPages || 0
+            transactions: (result.items||[]) as any,
+            total: result.total||0,
+            page: result.currentPage||1,
+            limit: input?.limit||10,
+            totalPages: result.totalPages||0
         }
     }
 
