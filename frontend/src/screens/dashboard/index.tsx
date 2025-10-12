@@ -1,6 +1,6 @@
-import { BACKEND_HOST, BACKEND_PORT } from "@env";
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useQuery } from '@apollo/client';
 import { Box, HStack, Icon, List, ScrollView, Spacer, Text, VStack } from "native-base";
 import React, { useContext, useEffect, useState } from "react";
 import { TouchableOpacity } from "react-native";
@@ -12,6 +12,16 @@ import Header from "../../components/Header";
 import { Icons } from '../../components/Icons/Icons';
 import ListTransactionByCategory from '../../components/ListTransactionByCategory';
 import { Store } from '../../contexts/StoreProvider';
+import { GET_USER_BY_ID } from '../../graphql/queries/users.queries';
+import { GET_ACCOUNTS_BY_USER } from '../../graphql/queries/accounts.queries';
+import { useCategoryBreakdown } from '../../hooks/dashboard/useCategoryBreakdown';
+
+// Transaction types mapping (hardcoded)
+const TRANSACTION_TYPES = [
+    { id: 1, type: 'EXPENSE' },
+    { id: 2, type: 'INCOME' },
+    { id: 3, type: 'TRANSFER' }
+];
 
 interface ApiData {
   amount: number;
@@ -29,150 +39,75 @@ interface DataCategory {
 }
 
 export default function Dashboard() {
-  const { user, setUser, token, setToken, profile, setProfile, startDate, endDate, despesaTotal, setDespesaTotal, receitaTotal, setReceitaTotal, setTransactionTypes, } = useContext(Store);
-  const [apiDataDespesasPorCategorias, setApiDataDespesasPorCategorias] = useState<ApiData[]>([]);
-  const [apiDataRendasPorCategorias, setApiDataRendasPorCategorias] = useState<ApiData[]>([]);
-  // const [gastoTotal, setGastoTotal] = useState(0);
-  // const [rendaTotal, setRendaTotal] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState([]);
-
+  const { user, profile, setProfile, startDate, endDate, despesaTotal, receitaTotal, setTransactionTypes } = useContext(Store);
+  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
 
   const navigation = useNavigation();
 
+  // GraphQL queries
+  const { data: userData, loading: userLoading } = useQuery(GET_USER_BY_ID, {
+    variables: { id: user?.id },
+    skip: !user?.id,
+  });
+
+  const { data: accountsData, loading: accountsLoading } = useQuery(GET_ACCOUNTS_BY_USER, {
+    variables: { userId: user?.id },
+    skip: !user?.id,
+  });
+
+  const { categoryBreakdown, loading: categoryLoading, refetch } = useCategoryBreakdown(
+    user?.id,
+    startDate,
+    endDate
+  );
+
   const handleNavigateAddTransaction = () => {
-    navigation.navigate('AddTransaction');
+    navigation.navigate('AddTransaction' as never);
   }
   const handleNavigateAddAccount = () => {
-    navigation.navigate('AddAccount');
+    navigation.navigate('AddAccount' as never);
   }
   const handleNavigateManageProfile = () => {
-    navigation.navigate('ManageProfile');
+    navigation.navigate('ManageProfile' as never);
   }
 
   const moeda = Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-  // const moeda = Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' });
+
+  // Check profile completeness and navigate if needed
+  useEffect(() => {
+    if (userData?.userById) {
+      const fetchedUser = userData.userById;
+      if (!fetchedUser.name || !fetchedUser.birthdate || !fetchedUser.lastname) {
+        handleNavigateManageProfile();
+      }
+    }
+  }, [userData]);
+
+  // Check if user has accounts
+  useEffect(() => {
+    if (accountsData?.accountsByUser && accountsData.accountsByUser.length === 0) {
+      handleNavigateAddAccount();
+    }
+  }, [accountsData]);
+
+  // Set transaction types in Store
+  useEffect(() => {
+    setTransactionTypes(TRANSACTION_TYPES);
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchData();
-    }, [])
+      if (refetch) {
+        refetch();
+      }
+    }, [refetch])
   );
-
-
-  // useEffect(() => {
-  //   fetchData();
-  // });
-
-  const fetchData = async () => {
-    console.log('dashboard')
-    try {
-      // let startDate = new Date(data.getFullYear(), data.getMonth(), 1).toISOString().slice(0, 10);
-      // let endDate = new Date(data.getFullYear(), data.getMonth() + 1, 0).toISOString().slice(0, 10);
-
-      //Buscar Perfil do usuário
-      const profileResponse = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/profile/byUser/${user.id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token.access_token}`
-        },
-      }).then((response) => response.json())
-
-      setProfile({ ...profileResponse });
-
-      if (profileResponse.name == null || profileResponse.birthday == null || profileResponse.lastname == null || profileResponse.monthly_income == null || profileResponse.gender_id == null || profileResponse.profession == null) {
-        handleNavigateManageProfile()
-      }
-
-      // Buscar contas do usuário
-      const accountResponse = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/account/byProfile/${profileResponse.id || profile.id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token.access_token}`
-        },
-      })
-        .then((response) => response.json())
-
-      if (accountResponse.length == 0) {
-        handleNavigateAddAccount()
-      }
-
-      let payload = {
-        "profileId": profileResponse.id || profile.id,
-        "startDate": startDate,
-        "endDate": endDate
-      }
-
-      // Buscar despesas do usuário por categoria em um determinado período
-      const despesasporcategorias = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/dashboard/despesasporcategorias`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      }).then((response) => response.json())
-
-
-      // if (despesasporcategorias.length === 0) {
-      //   // handleNavigateAddTransaction()
-      // }
-
-      if (despesasporcategorias.length !== 0) {
-        // let countGastoMensal = 0;
-        // despesasporcategorias.forEach((item: ApiData) => {
-        //   countGastoMensal += item.amount;
-        // });
-        // setGastoTotal(countGastoMensal);
-
-        setApiDataDespesasPorCategorias(despesasporcategorias);
-      }
-
-
-      // Buscar rendas do usuário por categoria em um determinado período
-      const rendasporcategorias = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/dashboard/rendasporcategorias`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      }).then((response) => response.json())
-
-      if (rendasporcategorias.length !== 0) {
-        // let countRendaMensal = 0;
-        // console.log("rendasporcategorias", JSON.stringify(rendasporcategorias, null, 2))
-        // rendasporcategorias.forEach((item: ApiData) => {
-        //   countRendaMensal += item.amount;
-        // });
-        // setRendaTotal(countRendaMensal);
-
-        setApiDataRendasPorCategorias(rendasporcategorias);
-      }
-
-
-
-
-      // Obter os tipos de transações
-      const res_transactionTypes = await fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/transactiontypes`, {
-        method: 'get',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      }).then((response) => response.json())
-      setTransactionTypes(res_transactionTypes);
-      // setTypeId(res_transactionTypes[0].id);
-
-
-    } catch (error) {
-      console.log("dashboard", error);
-    }
-  };
 
   const getCategoryIcon = (categoryName: string): string => Icons.filter((item) => item.category === categoryName)[0]?.icon || "help";
   const getCategoryColor = (categoryName: string): string => Icons.filter((item) => item.category === categoryName)[0]?.color || "#9e9e9e";
   const listCategoryColor = (): string[] => Icons.map((item) => { return item.color });
 
-  let chartDataDespesas: DataCategory[] = apiDataDespesasPorCategorias.map((item, index) => ({
+  let chartDataDespesas: DataCategory[] = categoryBreakdown.expenses.map((item) => ({
     x: item.category,
     y: item.amount,
     category: item.category,
@@ -191,7 +126,7 @@ export default function Dashboard() {
     }]
   }
 
-  let chartDataRendas: DataCategory[] = apiDataRendasPorCategorias.map((item, index) => ({
+  let chartDataRendas: DataCategory[] = categoryBreakdown.income.map((item) => ({
     x: item.category,
     y: item.amount,
     category: item.category,
@@ -210,25 +145,10 @@ export default function Dashboard() {
     }]
   }
 
-
-
-
-
-  // const CategoryIcon = (props: any) => {
-  //   return <Icon
-  //     as={<MaterialIcons name={props.iconName} color={props.color} />}
-  //     size={5}
-  //     ml={2}
-  //     color={props.color}
-  //   />
-
-  // };
-
-
   function handleListTransactionByCategory(categoria: DataCategory): void {
     let { x, y, category, id, color, iconName } = categoria;
     console.log("ListTransactionByCategory", categoria)
-    navigation.navigate('ListTransactionByCategory', { x, y, category, id, color, iconName });
+    navigation.navigate('ListTransactionByCategory' as never, { x, y, category, id, color, iconName } as never);
   }
 
   return (
