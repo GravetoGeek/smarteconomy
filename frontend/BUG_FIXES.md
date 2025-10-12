@@ -98,6 +98,31 @@ private createSignature(data: string): string {
 
 ---
 
+### 2.1. ❌ JwtGuard Dependency Injection (Continuação do Bug 2)
+**Status:** ✅ **RESOLVIDO**
+
+**O que era:**
+- Mesmo após corrigir o JWT, ainda havia erro "Forbidden resource"
+- Backend crashava na inicialização
+- "Nest can't resolve dependencies of the JwtGuard"
+
+**Causa raiz:**
+- `JwtGuard` estava usando `JwtService` do `@nestjs/jwt`
+- Mas o sistema usa `JwtCryptoService` customizado
+- DashboardsModule e TransactionsModule não importavam AuthModule
+- Dependency injection falhava
+
+**Solução aplicada:**
+1. ✅ JwtGuard agora injeta `JWT_SERVICE` token
+2. ✅ Usa `@Inject(JWT_SERVICE)` para pegar implementação customizada
+3. ✅ DashboardsModule importa AuthModule
+4. ✅ TransactionsModule importa AuthModule
+5. ✅ AuthModule exporta JwtGuard
+
+**Commit:** `217ca8f` - fix(auth): connect JwtGuard to custom JwtCryptoService and fix module imports
+
+---
+
 ### 3. ⚠️ Apollo Client Warning (Não-Crítico)
 
 **Warning:**
@@ -123,6 +148,7 @@ https://go.apollo.dev/c/err#{"version":"3.14.0","message":104,"args":["cache.dif
 |----------|-----------|--------|--------|
 | Loop infinito (Maximum update depth) | 🔴 Crítico | ✅ Resolvido | 4c9621a |
 | JWT inválido (Forbidden resource) | 🔴 Crítico | ✅ Resolvido | 25a5469 |
+| JwtGuard dependency injection | 🔴 Crítico | ✅ Resolvido | 217ca8f |
 | Apollo Client warning | 🟡 Baixo | ⚠️ Informativo | - |
 
 ---
