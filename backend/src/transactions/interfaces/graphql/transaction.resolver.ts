@@ -5,74 +5,32 @@
  * seguindo os padrões estabelecidos no projeto.
  */
 
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
-import { Injectable, UseGuards } from '@nestjs/common'
-import { JwtGuard } from '../../../auth/infrastructure/guards/jwt.guard'
+import {Injectable,UseGuards} from '@nestjs/common'
+import {Args,Mutation,Query,Resolver} from '@nestjs/graphql'
+import {JwtGuard} from '../../../auth/infrastructure/guards/jwt.guard'
 import {
     CreateTransactionUseCase,
-    SearchTransactionsUseCase,
     GetTransactionSummaryUseCase,
-    UpdateTransactionUseCase,
-    ReverseTransactionUseCase
+    ReverseTransactionUseCase,
+    SearchTransactionsUseCase,
+    UpdateTransactionUseCase
 } from '../../application'
 
-// Simplified DTOs for now (since we have GraphQL issues)
-interface TransactionDto {
-    id: string
-    description: string
-    amount: number
-    type: string
-    status: string
-    accountId: string
-    categoryId: string
-    destinationAccountId?: string
-    date: Date
-    createdAt: Date
-    updatedAt: Date
-    isExpense: boolean
-    isIncome: boolean
-    isTransfer: boolean
-    isPending: boolean
-    isCompleted: boolean
-    canBeCompleted: boolean
-    canBeCancelled: boolean
-    canBeReversed: boolean
-}
+// GraphQL Models and Inputs
+import {
+    CreateTransactionResponse,
+    Transaction,
+    TransactionSearchResult,
+    TransactionSummary
+} from './models/transaction.model'
 
-interface CreateTransactionInput {
-    description: string
-    amount: number
-    type: string
-    accountId: string
-    categoryId: string
-    destinationAccountId?: string
-    date?: string
-}
+import {
+    CreateTransactionInput,
+    SearchTransactionsInput,
+    UpdateTransactionInput
+} from './inputs/transaction.input'
 
-interface SearchTransactionsInput {
-    filters?: {
-        accountId?: string
-        categoryId?: string
-        type?: string
-        status?: string
-        dateFrom?: string
-        dateTo?: string
-        minAmount?: number
-        maxAmount?: number
-        searchTerm?: string
-    }
-    page?: number
-    limit?: number
-    sortBy?: 'date' | 'amount' | 'description' | 'createdAt'
-    sortOrder?: 'asc' | 'desc'
-}
-
-interface UpdateTransactionInput {
-    description?: string
-    status?: string
-}
-
-@Resolver('Transaction')
+@Resolver(() => Transaction)
 @Injectable()
 export class TransactionResolver {
     constructor(
@@ -81,172 +39,106 @@ export class TransactionResolver {
         private readonly getTransactionSummaryUseCase: GetTransactionSummaryUseCase,
         private readonly updateTransactionUseCase: UpdateTransactionUseCase,
         private readonly reverseTransactionUseCase: ReverseTransactionUseCase
-    ) { }
+    ) {}
 
-    @Query(() => String) // Simplified return type for now
+    @Mutation(() => CreateTransactionResponse)
+    @UseGuards(JwtGuard)
+    async createTransaction(
+        @Args('input') input: CreateTransactionInput
+    ): Promise<CreateTransactionResponse> {
+        const result=await this.createTransactionUseCase.execute({
+            description: input.description,
+            amount: input.amount,
+            type: input.type,
+            accountId: input.accountId,
+            categoryId: input.categoryId,
+            destinationAccountId: input.destinationAccountId,
+            date: input.date
+        })
+
+        return {
+            transaction: result.transaction as any,
+            warnings: result.warnings
+        }
+    }
+
+    @Query(() => TransactionSearchResult)
     @UseGuards(JwtGuard)
     async searchTransactions(
-        @Args('userId', { type: () => String }) userId: string,
-        @Args('filters', { type: () => String, nullable: true }) filters?: string,
-        @Args('sortBy', { type: () => String, nullable: true }) sortBy?: string,
-        @Args('sortOrder', { type: () => String, nullable: true }) sortOrder?: string,
-        @Args('page', { type: () => Number, nullable: true }) page?: number,
-        @Args('limit', { type: () => Number, nullable: true }) limit?: number
-    ): Promise<any> {
-        const input = {
-            userId,
-            filters: filters ? JSON.parse(filters) : undefined,
-            sortBy: sortBy as 'date' | 'amount' | 'description' | 'createdAt' | undefined,
-            sortOrder: sortOrder as 'asc' | 'desc' | undefined,
-            page,
-            limit
-        }
-        return await this.searchTransactionsUseCase.execute(input)
-    }
-
-    @Query(() => String, { nullable: true }) // Simplified return type
-    @UseGuards(JwtGuard)
-    async transactionById(@Args('id', { type: () => String }) id: string): Promise<TransactionDto | null> {
-        // Implementation would delegate to a find by ID use case
-        throw new Error('Not implemented yet')
-    }
-
-    @Query(() => [String]) // Simplified return type
-    @UseGuards(JwtGuard)
-    async transactionsByAccount(@Args('accountId', { type: () => String }) accountId: string): Promise<TransactionDto[]> {
-        const result = await this.searchTransactionsUseCase.execute({
-            filters: { accountId }
+        @Args('userId') userId: string,
+        @Args('input',{nullable: true}) input?: SearchTransactionsInput
+    ): Promise<TransactionSearchResult> {
+        const result=await this.searchTransactionsUseCase.execute({
+            filters: input?.filters? {
+                accountId: input.filters.accountId,
+                categoryId: input.filters.categoryId,
+                type: input.filters.type,
+                status: input.filters.status,
+                dateFrom: input.filters.dateFrom?.toISOString(),
+                dateTo: input.filters.dateTo?.toISOString(),
+                minAmount: input.filters.minAmount,
+                maxAmount: input.filters.maxAmount,
+                searchTerm: input.filters.searchTerm
+            }:undefined,
+            page: input?.page||1,
+            limit: input?.limit||10,
+            sortBy: input?.sortBy as any,
+            sortOrder: input?.sortOrder as any
         })
-        return this.mapTransactionsToDto(result.items)
+
+        // Map domain result to GraphQL schema
+        return {
+            transactions: (result.items||[]) as any,
+            total: result.total||0,
+            page: result.currentPage||1,
+            limit: input?.limit||10,
+            totalPages: result.totalPages||0
+        }
     }
 
-    @Query(() => String) // Simplified return type
+    @Query(() => TransactionSummary)
     @UseGuards(JwtGuard)
     async transactionSummary(
-        @Args('accountId', { type: () => String }) accountId: string,
-        @Args('dateFrom', { type: () => String }) dateFrom: string,
-        @Args('dateTo', { type: () => String }) dateTo: string
-    ): Promise<any> {
-        return await this.getTransactionSummaryUseCase.execute({
+        @Args('accountId') accountId: string,
+        @Args('dateFrom') dateFrom: Date,
+        @Args('dateTo') dateTo: Date
+    ): Promise<TransactionSummary> {
+        const result=await this.getTransactionSummaryUseCase.execute({
             accountId,
-            dateFrom: new Date(dateFrom),
-            dateTo: new Date(dateTo)
+            dateFrom,
+            dateTo
         })
+
+        return result as any
     }
 
-    //     @Mutation(() => String)
-    //     @UseGuards(JwtGuard)
-    //     async createTransaction(
-    //         @Args('input') input: CreateTransactionInput
-    //     ): Promise<any> {
-    //         const result = await this.createTransactionUseCase.execute({
-    //             ...input,
-    //             type: input.type as any,
-    //             date: input.date ? new Date(input.date) : undefined
-    //         })
-    //
-    //         return {
-    //             transaction: this.mapTransactionToDto(result.transaction),
-    //             success: true,
-    //             message: 'Transação criada com sucesso',
-    //             warnings: result.warnings
-    //         }
-    //     }
+    @Mutation(() => Transaction)
+    @UseGuards(JwtGuard)
+    async updateTransaction(
+        @Args('id') id: string,
+        @Args('input') input: UpdateTransactionInput
+    ): Promise<Transaction> {
+        const result=await this.updateTransactionUseCase.execute({
+            id,
+            description: input.description,
+            status: input.status as any
+        })
 
-    //     @Mutation(() => String)
-    //     @UseGuards(JwtGuard)
-    //     async createIncome(
-    //         @Args('input') input: Omit<CreateTransactionInput, 'type' | 'destinationAccountId'>
-    //     ): Promise<any> {
-    //         return await this.createTransaction({
-    //             ...input,
-    //             type: 'INCOME'
-    //         })
-    //     }
-
-    //     @Mutation(() => String)
-    //     @UseGuards(JwtGuard)
-    //     async createExpense(
-    //         @Args('input') input: Omit<CreateTransactionInput, 'type' | 'destinationAccountId'>
-    //     ): Promise<any> {
-    //         return await this.createTransaction({
-    //             ...input,
-    //             type: 'EXPENSE'
-    //         })
-    //     }
-
-    //     @Mutation(() => String)
-    //     @UseGuards(JwtGuard)
-    //     async createTransfer(
-    //         @Args('input') input: Omit<CreateTransactionInput, 'type'> & { destinationAccountId: string }
-    //     ): Promise<any> {
-    //         return await this.createTransaction({
-    //             ...input,
-    //             type: 'TRANSFER'
-    //         })
-    //     }
-
-    //     @Mutation(() => String)
-    //     @UseGuards(JwtGuard)
-    //     async updateTransaction(
-    //         @Args('id') id: string,
-    //         @Args('input') input: UpdateTransactionInput
-    //     ): Promise<TransactionDto> {
-    //         const updated = await this.updateTransactionUseCase.execute({
-    //             id,
-    //             ...input,
-    //             status: input.status as any
-    //         })
-    //
-    //         return this.mapTransactionToDto(updated)
-    //     }
-
-    //     @Mutation(() => String)
-    //     @UseGuards(JwtGuard)
-    //     async reverseTransaction(
-    //         @Args('transactionId') transactionId: string,
-    //         @Args('reason') reason: string,
-    //         @Args('requestedBy') requestedBy: string
-    //     ): Promise<any> {
-    //         const result = await this.reverseTransactionUseCase.execute({
-    //             transactionId,
-    //             reason,
-    //             requestedBy
-    //         })
-    //
-    //         return {
-    //             originalTransaction: this.mapTransactionToDto(result.originalTransaction),
-    //             reversalTransaction: this.mapTransactionToDto(result.reversalTransaction),
-    //             success: result.success,
-    //             message: result.message
-    //         }
-    //     }
-
-    private mapTransactionToDto(transaction: any): TransactionDto {
-        return {
-            id: transaction.id,
-            description: transaction.description,
-            amount: transaction.amount,
-            type: transaction.type,
-            status: transaction.status,
-            accountId: transaction.accountId,
-            categoryId: transaction.categoryId,
-            destinationAccountId: transaction.destinationAccountId,
-            date: transaction.date,
-            createdAt: transaction.createdAt,
-            updatedAt: transaction.updatedAt,
-            isExpense: transaction.isExpense,
-            isIncome: transaction.isIncome,
-            isTransfer: transaction.isTransfer,
-            isPending: transaction.isPending,
-            isCompleted: transaction.isCompleted,
-            canBeCompleted: transaction.canBeCompleted(),
-            canBeCancelled: transaction.canBeCancelled(),
-            canBeReversed: transaction.canBeReversed()
-        }
+        return result as any
     }
 
-    private mapTransactionsToDto(transactions: any[]): TransactionDto[] {
-        return transactions.map(transaction => this.mapTransactionToDto(transaction))
+    @Mutation(() => Transaction)
+    @UseGuards(JwtGuard)
+    async reverseTransaction(
+        @Args('transactionId') transactionId: string,
+        @Args('reason') reason: string,
+        @Args('requestedBy') requestedBy: string
+    ): Promise<Transaction> {
+        const result=await this.reverseTransactionUseCase.execute({
+            transactionId,
+            reason,
+            requestedBy
+        })
+        return result.reversalTransaction as any
     }
 }

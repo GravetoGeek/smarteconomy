@@ -1,294 +1,398 @@
-import { BACKEND_HOST, BACKEND_PORT } from "@env";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
-import jwtDecode from 'jwt-decode';
+import {useQuery} from "@apollo/client"
+import {MaterialIcons} from "@expo/vector-icons"
+import {useNavigation} from "@react-navigation/native"
 import {
-  Box,
-  Button,
-  FormControl,
-  Icon,
-  Image,
-  Input,
-  VStack,
-} from "native-base";
-import React, { useContext, useState } from "react";
-import cover from '../../assets/cover.png';
-import { Store } from "../../contexts/StoreProvider";
+    Box,
+    Button,
+    CheckIcon,
+    FormControl,
+    Icon,
+    Image,
+    Input,
+    ScrollView,
+    Select,
+    VStack,
+} from "native-base"
+import React,{useState} from "react"
+import cover from '../../assets/cover.png'
+import {GET_GENDERS,GET_PROFESSIONS} from "../../graphql/queries/lookup.queries"
+import {useSignup} from "../../hooks/auth/useSignup"
 
 export default function Register() {
-  const { user, setUser, token, setToken } = useContext(Store);
-  const [formData, setData] = useState({});
-  const [errors, setErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const navigation=useNavigation()
+    const {signup,loading,error}=useSignup()
 
-  const navigation = useNavigation();
+    // Buscar genders e professions
+    const {data: gendersData,loading: gendersLoading}=useQuery(GET_GENDERS)
+    const {data: professionsData,loading: professionsLoading}=useQuery(GET_PROFESSIONS)
 
-  function handleHome() {
-    navigation.navigate("Home");
-  }
-  function handleDashboard() {
-    navigation.navigate("Dashboard");
-  }
-  function handleAddTransaction() {
-    navigation.navigate("AddTransaction");
-  }
+    const [formData,setData]=useState({
+        email: '',
+        password: '',
+        confirm_password: '',
+        name: '',
+        lastname: '',
+        birthdate: '',
+        genderId: '',
+        professionId: '',
+    })
+    const [errors,setErrors]=useState<any>({})
+    const [showPassword,setShowPassword]=useState(false)
+    const [showConfirmPassword,setShowConfirmPassword]=useState(false)
 
-  const validate = () => {
-    let emailRegex = /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/i;
-    if (!formData?.email) {
-      setErrors({ ...errors, required: "Email é obrigatório" });
-      return false;
+    function handleDashboard() {
+        navigation.navigate("Dashboard" as never)
     }
-    if (!emailRegex.test(formData?.email)) {
-      setErrors({ ...errors, invalid: "Email inválido" });
-      return false;
-    }
-    if (!formData?.password) {
-      setErrors({ ...errors, password: "Senha é obrigatória" });
-      return false;
-    }
-    if (formData?.password?.length < 8) {
-      setErrors({
-        ...errors,
-        password_length: "Senha deve ter no mínimo 8 caracteres",
-      });
-      return false;
-    }
-    if (!formData?.confirm_password) {
-      setErrors({
-        ...errors,
-        confirm_password: "Confirmação de senha é obrigatória",
-      });
-      return false;
-    }
-    if (formData?.confirm_password?.length < 8) {
-      setErrors({
-        ...errors,
-        confirm_password_length:
-          "Confirmação de senha deve ter no mínimo 8 caracteres",
-      });
-      return false;
-    }
-    if (formData?.password != formData?.confirm_password) {
-      setErrors({ ...errors, diferent: "Senhas não conferem" });
-      return false;
-    }
-    return true;
-  };
 
-  const submit = () => {
-    delete errors?.required;
-    delete errors?.invalid;
-    delete errors?.password;
-    delete errors?.password_length;
-    delete errors?.confirm_password;
-    delete errors?.confirm_password_length;
-    delete errors?.diferent;
+    const validate=() => {
+        let emailRegex=/^[a-z0-9.]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/i
+        const newErrors: any={}
 
-    if (validate()) {
-      delete formData.confirm_password;
-      const signData = JSON.stringify(formData);
-      fetch(`http://${BACKEND_HOST}:${BACKEND_PORT}/auth/signup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: signData,
-      })
-        .then((response) => response.json())
-        .then(async (responseJson) => {
-          if (responseJson.error) {
-            alert(responseJson.error);
-          } else {
-            if (responseJson.auth) {
-              alert("Cadastro realizado com sucesso");
-              let url = `http://${BACKEND_HOST}:${BACKEND_PORT}/auth/login`;
-              let result = await axios.post(url, signData, {
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }).then((response) => {
+        if(!formData.email) {
+            newErrors.email="Email é obrigatório"
+        } else if(!emailRegex.test(formData.email)) {
+            newErrors.email="Email inválido"
+        }
 
-                //aqui usa-se o dispatch
+        if(!formData.name) {
+            newErrors.name="Nome é obrigatório"
+        }
 
-                if (response.status === 200) {
-                  let { access_token, auth, refresh_token } = response.data;
-                  setToken({ access_token, auth, refresh_token });
-                  const decodedToken = jwtDecode(access_token)
-                  let { id, email, exp, iat } = decodedToken;
-                  setUser({ id, email })
-                  handleDashboard()
-                }
-              }
-              ).catch((error) => {
-                console.log('error_register', error);
-              }
-              );
+        if(!formData.lastname) {
+            newErrors.lastname="Sobrenome é obrigatório"
+        }
+
+        if(!formData.birthdate) {
+            newErrors.birthdate="Data de nascimento é obrigatória"
+        }
+
+        if(!formData.genderId) {
+            newErrors.genderId="Gênero é obrigatório"
+        }
+
+        if(!formData.professionId) {
+            newErrors.professionId="Profissão é obrigatória"
+        }
+
+        if(!formData.password) {
+            newErrors.password="Senha é obrigatória"
+        } else if(formData.password.length<8) {
+            newErrors.password="Senha deve ter no mínimo 8 caracteres"
+        }
+
+        if(!formData.confirm_password) {
+            newErrors.confirm_password="Confirmação de senha é obrigatória"
+        } else if(formData.confirm_password.length<8) {
+            newErrors.confirm_password="Confirmação de senha deve ter no mínimo 8 caracteres"
+        }
+
+        if(formData.password!==formData.confirm_password) {
+            newErrors.confirm_password="Senhas não conferem"
+        }
+
+        setErrors(newErrors)
+        return Object.keys(newErrors).length===0
+    }
+
+    const submit=async () => {
+        if(validate()) {
+            const {confirm_password,...signupData}=formData
+
+            const result=await signup(signupData)
+
+            if(result) {
+                handleDashboard()
             }
-          }
-
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } else {
-      console.log("error_register2", errors);
+        }
     }
-  };
-  return (
-    <Box height="full">
-      <VStack width="full" p="5">
-        <Box width="full" height="40%" alignItems="center" justifyContent="center">
-          <Image
-            size={"full"}
-            resizeMode="contain"
-            source={cover}
-            alt="Smart Economy"
-          />
-        </Box>
-        <FormControl
-          pb="2"
-          isRequired
-          isInvalid={"required" in errors || "invalid" in errors}
-          width="full"
-        >
-          <FormControl.Label>Email</FormControl.Label>
-          <Input
-            placeholder="exemplo@exemplo.com"
-            value={formData?.email}
-            onChangeText={(text) => setData({ ...formData, email: text })}
-            InputLeftElement={
-              <Icon
-                as={<MaterialIcons name="person" />}
-                size={5}
-                ml={2}
-                color="muted.400"
-              />
-            }
-          />
-          {"required" in errors ? (
-            <FormControl.ErrorMessage>
-              {errors?.required}
-            </FormControl.ErrorMessage>
-          ) : null}
-          {"invalid" in errors ? (
-            <FormControl.ErrorMessage>
-              {errors?.invalid}
-            </FormControl.ErrorMessage>
-          ) : null}
-        </FormControl>
+    return (
+        <ScrollView>
+            <Box height="full" pb="10">
+                <VStack width="full" p="5">
+                    <Box width="full" height="200" alignItems="center" justifyContent="center">
+                        <Image
+                            size={"full"}
+                            resizeMode="contain"
+                            source={cover}
+                            alt="Smart Economy"
+                        />
+                    </Box>
 
-        <FormControl
-          pt="2"
-          pb="2"
-          isRequired
-          isInvalid={"password" in errors || "password_length" in errors}
-          width="full"
-        >
-          <FormControl.Label>Senha</FormControl.Label>
-          <Input
-            placeholder="Senha"
-            value={formData?.password}
-            onChangeText={(text) => setData({ ...formData, password: text })}
-            type={showPassword ? "text" : "password"}
-            InputLeftElement={
-              <Icon
-                as={<MaterialIcons name="lock" />}
-                size={5}
-                ml={2}
-                color="muted.400"
-              />
-            }
-            InputRightElement={
-              <Icon
-                as={
-                  <MaterialIcons
-                    name={showPassword ? "visibility" : "visibility-off"}
-                  />
-                }
-                size={5}
-                mr="2"
-                color="muted.400"
-                onPress={() => setShowPassword(!showPassword)}
-              />
-            }
-          />
-          {"password" in errors ? (
-            <FormControl.ErrorMessage>
-              {errors?.password}
-            </FormControl.ErrorMessage>
-          ) : null}
-          {"password_length" in errors ? (
-            <FormControl.ErrorMessage>
-              {errors?.password_length}
-            </FormControl.ErrorMessage>
-          ) : null}
-        </FormControl>
+                    <FormControl
+                        pb="2"
+                        isRequired
+                        isInvalid={"name" in errors}
+                        width="full"
+                    >
+                        <FormControl.Label>Nome</FormControl.Label>
+                        <Input
+                            placeholder="Seu nome"
+                            value={formData.name}
+                            onChangeText={(text) => setData({...formData,name: text})}
+                            InputLeftElement={
+                                <Icon
+                                    as={<MaterialIcons name="person" />}
+                                    size={5}
+                                    ml={2}
+                                    color="muted.400"
+                                />
+                            }
+                        />
+                        {errors.name&&(
+                            <FormControl.ErrorMessage>
+                                {errors.name}
+                            </FormControl.ErrorMessage>
+                        )}
+                    </FormControl>
 
-        <FormControl
-          pt="2"
-          pb="2"
-          isRequired
-          isInvalid={
-            "confirm_password" in errors ||
-            "confirm_password_length" in errors ||
-            "diferent" in errors
-          }
-          width="full"
-        >
-          <FormControl.Label>Confirmar Senha</FormControl.Label>
-          <Input
-            placeholder="Confirmar Senha"
-            value={formData?.confirm_password}
-            onChangeText={(text) =>
-              setData({ ...formData, confirm_password: text })
-            }
-            type={showConfirmPassword ? "text" : "password"}
-            InputLeftElement={
-              <Icon
-                as={<MaterialIcons name="lock" />}
-                size={5}
-                ml={2}
-                color="muted.400"
-              />
-            }
-            InputRightElement={
-              <Icon
-                as={
-                  <MaterialIcons
-                    name={showConfirmPassword ? "visibility" : "visibility-off"}
-                  />
-                }
-                size={5}
-                mr="2"
-                color="muted.400"
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-              />
-            }
-          />
-          {"confirm_password" in errors ? (
-            <FormControl.ErrorMessage>
-              {errors?.confirm_password}
-            </FormControl.ErrorMessage>
-          ) : null}
-          {"confirm_password_length" in errors ? (
-            <FormControl.ErrorMessage>
-              {errors?.confirm_password_length}
-            </FormControl.ErrorMessage>
-          ) : null}
-          {"diferent" in errors ? (
-            <FormControl.ErrorMessage>
-              {errors?.diferent}
-            </FormControl.ErrorMessage>
-          ) : null}
-        </FormControl>
+                    <FormControl
+                        pb="2"
+                        isRequired
+                        isInvalid={"lastname" in errors}
+                        width="full"
+                    >
+                        <FormControl.Label>Sobrenome</FormControl.Label>
+                        <Input
+                            placeholder="Seu sobrenome"
+                            value={formData.lastname}
+                            onChangeText={(text) => setData({...formData,lastname: text})}
+                            InputLeftElement={
+                                <Icon
+                                    as={<MaterialIcons name="person" />}
+                                    size={5}
+                                    ml={2}
+                                    color="muted.400"
+                                />
+                            }
+                        />
+                        {errors.lastname&&(
+                            <FormControl.ErrorMessage>
+                                {errors.lastname}
+                            </FormControl.ErrorMessage>
+                        )}
+                    </FormControl>
 
-        <Button colorScheme="purple" onPress={submit}>
-          Cadastrar
-        </Button>
-      </VStack>
-    </Box>
-  );
+                    <FormControl
+                        pb="2"
+                        isRequired
+                        isInvalid={"email" in errors}
+                        width="full"
+                    >
+                        <FormControl.Label>Email</FormControl.Label>
+                        <Input
+                            placeholder="exemplo@exemplo.com"
+                            value={formData.email}
+                            onChangeText={(text) => setData({...formData,email: text})}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                            autoComplete="email"
+                            InputLeftElement={
+                                <Icon
+                                    as={<MaterialIcons name="email" />}
+                                    size={5}
+                                    ml={2}
+                                    color="muted.400"
+                                />
+                            }
+                        />
+                        {errors.email&&(
+                            <FormControl.ErrorMessage>
+                                {errors.email}
+                            </FormControl.ErrorMessage>
+                        )}
+                    </FormControl>
+
+                    <FormControl
+                        pb="2"
+                        isRequired
+                        isInvalid={"birthdate" in errors}
+                        width="full"
+                    >
+                        <FormControl.Label>Data de Nascimento</FormControl.Label>
+                        <Input
+                            placeholder="AAAA-MM-DD (ex: 1990-01-15)"
+                            value={formData.birthdate}
+                            onChangeText={(text) => setData({...formData,birthdate: text})}
+                            InputLeftElement={
+                                <Icon
+                                    as={<MaterialIcons name="calendar-today" />}
+                                    size={5}
+                                    ml={2}
+                                    color="muted.400"
+                                />
+                            }
+                        />
+                        {errors.birthdate&&(
+                            <FormControl.ErrorMessage>
+                                {errors.birthdate}
+                            </FormControl.ErrorMessage>
+                        )}
+                    </FormControl>
+
+                    <FormControl
+                        pb="2"
+                        isRequired
+                        isInvalid={"genderId" in errors}
+                        width="full"
+                    >
+                        <FormControl.Label>Gênero</FormControl.Label>
+                        <Select
+                            selectedValue={formData.genderId}
+                            minWidth="200"
+                            accessibilityLabel="Escolha seu gênero"
+                            placeholder="Escolha seu gênero"
+                            _selectedItem={{
+                                bg: "purple.600",
+                                endIcon: <CheckIcon size="5" />
+                            }}
+                            onValueChange={(itemValue) => setData({...formData,genderId: itemValue})}
+                        >
+                            {gendersData?.genders?.map((gender: any) => (
+                                <Select.Item key={gender.id} label={gender.gender} value={gender.id} />
+                            ))}
+                        </Select>
+                        {errors.genderId&&(
+                            <FormControl.ErrorMessage>
+                                {errors.genderId}
+                            </FormControl.ErrorMessage>
+                        )}
+                    </FormControl>
+
+                    <FormControl
+                        pb="2"
+                        isRequired
+                        isInvalid={"professionId" in errors}
+                        width="full"
+                    >
+                        <FormControl.Label>Profissão</FormControl.Label>
+                        <Select
+                            selectedValue={formData.professionId}
+                            minWidth="200"
+                            accessibilityLabel="Escolha sua profissão"
+                            placeholder="Escolha sua profissão"
+                            _selectedItem={{
+                                bg: "purple.600",
+                                endIcon: <CheckIcon size="5" />
+                            }}
+                            onValueChange={(itemValue) => setData({...formData,professionId: itemValue})}
+                        >
+                            {professionsData?.professions?.map((profession: any) => (
+                                <Select.Item key={profession.id} label={profession.profession} value={profession.id} />
+                            ))}
+                        </Select>
+                        {errors.professionId&&(
+                            <FormControl.ErrorMessage>
+                                {errors.professionId}
+                            </FormControl.ErrorMessage>
+                        )}
+                    </FormControl>
+
+                    <FormControl
+                        pt="2"
+                        pb="2"
+                        isRequired
+                        isInvalid={"password" in errors}
+                        width="full"
+                    >
+                        <FormControl.Label>Senha</FormControl.Label>
+                        <Input
+                            placeholder="Senha (mínimo 8 caracteres)"
+                            value={formData.password}
+                            onChangeText={(text) => setData({...formData,password: text})}
+                            type={showPassword? "text":"password"}
+                            InputLeftElement={
+                                <Icon
+                                    as={<MaterialIcons name="lock" />}
+                                    size={5}
+                                    ml={2}
+                                    color="muted.400"
+                                />
+                            }
+                            InputRightElement={
+                                <Icon
+                                    as={
+                                        <MaterialIcons
+                                            name={showPassword? "visibility":"visibility-off"}
+                                        />
+                                    }
+                                    size={5}
+                                    mr="2"
+                                    color="muted.400"
+                                    onPress={() => setShowPassword(!showPassword)}
+                                />
+                            }
+                        />
+                        {errors.password&&(
+                            <FormControl.ErrorMessage>
+                                {errors.password}
+                            </FormControl.ErrorMessage>
+                        )}
+                    </FormControl>
+
+                    <FormControl
+                        pt="2"
+                        pb="2"
+                        isRequired
+                        isInvalid={"confirm_password" in errors}
+                        width="full"
+                    >
+                        <FormControl.Label>Confirmar Senha</FormControl.Label>
+                        <Input
+                            placeholder="Confirmar Senha"
+                            value={formData.confirm_password}
+                            onChangeText={(text) =>
+                                setData({...formData,confirm_password: text})
+                            }
+                            type={showConfirmPassword? "text":"password"}
+                            InputLeftElement={
+                                <Icon
+                                    as={<MaterialIcons name="lock" />}
+                                    size={5}
+                                    ml={2}
+                                    color="muted.400"
+                                />
+                            }
+                            InputRightElement={
+                                <Icon
+                                    as={
+                                        <MaterialIcons
+                                            name={showConfirmPassword? "visibility":"visibility-off"}
+                                        />
+                                    }
+                                    size={5}
+                                    mr="2"
+                                    color="muted.400"
+                                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                                />
+                            }
+                        />
+                        {errors.confirm_password&&(
+                            <FormControl.ErrorMessage>
+                                {errors.confirm_password}
+                            </FormControl.ErrorMessage>
+                        )}
+                    </FormControl>
+
+                    {error&&(
+                        <Box bg="red.100" p="3" mb="3" borderRadius="md">
+                            <FormControl.ErrorMessage>
+                                {error}
+                            </FormControl.ErrorMessage>
+                        </Box>
+                    )}
+
+                    <Button
+                        colorScheme="purple"
+                        onPress={submit}
+                        isLoading={loading}
+                        isLoadingText="Cadastrando..."
+                        isDisabled={gendersLoading||professionsLoading}
+                    >
+                        Cadastrar
+                    </Button>
+                </VStack>
+            </Box>
+        </ScrollView>
+    )
 }

@@ -1,18 +1,21 @@
-import { Injectable, ExecutionContext, UnauthorizedException, CanActivate } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
-import { GqlExecutionContext } from '@nestjs/graphql'
+import {CanActivate,ExecutionContext,Inject,Injectable,UnauthorizedException} from '@nestjs/common'
+import {GqlExecutionContext} from '@nestjs/graphql'
+import {JwtServicePort} from '../../domain/ports/jwt-service.port'
+import {JWT_SERVICE} from '../../domain/tokens'
 
 @Injectable()
 export class JwtGuard implements CanActivate {
-    constructor(private readonly jwtService: JwtService) { }
+    constructor(
+        @Inject(JWT_SERVICE) private readonly jwtService: JwtServicePort
+    ) {}
 
     getRequest(context: ExecutionContext) {
         try {
-            const ctx = GqlExecutionContext.create(context)
+            const ctx=GqlExecutionContext.create(context)
             return ctx.getContext().req
-        } catch (error) {
+        } catch(error) {
             // Re-throw GraphQL context creation errors
-            if (error instanceof Error && error.message.includes('GraphQL')) {
+            if(error instanceof Error&&error.message.includes('GraphQL')) {
                 throw error
             }
             // Handle other errors gracefully
@@ -22,46 +25,47 @@ export class JwtGuard implements CanActivate {
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         // Handle null context by throwing error (as expected by tests)
-        if (!context) {
+        if(!context) {
             throw new Error('Execution context is null')
         }
 
-        const request = this.getRequest(context)
+        const request=this.getRequest(context)
 
         // Handle invalid GraphQL context gracefully
-        if (!request || !request.headers) {
+        if(!request||!request.headers) {
             return false
         }
 
-        const authHeader = request.headers.authorization
+        const authHeader=request.headers.authorization
 
-        if (!authHeader) {
+        if(!authHeader) {
             return false
         }
 
-        const token = this.extractTokenFromHeader(authHeader)
-        if (token === undefined) {
+        const token=this.extractTokenFromHeader(authHeader)
+        if(token===undefined) {
             return false
         }
 
         try {
-            // Use sync verify method to match test expectations
-            const payload = this.jwtService.verify(token)
-            request.user = payload
+            // Use async verify method from custom JwtServicePort
+            const payload=await this.jwtService.verify(token)
+            request.user=payload
             return true
-        } catch (error) {
+        } catch(error) {
+            console.log('[JwtGuard] Token verification failed:',error.message)
             return false
         }
     }
 
-    private extractTokenFromHeader(authHeader: string | null): string | undefined {
-        if (!authHeader) return undefined
+    private extractTokenFromHeader(authHeader: string|null): string|undefined {
+        if(!authHeader) return undefined
 
         // Check if it starts with Bearer (case insensitive), but don't trim yet
-        const bearerPattern = /^bearer\s+(.*)$/i
-        const match = authHeader.match(bearerPattern)
+        const bearerPattern=/^bearer\s+(.*)$/i
+        const match=authHeader.match(bearerPattern)
 
-        if (!match) {
+        if(!match) {
             return undefined
         }
 

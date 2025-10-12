@@ -3,27 +3,27 @@ export class Password {
 
     constructor(password: string) {
         this.validate(password)
-        this.value = password
+        this.value=password
     }
 
     private validate(password: string): void {
-        if (!password || password.trim().length === 0) {
+        if(!password||password.trim().length===0) {
             throw new Error('Password is required')
         }
 
-        if (password.length < 6) {
+        if(password.length<6) {
             throw new Error('Password must be at least 6 characters long')
         }
 
-        if (password.length > 100) {
+        if(password.length>100) {
             throw new Error('Password is too long')
         }
 
         // Verificar se contém pelo menos uma letra e um número
-        const hasLetter = /[a-zA-Z]/.test(password)
-        const hasNumber = /\d/.test(password)
+        const hasLetter=/[a-zA-Z]/.test(password)
+        const hasNumber=/\d/.test(password)
 
-        if (!hasLetter || !hasNumber) {
+        if(!hasLetter||!hasNumber) {
             throw new Error('Password must contain at least one letter and one number')
         }
     }
@@ -33,10 +33,17 @@ export class Password {
     }
 
     equals(other: Password): boolean {
-        return this.value === other.value
+        return this.value===other.value
     }
 
     toString(): string {
         return this.value
+    }
+
+    // Criar instância a partir de um hash (pula validação)
+    static fromHash(hash: string): Password {
+        const pw=Object.create(Password.prototype) as Password
+            ; (pw as any).value=hash
+        return pw
     }
 }
