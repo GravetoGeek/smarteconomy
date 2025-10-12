@@ -1,8 +1,20 @@
 import {ApolloClient,InMemoryCache,createHttpLink,from} from '@apollo/client'
 import {setContext} from '@apollo/client/link/context'
 import {onError} from '@apollo/client/link/error'
+import {loadDevMessages,loadErrorMessages} from '@apollo/client/dev'
 import {BACKEND_HOST,BACKEND_PORT} from '@env'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+
+// Suppress Apollo Client deprecation warnings in development
+if(__DEV__) {
+    require('./apollo-dev-config')
+}
+
+// Load Apollo Client error messages in development
+if(__DEV__) {
+    loadDevMessages()
+    loadErrorMessages()
+}
 
 // HTTP Link - conecta ao backend GraphQL
 const httpLink=createHttpLink({
