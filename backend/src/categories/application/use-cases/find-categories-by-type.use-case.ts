@@ -1,7 +1,7 @@
-import { Injectable, Inject } from '@nestjs/common'
-import { Category } from '../../domain/entities/category'
-import { CategoryRepositoryPort } from '../../domain/ports/category-repository.port'
-import { CATEGORY_REPOSITORY } from '../../domain/tokens'
+import {Inject,Injectable} from '@nestjs/common'
+import {Category} from '../../domain/entities/category'
+import {CategoryRepositoryPort} from '../../domain/ports/category-repository.port'
+import {CATEGORY_REPOSITORY} from '../../domain/tokens'
 
 @Injectable()
 export class FindCategoriesByTypeUseCase {

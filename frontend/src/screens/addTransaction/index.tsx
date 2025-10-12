@@ -1,122 +1,122 @@
-import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
-import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
-import { Picker } from "@react-native-picker/picker";
-import { useNavigation } from "@react-navigation/native";
-import moment from "moment";
-import { Box, Button, FormControl, Icon, Input, VStack } from "native-base";
-import React, { useContext, useState, useEffect } from "react";
-import FloatingBottomMenu from "../../components/FloatingBottomMenu";
-import Header from "../../components/Header";
-import { Store } from "../../contexts/StoreProvider";
-import { styles } from './style';
-import { useGetAccountsByUser } from "../../hooks/accounts/useGetAccountsByUser";
-import { useGetCategoriesByType } from "../../hooks/categories/useGetCategoriesByType";
-import { useCreateTransaction } from "../../hooks/transactions/useCreateTransaction";
+import {FontAwesome5,MaterialIcons} from "@expo/vector-icons"
+import {DateTimePickerAndroid} from "@react-native-community/datetimepicker"
+import {Picker} from "@react-native-picker/picker"
+import {useNavigation} from "@react-navigation/native"
+import moment from "moment"
+import {Box,Button,FormControl,Icon,Input,VStack} from "native-base"
+import React,{useContext,useEffect,useState} from "react"
+import FloatingBottomMenu from "../../components/FloatingBottomMenu"
+import Header from "../../components/Header"
+import {Store} from "../../contexts/StoreProvider"
+import {useGetAccountsByUser} from "../../hooks/accounts/useGetAccountsByUser"
+import {useGetCategoriesByType} from "../../hooks/categories/useGetCategoriesByType"
+import {useCreateTransaction} from "../../hooks/transactions/useCreateTransaction"
+import {styles} from './style'
 
 // Mapeamento de tipos de transação (mesmo padrão do backend)
 const TRANSACTION_TYPES=[
-    {id: 1, type: 'EXPENSE', label: 'Despesa'},
-    {id: 2, type: 'INCOME', label: 'Receita'},
-    {id: 3, type: 'TRANSFER', label: 'Transferência'}
+    {id: 1,type: 'EXPENSE',label: 'Despesa'},
+    {id: 2,type: 'INCOME',label: 'Receita'},
+    {id: 3,type: 'TRANSFER',label: 'Transferência'}
 ]
 
-const AddTransaction = () => {
-    const { user, profile } = useContext(Store);
-    const [description, setDescription] = useState("");
-    const [amount, setAmount] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState<string>("");
-    const [selectedAccount, setSelectedAccount] = useState<string>("");
-    const [selectedDestinationAccount, setSelectedDestinationAccount] = useState<string>("");
-    const [type_id, setTypeId] = useState<number>(1); // 1 = EXPENSE por padrão
-    const [date, setDate] = useState(moment().format("YYYY-MM-DD HH:mm:ss"));
+const AddTransaction=() => {
+    const {user,profile}=useContext(Store)
+    const [description,setDescription]=useState("")
+    const [amount,setAmount]=useState("")
+    const [selectedCategory,setSelectedCategory]=useState<string>("")
+    const [selectedAccount,setSelectedAccount]=useState<string>("")
+    const [selectedDestinationAccount,setSelectedDestinationAccount]=useState<string>("")
+    const [type_id,setTypeId]=useState<number>(1) // 1 = EXPENSE por padrão
+    const [date,setDate]=useState(moment().format("YYYY-MM-DD HH:mm:ss"))
 
-    const navigation = useNavigation();
+    const navigation=useNavigation()
 
     // GraphQL hooks
-    const { accounts, loading: loadingAccounts } = useGetAccountsByUser(user?.id);
-    const { categories, loading: loadingCategories, refetch: refetchCategories } = useGetCategoriesByType(
-        TRANSACTION_TYPES.find(t => t.id === type_id)?.type || ''
-    );
-    const { createTransaction, loading: creatingTransaction } = useCreateTransaction();
+    const {accounts,loading: loadingAccounts}=useGetAccountsByUser(user?.id)
+    const {categories,loading: loadingCategories,refetch: refetchCategories}=useGetCategoriesByType(
+        TRANSACTION_TYPES.find(t => t.id===type_id)?.type||''
+    )
+    const {createTransaction,loading: creatingTransaction}=useCreateTransaction()
 
     // Define conta padrão quando carregar
     useEffect(() => {
-        if (accounts.length > 0 && !selectedAccount) {
-            setSelectedAccount(accounts[0].id);
+        if(accounts.length>0&&!selectedAccount) {
+            setSelectedAccount(accounts[0].id)
         }
-    }, [accounts]);
+    },[accounts])
 
     // Recarrega categorias ao mudar tipo
     useEffect(() => {
-        const transactionType = TRANSACTION_TYPES.find(t => t.id === type_id)?.type;
-        if (transactionType) {
-            refetchCategories({ type: transactionType });
+        const transactionType=TRANSACTION_TYPES.find(t => t.id===type_id)?.type
+        if(transactionType) {
+            refetchCategories({type: transactionType})
         }
-    }, [type_id]);
+    },[type_id])
 
     // Define categoria padrão quando carregar
     useEffect(() => {
-        if (categories.length > 0 && !selectedCategory) {
-            setSelectedCategory(categories[0].id);
+        if(categories.length>0&&!selectedCategory) {
+            setSelectedCategory(categories[0].id)
         }
-    }, [categories]);
+    },[categories])
 
     function handleDashboard() {
-        navigation.navigate('Dashboard');
+        navigation.navigate('Dashboard')
     }
 
-    const handleAddTransaction = async () => {
+    const handleAddTransaction=async () => {
         try {
-            const transactionType = TRANSACTION_TYPES.find(t => t.id === type_id)?.type;
-            
-            if (!transactionType) {
-                console.error('Tipo de transação inválido');
-                return;
+            const transactionType=TRANSACTION_TYPES.find(t => t.id===type_id)?.type
+
+            if(!transactionType) {
+                console.error('Tipo de transação inválido')
+                return
             }
 
             // Remove campos undefined para não enviar
-            const input: any = {
+            const input: any={
                 amount: parseFloat(amount),
                 description: description,
-                type: transactionType as 'EXPENSE' | 'INCOME' | 'TRANSFER',
+                type: transactionType as 'EXPENSE'|'INCOME'|'TRANSFER',
                 accountId: selectedAccount,
                 date: moment(date).format("YYYY-MM-DD HH:mm:ss"),
-            };
+            }
 
             // Adiciona categoryId apenas se não for transferência
-            if (type_id !== 3 && selectedCategory) {
-                input.categoryId = selectedCategory;
+            if(type_id!==3&&selectedCategory) {
+                input.categoryId=selectedCategory
             }
 
             // Adiciona destinationAccountId apenas se for transferência
-            if (type_id === 3 && selectedDestinationAccount) {
-                input.destinationAccountId = selectedDestinationAccount;
+            if(type_id===3&&selectedDestinationAccount) {
+                input.destinationAccountId=selectedDestinationAccount
             }
 
-            const result = await createTransaction(input);
+            const result=await createTransaction(input)
 
-            if (result) {
-                console.log('Transação criada:', result.transaction.id);
-                handleDashboard();
+            if(result) {
+                console.log('Transação criada:',result.transaction.id)
+                handleDashboard()
             }
-        } catch (error) {
-            console.error('Erro ao criar transação:', error);
+        } catch(error) {
+            console.error('Erro ao criar transação:',error)
         }
-    };
+    }
 
-    const onChange = (event: any, selectedDate: any) => {
-        const currentDate = selectedDate;
-        setDate(moment(currentDate).format("YYYY-MM-DD HH:mm:ss"));
-    };
+    const onChange=(event: any,selectedDate: any) => {
+        const currentDate=selectedDate
+        setDate(moment(currentDate).format("YYYY-MM-DD HH:mm:ss"))
+    }
 
-    const showDatepicker = () => {
+    const showDatepicker=() => {
         DateTimePickerAndroid.open({
             value: moment(date).toDate(),
             onChange,
             mode: "date",
             is24Hour: true,
-        });
-    };
+        })
+    }
 
     return (
         <Box flex={1} bg='white'>
@@ -129,8 +129,8 @@ const AddTransaction = () => {
                             style={styles.pickerTypeTransaction}
                             selectedValue={type_id}
                             onValueChange={(itemValue) => {
-                                setTypeId(itemValue);
-                                setSelectedCategory(""); // Limpa categoria ao mudar tipo
+                                setTypeId(itemValue)
+                                setSelectedCategory("") // Limpa categoria ao mudar tipo
                             }}
                         >
                             {TRANSACTION_TYPES.map((type) => (
@@ -169,7 +169,7 @@ const AddTransaction = () => {
                             }
                         />
 
-                        {type_id !== 3 && (
+                        {type_id!==3&&(
                             <>
                                 <FormControl.Label>Categoria</FormControl.Label>
                                 <Picker
@@ -205,7 +205,7 @@ const AddTransaction = () => {
                             ))}
                         </Picker>
 
-                        {type_id === 3 && (
+                        {type_id===3&&(
                             <>
                                 <FormControl.Label>Conta de destino</FormControl.Label>
                                 <Picker
@@ -215,7 +215,7 @@ const AddTransaction = () => {
                                     enabled={!loadingAccounts}
                                 >
                                     {accounts
-                                        .filter((item) => item.id !== selectedAccount)
+                                        .filter((item) => item.id!==selectedAccount)
                                         .map((item) => (
                                             <Picker.Item
                                                 key={item.id}
@@ -241,14 +241,14 @@ const AddTransaction = () => {
                             }
                         />
                     </FormControl>
-                    
-                    <Button 
-                        style={styles.btnAddTransaction} 
-                        mt='5' 
-                        colorScheme="purple" 
+
+                    <Button
+                        style={styles.btnAddTransaction}
+                        mt='5'
+                        colorScheme="purple"
                         onPress={handleAddTransaction}
                         isLoading={creatingTransaction}
-                        isDisabled={creatingTransaction || loadingAccounts || loadingCategories}
+                        isDisabled={creatingTransaction||loadingAccounts||loadingCategories}
                     >
                         Adicionar transação
                     </Button>
@@ -256,7 +256,7 @@ const AddTransaction = () => {
             </VStack>
             <FloatingBottomMenu />
         </Box>
-    );
-};
+    )
+}
 
-export default AddTransaction;
+export default AddTransaction

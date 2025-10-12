@@ -1,9 +1,9 @@
-import { Category } from '../entities/category'
+import {Category} from '../entities/category'
 
 export interface CategoryRepositoryPort {
     save(category: Category): Promise<Category>
-    findById(id: string): Promise<Category | null>
-    findByCategory(category: string): Promise<Category | null>
+    findById(id: string): Promise<Category|null>
+    findByCategory(category: string): Promise<Category|null>
     findAll(): Promise<Category[]>
     findByType(type: string): Promise<Category[]>
     delete(id: string): Promise<void>
