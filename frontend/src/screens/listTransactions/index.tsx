@@ -65,7 +65,7 @@ const ListTransactions=() => {
             category_id: item.categoryId
         }
 
-        navigation.navigate('ManageTransaction' as never,transaction as never)
+        navigation.navigate('ManageTransaction',transaction as any)
     }
 
     // Helper para mapear tipo GraphQL para legacy

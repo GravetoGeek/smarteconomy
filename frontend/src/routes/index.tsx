@@ -12,8 +12,9 @@ import Login from '../screens/login';
 import ManageProfile from '../screens/manageProfile';
 import ManageTransaction from '../screens/manageTransaction';
 import Register from '../screens/register';
+import { RootStackParamList } from '../../types/navigation';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 
 

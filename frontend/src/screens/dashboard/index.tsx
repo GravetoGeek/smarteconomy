@@ -91,9 +91,11 @@ export default function Dashboard() {
     },[accountsData])
 
     // Set transaction types in Store
-    useEffect(() => {
-        setTransactionTypes(TRANSACTION_TYPES)
-    },[])
+    // Note: TRANSACTION_TYPES is not compatible with Transaction[] type
+    // This is hardcoded data, not actual transactions
+    // useEffect(() => {
+    //     setTransactionTypes(TRANSACTION_TYPES)
+    // },[])
 
     useFocusEffect(
         React.useCallback(() => {
@@ -148,7 +150,7 @@ export default function Dashboard() {
     function handleListTransactionByCategory(categoria: DataCategory): void {
         let {x,y,category,id,color,iconName}=categoria
         console.log("ListTransactionByCategory",categoria)
-        navigation.navigate('ListTransactionByCategory' as never,{x,y,category,id,color,iconName} as never)
+        navigation.navigate('ListTransactionByCategory',{x,y,category,id,color,iconName})
     }
 
     return (
@@ -192,14 +194,14 @@ export default function Dashboard() {
                                 innerRadius={50}
                                 labelRadius={120}
                                 padding={100}
-                                labels={({datum}) => `${despesaTotal===0? '':(100*datum.y/despesaTotal).toFixed(2)+'%'}\n${datum.x}\n${despesaTotal===0? '':moeda.format(datum.y)}`}
+                                labels={({datum}: any) => `${despesaTotal===0? '':(100*datum.y/despesaTotal).toFixed(2)+'%'}\n${datum.x}\n${despesaTotal===0? '':moeda.format(datum.y)}`}
                                 animate={{easing: 'exp'}}
                                 style={{
                                     labels: {
-                                        fill: ({datum}) => datum.color,
+                                        fill: ({datum}: any) => datum.color,
                                     },
                                     data: {
-                                        fill: ({datum}) => datum.color,
+                                        fill: ({datum}: any) => datum.color,
                                     }
                                 }}
 
@@ -257,14 +259,14 @@ export default function Dashboard() {
                                 innerRadius={50}
                                 labelRadius={120}
                                 padding={100}
-                                labels={({datum}) => `${receitaTotal===0? '':(100*datum.y/receitaTotal).toFixed(2)+'%'}\n${datum.x}\n${receitaTotal===0? '':moeda.format(datum.y)}`}
+                                labels={({datum}: any) => `${receitaTotal===0? '':(100*datum.y/receitaTotal).toFixed(2)+'%'}\n${datum.x}\n${receitaTotal===0? '':moeda.format(datum.y)}`}
                                 animate={{easing: 'exp'}}
                                 style={{
                                     labels: {
-                                        fill: ({datum}) => datum.color,
+                                        fill: ({datum}: any) => datum.color,
                                     },
                                     data: {
-                                        fill: ({datum}) => datum.color,
+                                        fill: ({datum}: any) => datum.color,
                                     }
                                 }}
 
