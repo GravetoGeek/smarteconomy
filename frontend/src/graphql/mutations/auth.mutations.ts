@@ -2,7 +2,7 @@ import {gql} from '@apollo/client'
 
 /**
  * 🔐 Auth Mutations
- * 
+ *
  * Mutations GraphQL para autenticação e autorização
  */
 

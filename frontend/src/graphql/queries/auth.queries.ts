@@ -2,7 +2,7 @@ import {gql} from '@apollo/client'
 
 /**
  * 🔐 Auth Queries
- * 
+ *
  * Queries GraphQL para validação de autenticação
  */
 

@@ -15,22 +15,22 @@ interface LogoutResponse {
 
 /**
  * 🚪 useLogout Hook
- * 
+ *
  * Custom hook para logout de usuário usando GraphQL
- * 
+ *
  * @example
  * ```tsx
  * const ProfileScreen = () => {
  *   const { logout, loading, error } = useLogout();
- * 
+ *
  *   const handleLogout = async () => {
  *     const success = await logout();
- *     
+ *
  *     if (success) {
  *       navigation.navigate('Login');
  *     }
  *   };
- * 
+ *
  *   return (
  *     <Button onPress={handleLogout} isLoading={loading}>
  *       Sair
