@@ -1,10 +1,13 @@
-import { Injectable, ExecutionContext, UnauthorizedException, CanActivate } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
+import { Injectable, ExecutionContext, UnauthorizedException, CanActivate, Inject } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
+import { JWT_SERVICE } from '../../domain/tokens'
+import { JwtServicePort } from '../../domain/ports/jwt-service.port'
 
 @Injectable()
 export class JwtGuard implements CanActivate {
-    constructor(private readonly jwtService: JwtService) { }
+    constructor(
+        @Inject(JWT_SERVICE) private readonly jwtService: JwtServicePort
+    ) { }
 
     getRequest(context: ExecutionContext) {
         try {
@@ -45,11 +48,12 @@ export class JwtGuard implements CanActivate {
         }
 
         try {
-            // Use sync verify method to match test expectations
-            const payload = this.jwtService.verify(token)
+            // Use async verify method from custom JwtServicePort
+            const payload = await this.jwtService.verify(token)
             request.user = payload
             return true
         } catch (error) {
+            console.log('[JwtGuard] Token verification failed:', error.message)
             return false
         }
     }
