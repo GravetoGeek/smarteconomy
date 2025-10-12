@@ -44,9 +44,10 @@ export class CreateTransactionInput {
     @IsUUID('4', { message: 'ID da conta deve ser um UUID válido' })
     accountId: string
 
-    @Field()
+    @Field({ nullable: true })
+    @IsOptional()
     @IsUUID('4', { message: 'ID da categoria deve ser um UUID válido' })
-    categoryId: string
+    categoryId?: string
 
     @Field({ nullable: true })
     @IsOptional()

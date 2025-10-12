@@ -9,9 +9,9 @@ import React,{useEffect,useState} from 'react'
 import DropDownPicker from 'react-native-dropdown-picker'
 import FloatingBottomMenu from '../../components/FloatingBottomMenu'
 import Header from '../../components/Header'
-import {useStore} from '../../hooks/useStore'
 import {GET_USER_BY_ID} from '../../graphql/queries/users.queries'
 import {useUpdateUser} from '../../hooks/users/useUpdateUser'
+import {useStore} from '../../hooks/useStore'
 import {Profile} from '../../models'
 
 // Gender constants (hardcoded since GraphQL doesn't have a dedicated endpoint)

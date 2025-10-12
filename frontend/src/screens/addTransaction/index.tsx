@@ -7,10 +7,10 @@ import {Box,Button,FormControl,Icon,Input,VStack} from "native-base"
 import React,{useEffect,useState} from "react"
 import FloatingBottomMenu from "../../components/FloatingBottomMenu"
 import Header from "../../components/Header"
-import {useStore} from "../../hooks/useStore"
 import {useGetAccountsByUser} from "../../hooks/accounts/useGetAccountsByUser"
 import {useGetCategoriesByType} from "../../hooks/categories/useGetCategoriesByType"
 import {useCreateTransaction} from "../../hooks/transactions/useCreateTransaction"
+import {useStore} from "../../hooks/useStore"
 import {styles} from './style'
 
 // Mapeamento de tipos de transação (mesmo padrão do backend)
@@ -74,14 +74,45 @@ const AddTransaction=() => {
                 return
             }
 
+            // Validação do amount
+            const numericAmount=parseFloat(amount)
+            if(isNaN(numericAmount)||numericAmount<=0) {
+                console.error('Valor inválido:',amount)
+                alert('Por favor, insira um valor válido')
+                return
+            }
+
+            // Validação de campos obrigatórios
+            if(!description||!selectedAccount) {
+                console.error('Campos obrigatórios faltando')
+                alert('Preencha todos os campos obrigatórios')
+                return
+            }
+
+            // Para transações que não são transferência, categoria é obrigatória
+            if(type_id!==3&&!selectedCategory) {
+                console.error('Categoria é obrigatória para este tipo de transação')
+                alert('Selecione uma categoria')
+                return
+            }
+
+            // Para transferências, conta destino é obrigatória
+            if(type_id===3&&!selectedDestinationAccount) {
+                console.error('Conta destino é obrigatória para transferências')
+                alert('Selecione a conta de destino')
+                return
+            }
+
             // Remove campos undefined para não enviar
             const input: any={
-                amount: parseFloat(amount),
+                amount: numericAmount,
                 description: description,
                 type: transactionType as 'EXPENSE'|'INCOME'|'TRANSFER',
                 accountId: selectedAccount,
                 date: moment(date).format("YYYY-MM-DD HH:mm:ss"),
             }
+
+            console.log('[AddTransaction] Input data:',JSON.stringify(input,null,2))
 
             // Adiciona categoryId apenas se não for transferência
             if(type_id!==3&&selectedCategory) {

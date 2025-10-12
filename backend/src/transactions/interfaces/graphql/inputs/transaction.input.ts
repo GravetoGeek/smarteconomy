@@ -32,10 +32,10 @@ export class CreateTransactionInput {
     @IsUUID('4',{message: 'ID da conta inválido'})
     accountId: string
 
-    @Field()
-    @IsNotEmpty({message: 'ID da categoria é obrigatório'})
+    @Field({nullable: true})
+    @IsOptional()
     @IsUUID('4',{message: 'ID da categoria inválido'})
-    categoryId: string
+    categoryId?: string
 
     @Field({nullable: true})
     @IsOptional()
