@@ -22,7 +22,7 @@ export class User {
     private _role: UserRole
     private readonly _genderId: string
     private readonly _professionId: string
-    private readonly _profileId?: string
+    private readonly _profileId?: string|null
     private readonly _password: Password
     private _status: AccountStatus
     private readonly _createdAt: Date
@@ -37,7 +37,7 @@ export class User {
         role: UserRole
         genderId: string
         professionId: string
-        profileId?: string
+        profileId?: string|null // Aceita null do Prisma
         password: string
         status?: AccountStatus
         createdAt?: Date
@@ -81,7 +81,7 @@ export class User {
     get role(): UserRole {return this._role}
     get genderId(): string {return this._genderId}
     get professionId(): string {return this._professionId}
-    get profileId(): string|undefined {return this._profileId}
+    get profileId(): string|undefined|null {return this._profileId}
     get password(): string {return this._password.getValue()}
     get status(): AccountStatus {return this._status}
     get createdAt(): Date {return this._createdAt}
@@ -141,12 +141,6 @@ export class User {
         this._updatedAt=new Date()
     }
 
-    updatePassword(newPassword: string): void {
-        // Password VO revalida complexidade
-        ; (this as any)._password=new Password(newPassword)
-        this._updatedAt=new Date()
-    }
-
     // Factory method
     static create(props: {
         email: string
@@ -175,7 +169,7 @@ export class User {
         role: UserRole|string // Aceita string para compatibilidade com Prisma
         genderId: string
         professionId: string
-        profileId?: string
+        profileId?: string|null // Aceita null do Prisma
         password: string
         status: AccountStatus|string // Aceita string para compatibilidade com Prisma
         createdAt: Date

@@ -1,22 +1,234 @@
 {
     "info": {
-        "name": "SmartEconomy API",
-        "description": "API GraphQL para gestão financeira - Módulo Users",
+        "name": "SmartEconomy API - Complete Collection",
+        "description": "Collection completa da API GraphQL SmartEconomy com todos os módulos implementados",
+        "version": "2.0.0",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "variable": [
         {
             "key": "base_url",
-            "value": "http://localhost:3000"
+            "value": "http://localhost:3000",
+            "type": "string"
         },
         {
             "key": "graphql_endpoint",
-            "value": "{{base_url}}/graphql"
+            "value": "{{base_url}}/graphql",
+            "type": "string"
+        },
+        {
+            "key": "access_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "refresh_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "user_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "account_id",
+            "value": "",
+            "type": "string"
         }
     ],
     "item": [
         {
-            "name": "Users",
+            "name": "🎯 Basic",
+            "description": "Queries básicas da aplicação",
+            "item": [
+                {
+                    "name": "Hello World",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query { hello }\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Query básica para testar conectividade"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🔐 Authentication",
+            "description": "Autenticação e autorização de usuários",
+            "item": [
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const response = pm.response.json();",
+                                    "    if (response.data && response.data.login) {",
+                                    "        pm.collectionVariables.set('access_token', response.data.login.accessToken);",
+                                    "        pm.collectionVariables.set('refresh_token', response.data.login.refreshToken);",
+                                    "        pm.collectionVariables.set('user_id', response.data.login.user.id);",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation Login($input: LoginInput!) { login(input: $input) { accessToken refreshToken expiresIn tokenType user { id email role } } }\",\n  \"variables\": {\n    \"input\": {\n      \"email\": \"admin@smarteconomy.com\",\n      \"password\": \"Admin123456!\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Fazer login e obter tokens de acesso"
+                    }
+                },
+                {
+                    "name": "Signup",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const response = pm.response.json();",
+                                    "    if (response.data && response.data.signup) {",
+                                    "        pm.collectionVariables.set('access_token', response.data.signup.accessToken);",
+                                    "        pm.collectionVariables.set('refresh_token', response.data.signup.refreshToken);",
+                                    "        pm.collectionVariables.set('user_id', response.data.signup.user.id);",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation Signup($input: SignupInput!) { signup(input: $input) { accessToken refreshToken expiresIn tokenType user { id email role } } }\",\n  \"variables\": {\n    \"input\": {\n      \"email\": \"newuser@smarteconomy.com\",\n      \"password\": \"NewUser123!\",\n      \"name\": \"Novo\",\n      \"lastname\": \"Usuário\",\n      \"birthdate\": \"1990-01-01T00:00:00.000Z\",\n      \"genderId\": \"123e4567-e89b-12d3-a456-426614174000\",\n      \"professionId\": \"123e4567-e89b-12d3-a456-426614174001\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Criar nova conta de usuário"
+                    }
+                },
+                {
+                    "name": "Refresh Token",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const response = pm.response.json();",
+                                    "    if (response.data && response.data.refreshToken) {",
+                                    "        pm.collectionVariables.set('access_token', response.data.refreshToken.accessToken);",
+                                    "        pm.collectionVariables.set('refresh_token', response.data.refreshToken.refreshToken);",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation RefreshToken($input: RefreshTokenInput!) { refreshToken(input: $input) { accessToken refreshToken expiresIn tokenType user { id email role } } }\",\n  \"variables\": {\n    \"input\": {\n      \"refreshToken\": \"{{refresh_token}}\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Renovar token de acesso usando refresh token"
+                    }
+                },
+                {
+                    "name": "Validate Token",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query ValidateToken($input: ValidateTokenInput!) { validateToken(input: $input) { valid user { id email role } } }\",\n  \"variables\": {\n    \"input\": {\n      \"accessToken\": \"{{access_token}}\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Validar se um token de acesso é válido"
+                    }
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation Logout($input: LogoutInput!) { logout(input: $input) { success message } }\",\n  \"variables\": {\n    \"input\": {\n      \"accessToken\": \"{{access_token}}\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Fazer logout e invalidar token"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "👥 Users",
+            "description": "Gestão completa de usuários",
             "item": [
                 {
                     "name": "Get All Users",
@@ -30,14 +242,13 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"query\": \"query { users { id email name lastname role status createdAt } }\"\n}"
+                            "raw": "{\n  \"query\": \"query GetAllUsers { users { id email name lastname birthdate role genderId professionId profileId status createdAt updatedAt } }\"\n}"
                         },
                         "url": {
                             "raw": "{{graphql_endpoint}}",
-                            "host": [
-                                "{{graphql_endpoint}}"
-                            ]
-                        }
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Buscar todos os usuários cadastrados"
                     }
                 },
                 {
@@ -52,14 +263,13 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"query\": \"query GetUserById($id: String!) { userById(id: $id) { id email name lastname role status createdAt } }\",\n  \"variables\": {\n    \"id\": \"USER_ID_AQUI\"\n  }\n}"
+                            "raw": "{\n  \"query\": \"query GetUserById($id: String!) { userById(id: $id) { id email name lastname birthdate role genderId professionId profileId status createdAt updatedAt } }\",\n  \"variables\": {\n    \"id\": \"{{user_id}}\"\n  }\n}"
                         },
                         "url": {
                             "raw": "{{graphql_endpoint}}",
-                            "host": [
-                                "{{graphql_endpoint}}"
-                            ]
-                        }
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Buscar usuário específico por ID"
                     }
                 },
                 {
@@ -74,14 +284,13 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"query\": \"query GetUserByEmail($email: String!) { userByEmail(email: $email) { id email name lastname role status createdAt } }\",\n  \"variables\": {\n    \"email\": \"joao.silva@example.com\"\n  }\n}"
+                            "raw": "{\n  \"query\": \"query GetUserByEmail($email: String!) { userByEmail(email: $email) { id email name lastname birthdate role genderId professionId profileId status createdAt updatedAt } }\",\n  \"variables\": {\n    \"email\": \"admin@smarteconomy.com\"\n  }\n}"
                         },
                         "url": {
                             "raw": "{{graphql_endpoint}}",
-                            "host": [
-                                "{{graphql_endpoint}}"
-                            ]
-                        }
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Buscar usuário por endereço de email"
                     }
                 },
                 {
@@ -96,18 +305,32 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"query\": \"query SearchUsers($input: SearchUsersInput!) { searchUsers(input: $input) { items { id email name lastname role } total currentPage totalPages } }\",\n  \"variables\": {\n    \"input\": {\n      \"page\": 1,\n      \"limit\": 10,\n      \"filter\": \"joão\",\n      \"sort\": \"name\",\n      \"sortDirection\": \"asc\"\n    }\n  }\n}"
+                            "raw": "{\n  \"query\": \"query SearchUsers($input: SearchUsersInput!) { searchUsers(input: $input) { items { id email name lastname role status createdAt } total currentPage limit totalPages lastPage } }\",\n  \"variables\": {\n    \"input\": {\n      \"page\": 1,\n      \"limit\": 10,\n      \"filter\": \"\",\n      \"sort\": \"name\",\n      \"sortDirection\": \"asc\"\n    }\n  }\n}"
                         },
                         "url": {
                             "raw": "{{graphql_endpoint}}",
-                            "host": [
-                                "{{graphql_endpoint}}"
-                            ]
-                        }
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Busca avançada de usuários com filtros e paginação"
                     }
                 },
                 {
                     "name": "Create User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const response = pm.response.json();",
+                                    "    if (response.data && response.data.createUser) {",
+                                    "        pm.collectionVariables.set('user_id', response.data.createUser.id);",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
                     "request": {
                         "method": "POST",
                         "header": [
@@ -118,14 +341,13 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"query\": \"mutation CreateUser($input: CreateUserInput!) { createUser(input: $input) { id email name lastname role status createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"email\": \"joao.silva@example.com\",\n      \"name\": \"João\",\n      \"lastname\": \"Silva\",\n      \"birthdate\": \"1990-01-15\",\n      \"role\": \"USER\",\n      \"genderId\": \"GENDER_ID_AQUI\",\n      \"professionId\": \"PROFESSION_ID_AQUI\",\n      \"password\": \"senha123456\"\n    }\n  }\n}"
+                            "raw": "{\n  \"query\": \"mutation CreateUser($input: CreateUserInput!) { createUser(input: $input) { id email name lastname birthdate role genderId professionId status createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"email\": \"joao.silva@example.com\",\n      \"name\": \"João\",\n      \"lastname\": \"Silva\",\n      \"birthdate\": \"1990-01-15\",\n      \"role\": \"USER\",\n      \"genderId\": \"SUBSTITUIR_POR_GENDER_ID\",\n      \"professionId\": \"SUBSTITUIR_POR_PROFESSION_ID\",\n      \"password\": \"MinhaSenh@123\"\n    }\n  }\n}"
                         },
                         "url": {
                             "raw": "{{graphql_endpoint}}",
-                            "host": [
-                                "{{graphql_endpoint}}"
-                            ]
-                        }
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Criar novo usuário no sistema"
                     }
                 },
                 {
@@ -140,14 +362,13 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"query\": \"mutation UpdateUser($id: String!, $input: UpdateUserInput!) { updateUser(id: $id, input: $input) { id email name lastname role status updatedAt } }\",\n  \"variables\": {\n    \"id\": \"USER_ID_AQUI\",\n    \"input\": {\n      \"name\": \"João Pedro\",\n      \"lastname\": \"Silva Santos\"\n    }\n  }\n}"
+                            "raw": "{\n  \"query\": \"mutation UpdateUser($id: String!, $input: UpdateUserInput!) { updateUser(id: $id, input: $input) { success user { id email name lastname updatedAt } message } }\",\n  \"variables\": {\n    \"id\": \"{{user_id}}\",\n    \"input\": {\n      \"name\": \"João Pedro\",\n      \"lastname\": \"Silva Santos\",\n      \"genderId\": \"SUBSTITUIR_POR_GENDER_ID\",\n      \"professionId\": \"SUBSTITUIR_POR_PROFESSION_ID\"\n    }\n  }\n}"
                         },
                         "url": {
                             "raw": "{{graphql_endpoint}}",
-                            "host": [
-                                "{{graphql_endpoint}}"
-                            ]
-                        }
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Atualizar dados de usuário existente"
                     }
                 },
                 {
@@ -162,23 +383,23 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"query\": \"mutation DeleteUser($id: String!) { deleteUser(id: $id) { id email name lastname } }\",\n  \"variables\": {\n    \"id\": \"USER_ID_AQUI\"\n  }\n}"
+                            "raw": "{\n  \"query\": \"mutation DeleteUser($id: String!) { deleteUser(id: $id) { success message } }\",\n  \"variables\": {\n    \"id\": \"{{user_id}}\"\n  }\n}"
                         },
                         "url": {
                             "raw": "{{graphql_endpoint}}",
-                            "host": [
-                                "{{graphql_endpoint}}"
-                            ]
-                        }
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Deletar usuário do sistema"
                     }
                 }
             ]
         },
         {
-            "name": "Supporting Data",
+            "name": "💰 Accounts",
+            "description": "Gestão de contas financeiras",
             "item": [
                 {
-                    "name": "Get Genders",
+                    "name": "Get Accounts by User",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -189,18 +410,17 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"query\": \"query { genders { id gender } }\"\n}"
+                            "raw": "{\n  \"query\": \"query AccountsByUser($userId: String!) { accountsByUser(userId: $userId) { id name type balance userId status createdAt updatedAt } }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\"\n  }\n}"
                         },
                         "url": {
                             "raw": "{{graphql_endpoint}}",
-                            "host": [
-                                "{{graphql_endpoint}}"
-                            ]
-                        }
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Buscar todas as contas de um usuário específico"
                     }
                 },
                 {
-                    "name": "Get Professions",
+                    "name": "Get Account by ID",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -211,17 +431,448 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"query\": \"query { professions { id profession } }\"\n}"
+                            "raw": "{\n  \"query\": \"query AccountById($id: String!) { accountById(id: $id) { id name type balance userId status createdAt updatedAt } }\",\n  \"variables\": {\n    \"id\": \"{{account_id}}\"\n  }\n}"
                         },
                         "url": {
                             "raw": "{{graphql_endpoint}}",
-                            "host": [
-                                "{{graphql_endpoint}}"
-                            ]
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Buscar conta específica por ID"
+                    }
+                },
+                {
+                    "name": "Create Checking Account",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    const response = pm.response.json();",
+                                    "    if (response.data && response.data.createAccount) {",
+                                    "        pm.collectionVariables.set('account_id', response.data.createAccount.id);",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
                         }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation CreateAccount($input: CreateAccountInput!) { createAccount(input: $input) { id name type balance userId status createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"name\": \"Conta Corrente Principal\",\n      \"type\": \"CHECKING\",\n      \"balance\": 1500.50,\n      \"userId\": \"{{user_id}}\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Criar conta corrente"
+                    }
+                },
+                {
+                    "name": "Create Savings Account",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation CreateAccount($input: CreateAccountInput!) { createAccount(input: $input) { id name type balance userId status createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"name\": \"Conta Poupança\",\n      \"type\": \"SAVINGS\",\n      \"balance\": 5000.00,\n      \"userId\": \"{{user_id}}\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Criar conta poupança"
+                    }
+                },
+                {
+                    "name": "Create Investment Account",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation CreateAccount($input: CreateAccountInput!) { createAccount(input: $input) { id name type balance userId status createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"name\": \"Conta de Investimentos\",\n      \"type\": \"INVESTMENT\",\n      \"balance\": 10000.00,\n      \"userId\": \"{{user_id}}\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Criar conta de investimentos"
+                    }
+                },
+                {
+                    "name": "Create Credit Card",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation CreateAccount($input: CreateAccountInput!) { createAccount(input: $input) { id name type balance userId status createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"name\": \"Cartão Visa Gold\",\n      \"type\": \"CREDIT_CARD\",\n      \"balance\": 0.00,\n      \"userId\": \"{{user_id}}\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Criar cartão de crédito"
+                    }
+                },
+                {
+                    "name": "Create Wallet",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation CreateAccount($input: CreateAccountInput!) { createAccount(input: $input) { id name type balance userId status createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"name\": \"Carteira Digital\",\n      \"type\": \"WALLET\",\n      \"balance\": 250.00,\n      \"userId\": \"{{user_id}}\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Criar carteira digital"
                     }
                 }
             ]
+        },
+        {
+            "name": "🏷️ Gender",
+            "description": "Gestão de gêneros",
+            "item": [
+                {
+                    "name": "Get All Genders",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query GetAllGenders { genders { id gender createdAt updatedAt } }\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Buscar todos os gêneros disponíveis"
+                    }
+                },
+                {
+                    "name": "Get Gender by ID",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query GetGenderById($id: String!) { gender(id: $id) { id gender createdAt updatedAt } }\",\n  \"variables\": {\n    \"id\": \"SUBSTITUIR_POR_GENDER_ID\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Buscar gênero específico por ID"
+                    }
+                },
+                {
+                    "name": "Create Gender",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation CreateGender($input: CreateGenderInput!) { createGender(input: $input) { id gender createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"gender\": \"Não-binário\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Criar novo gênero"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "💼 Profession",
+            "description": "Gestão de profissões",
+            "item": [
+                {
+                    "name": "Get All Professions",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query GetAllProfessions { professions { id profession createdAt updatedAt } }\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Buscar todas as profissões disponíveis"
+                    }
+                },
+                {
+                    "name": "Get Profession by ID",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query GetProfessionById($id: String!) { profession(id: $id) { id profession createdAt updatedAt } }\",\n  \"variables\": {\n    \"id\": \"SUBSTITUIR_POR_PROFESSION_ID\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Buscar profissão específica por ID"
+                    }
+                },
+                {
+                    "name": "Create Profession",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation CreateProfession($input: CreateProfessionInput!) { createProfession(input: $input) { id profession createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"profession\": \"Desenvolvedor Full Stack\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Criar nova profissão"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📂 Categories",
+            "description": "Gestão de categorias",
+            "item": [
+                {
+                    "name": "Get All Categories",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query GetAllCategories { categories { id category createdAt updatedAt } }\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Buscar todas as categorias disponíveis"
+                    }
+                },
+                {
+                    "name": "Get Category by ID",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query GetCategoryById($id: String!) { category(id: $id) { id category createdAt updatedAt } }\",\n  \"variables\": {\n    \"id\": \"SUBSTITUIR_POR_CATEGORY_ID\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Buscar categoria específica por ID"
+                    }
+                },
+                {
+                    "name": "Create Category",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"mutation CreateCategory($input: CreateCategoryInput!) { createCategory(input: $input) { id category createdAt } }\",\n  \"variables\": {\n    \"input\": {\n      \"category\": \"Alimentação\"\n    }\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Criar nova categoria"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🎯 Complete Workflow Examples",
+            "description": "Exemplos de fluxos completos da aplicação",
+            "item": [
+                {
+                    "name": "Setup: Get Support Data",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query GetSupportData { genders { id gender } professions { id profession } categories { id category } }\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Obter dados de apoio (gêneros, profissões, categorias) para cadastros"
+                    }
+                },
+                {
+                    "name": "Complete User Journey",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query CompleteUserData($userId: String!) { userById(id: $userId) { id email name lastname role status createdAt } accountsByUser(userId: $userId) { id name type balance createdAt } }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Buscar dados completos do usuário e suas contas"
+                    }
+                },
+                {
+                    "name": "Financial Overview",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"query\": \"query FinancialOverview($userId: String!) { accountsByUser(userId: $userId) { id name type balance status } }\",\n  \"variables\": {\n    \"userId\": \"{{user_id}}\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{graphql_endpoint}}",
+                            "host": ["{{graphql_endpoint}}"]
+                        },
+                        "description": "Visão geral financeira do usuário"
+                    }
+                }
+            ]
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Script para preparar requests se necessário"
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Testes globais para verificar responses",
+                    "pm.test('Response should be 200 or have GraphQL errors', function () {",
+                    "    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+                    "});",
+                    "",
+                    "if (pm.response.code === 200) {",
+                    "    pm.test('Response should be valid JSON', function () {",
+                    "        pm.response.to.be.json;",
+                    "    });",
+                    "",
+                    "    const response = pm.response.json();",
+                    "    if (response.errors) {",
+                    "        pm.test('GraphQL errors should be logged', function () {",
+                    "            console.log('GraphQL Errors:', response.errors);",
+                    "        });",
+                    "    }",
+                    "}"
+                ]
+            }
         }
     ]
 }

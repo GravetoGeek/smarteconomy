@@ -20,6 +20,6 @@ async function bootstrap() {
     // ✅ Aplicar filtro de exceção global para tratamento correto de erros
     app.useGlobalFilters(new GraphQLExceptionFilter())
 
-    await app.listen(process.env.BACKEND_PORT)
+    await app.listen(process.env.BACKEND_PORT||3000)
 }
 bootstrap()

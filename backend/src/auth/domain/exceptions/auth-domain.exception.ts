@@ -53,3 +53,24 @@ export class TooManyLoginAttemptsException extends AuthDomainException {
         this.name = 'TooManyLoginAttemptsException'
     }
 }
+
+export class EmailAlreadyExistsException extends AuthDomainException {
+    constructor(email: string) {
+        super(`User with email ${email} already exists`)
+        this.name = 'EmailAlreadyExistsException'
+    }
+}
+
+export class InvalidEmailException extends AuthDomainException {
+    constructor(email: string) {
+        super(`Invalid email format: ${email}`)
+        this.name = 'InvalidEmailException'
+    }
+}
+
+export class WeakPasswordException extends AuthDomainException {
+    constructor() {
+        super('Password does not meet security requirements')
+        this.name = 'WeakPasswordException'
+    }
+}
