@@ -39,11 +39,21 @@ export default function AddAccount() {
             return
         }
 
+        const userId=user?.id||''
+
+        console.log('[AddAccount] User ID:',userId)
+        console.log('[AddAccount] User object:',JSON.stringify(user,null,2))
+
+        if(!userId||userId==='') {
+            alert('Erro: Usuário não identificado. Por favor, faça login novamente.')
+            return
+        }
+
         const result=await createAccount({
             name,
             type,
             balance: 0,
-            userId: user?.id?.toString()||''
+            userId
         })
 
         if(result) {

@@ -68,8 +68,12 @@ export const useLogin=() => {
                 variables: {input}
             })
 
+            console.log('[useLogin] Raw GraphQL response:', JSON.stringify(data, null, 2))
+
             if(data?.login) {
                 const {accessToken,refreshToken,user}=data.login
+
+                console.log('[useLogin] User from response:', JSON.stringify(user, null, 2))
 
                 // Salvar tokens no AsyncStorage
                 await AsyncStorage.setItem('token',accessToken)
