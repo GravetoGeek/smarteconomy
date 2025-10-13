@@ -5,13 +5,14 @@
  * relacionada a transações que envolve múltiplas entidades.
  */
 
-import { Transaction, TransactionType, TransactionStatus } from '../transaction.entity'
-import { TransactionRepositoryPort } from '../ports/transaction-repository.port'
+import {Inject,Injectable} from '@nestjs/common'
 import {
     DuplicateTransactionException,
     InsufficientBalanceException,
     TransactionStatusException
 } from '../exceptions/transaction-domain.exception'
+import {TransactionRepositoryPort} from '../ports/transaction-repository.port'
+import {Transaction,TransactionStatus,TransactionType} from '../transaction.entity'
 
 export interface AccountBalance {
     accountId: string
@@ -61,10 +62,12 @@ export interface TransactionDomainServicePort {
     }>
 }
 
+@Injectable()
 export class TransactionDomainService implements TransactionDomainServicePort {
     constructor(
+        @Inject('TransactionRepositoryPort')
         private readonly transactionRepository: TransactionRepositoryPort
-    ) { }
+    ) {}
 
     async processTransaction(
         transaction: Transaction,
@@ -75,20 +78,20 @@ export class TransactionDomainService implements TransactionDomainServicePort {
         updatedBalances: AccountBalance[]
     }> {
         // 1. Validar a transação
-        await this.validateTransaction(transaction, accountBalance, destinationBalance)
+        await this.validateTransaction(transaction,accountBalance,destinationBalance)
 
         // 2. Detectar atividade suspeita
-        const suspiciousActivity = await this.detectSuspiciousActivity(
+        const suspiciousActivity=await this.detectSuspiciousActivity(
             transaction.accountId,
             transaction
         )
 
-        if (suspiciousActivity.isDuplicate) {
+        if(suspiciousActivity.isDuplicate) {
             throw new DuplicateTransactionException()
         }
 
         // 3. Calcular novos saldos
-        const updatedBalances = this.calculateUpdatedBalances(
+        const updatedBalances=this.calculateUpdatedBalances(
             transaction,
             accountBalance,
             destinationBalance
@@ -109,27 +112,22 @@ export class TransactionDomainService implements TransactionDomainServicePort {
         destinationBalance?: AccountBalance
     ): Promise<void> {
         // Validar status da transação
-        if (!transaction.canBeCompleted()) {
-            throw new TransactionStatusException(transaction.status, 'processar')
+        if(!transaction.canBeCompleted()) {
+            throw new TransactionStatusException(transaction.status,'processar')
         }
 
-        // Validar saldo para despesas e transferências
-        if (transaction.isExpense || transaction.isTransfer) {
-            if (accountBalance.balance < transaction.amount) {
-                throw new InsufficientBalanceException(
-                    accountBalance.balance,
-                    transaction.amount
-                )
-            }
+        // Validar categoria obrigatória (exceto transferências)
+        if(!transaction.isTransfer&&!transaction.categoryId) {
+            throw new Error('Toda transação deve ter uma categoria')
         }
 
         // Validar conta de destino para transferências
-        if (transaction.isTransfer) {
-            if (!destinationBalance) {
+        if(transaction.isTransfer) {
+            if(!destinationBalance) {
                 throw new Error('Saldo da conta de destino é obrigatório para transferências')
             }
 
-            if (!transaction.destinationAccountId) {
+            if(!transaction.destinationAccountId) {
                 throw new Error('Conta de destino é obrigatória para transferências')
             }
         }
@@ -139,21 +137,21 @@ export class TransactionDomainService implements TransactionDomainServicePort {
         transactionId: string,
         reason: string
     ): Promise<Transaction> {
-        const transaction = await this.transactionRepository.findById(transactionId)
+        const transaction=await this.transactionRepository.findById(transactionId)
 
-        if (!transaction) {
+        if(!transaction) {
             throw new Error(`Transação não encontrada: ${transactionId}`)
         }
 
-        if (!transaction.canBeReversed()) {
-            throw new TransactionStatusException(transaction.status, 'reverter')
+        if(!transaction.canBeReversed()) {
+            throw new TransactionStatusException(transaction.status,'reverter')
         }
 
         // Criar transação de reversão
-        const reversalTransaction = new Transaction({
+        const reversalTransaction=new Transaction({
             description: `REVERSÃO: ${transaction.description} - ${reason}`,
             amount: transaction.amount,
-            type: transaction.isExpense ? TransactionType.INCOME : TransactionType.EXPENSE,
+            type: transaction.isExpense? TransactionType.INCOME:TransactionType.EXPENSE,
             accountId: transaction.accountId,
             categoryId: transaction.categoryId,
             destinationAccountId: transaction.destinationAccountId
@@ -177,52 +175,54 @@ export class TransactionDomainService implements TransactionDomainServicePort {
         isSuspicious: boolean
         reasons: string[]
     }> {
-        const reasons: string[] = []
-        let isDuplicate = false
-        let isSuspicious = false
+        const reasons: string[]=[]
+        let isDuplicate=false
+        let isSuspicious=false
 
-        // Verificar duplicatas
-        const isDuplicateTransaction = await this.transactionRepository.checkDuplicate(
-            transaction.accountId,
-            transaction.amount,
-            transaction.description,
-            transaction.date
-        )
-
-        if (isDuplicateTransaction) {
-            isDuplicate = true
+        // Verificar duplicatas (fallback defensivo)
+        let isDuplicateTransaction=false
+        if(typeof this.transactionRepository.checkDuplicate==='function') {
+            isDuplicateTransaction=await this.transactionRepository.checkDuplicate(
+                transaction.accountId,
+                transaction.amount,
+                transaction.description,
+                transaction.date
+            )
+        }
+        if(isDuplicateTransaction) {
+            isDuplicate=true
             reasons.push('Transação duplicada detectada')
         }
 
         // Verificar valores suspeitos (acima de R$ 10.000)
-        if (transaction.amount > 10000) {
-            isSuspicious = true
+        if(transaction.amount>10000) {
+            isSuspicious=true
             reasons.push('Valor alto da transação')
         }
 
         // Verificar múltiplas transações em pouco tempo
-        const recentTransactions = await this.transactionRepository.getRecentTransactions(
+        const recentTransactions=await this.transactionRepository.getRecentTransactions(
             accountId,
             10
         )
 
-        const transactionsLastHour = recentTransactions.filter(txn => {
-            const hourAgo = new Date(Date.now() - 60 * 60 * 1000)
-            return txn.createdAt > hourAgo
+        const transactionsLastHour=recentTransactions.filter(txn => {
+            const hourAgo=new Date(Date.now()-60*60*1000)
+            return txn.createdAt>hourAgo
         })
 
-        if (transactionsLastHour.length > 5) {
-            isSuspicious = true
+        if(transactionsLastHour.length>5) {
+            isSuspicious=true
             reasons.push('Muitas transações em pouco tempo')
         }
 
         // Verificar padrões suspeitos de valores
-        const roundAmounts = recentTransactions.filter(txn =>
-            txn.amount % 100 === 0 && txn.amount > 1000
+        const roundAmounts=recentTransactions.filter(txn =>
+            txn.amount%100===0&&txn.amount>1000
         )
 
-        if (roundAmounts.length > 3) {
-            isSuspicious = true
+        if(roundAmounts.length>3) {
+            isSuspicious=true
             reasons.push('Padrão suspeito de valores redondos')
         }
 
@@ -238,15 +238,15 @@ export class TransactionDomainService implements TransactionDomainServicePort {
         accountBalance: AccountBalance,
         destinationBalance?: AccountBalance
     ): AccountBalance[] {
-        const updatedBalances: AccountBalance[] = []
+        const updatedBalances: AccountBalance[]=[]
 
         // Atualizar saldo da conta origem
-        let newOriginBalance = accountBalance.balance
+        let newOriginBalance=accountBalance.balance
 
-        if (transaction.isExpense || transaction.isTransfer) {
-            newOriginBalance -= transaction.amount
-        } else if (transaction.isIncome) {
-            newOriginBalance += transaction.amount
+        if(transaction.isExpense||transaction.isTransfer) {
+            newOriginBalance-=transaction.amount
+        } else if(transaction.isIncome) {
+            newOriginBalance+=transaction.amount
         }
 
         updatedBalances.push({
@@ -255,10 +255,10 @@ export class TransactionDomainService implements TransactionDomainServicePort {
         })
 
         // Atualizar saldo da conta destino (transferências)
-        if (transaction.isTransfer && destinationBalance) {
+        if(transaction.isTransfer&&destinationBalance) {
             updatedBalances.push({
                 accountId: destinationBalance.accountId,
-                balance: destinationBalance.balance + transaction.amount
+                balance: destinationBalance.balance+transaction.amount
             })
         }
 
