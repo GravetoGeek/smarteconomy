@@ -5,11 +5,6 @@ import {onError} from '@apollo/client/link/error'
 import {BACKEND_HOST,BACKEND_PORT} from '@env'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-// Suppress Apollo Client deprecation warnings in development
-if(__DEV__) {
-    require('./apollo-dev-config')
-}
-
 // Load Apollo Client error messages in development
 if(__DEV__) {
     loadDevMessages()
@@ -108,6 +103,9 @@ export const apolloClient=new ApolloClient({
                 keyFields: ['id'],
             },
             User: {
+                keyFields: ['id'],
+            },
+            AuthUser: {
                 keyFields: ['id'],
             },
             Category: {

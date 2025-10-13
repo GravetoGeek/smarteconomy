@@ -37,6 +37,10 @@ export default function Login() {
         navigation.navigate('Register')
     }
 
+    function handleRequestPasswordReset() {
+        navigation.navigate('RequestPasswordReset')
+    }
+
     const submit=async () => {
         if(!email||!password) {
             setErrorMessage("Preencha todos os campos")
@@ -49,7 +53,7 @@ export default function Login() {
             const user=await login({email,password})
 
             if(user) {
-                setUser({...user,id: Number(user.id)})
+                setUser(user)
                 handleDashboard()
             } else {
                 setErrorMessage("Email ou senha inválidos")
@@ -123,6 +127,7 @@ export default function Login() {
                         </Button>
                         <Center>
                             <Text style={styles.txtLink} onPress={handleRegister} mt="7" color="muted.700" fontWeight={400}>Registrar</Text>
+                            <Text style={styles.txtLink} onPress={handleRequestPasswordReset} mt="3" color="purple.700" fontWeight={400}>Esqueci minha senha</Text>
                         </Center>
                     </Box>
 

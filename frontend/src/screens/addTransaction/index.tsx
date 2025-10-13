@@ -109,14 +109,29 @@ const AddTransaction=() => {
                 description: description,
                 type: transactionType as 'EXPENSE'|'INCOME'|'TRANSFER',
                 accountId: selectedAccount,
-                date: moment(date).format("YYYY-MM-DD HH:mm:ss"),
+                // date removido para evitar erro de tipo no backend
             }
 
+            // Para EXPENSE/INCOME, sempre envia categoryId válido
+            if(type_id!==3) {
+                // Regex para UUID v4
+                const uuidRegex=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+                let validCategory=null
+                if(selectedCategory&&uuidRegex.test(selectedCategory)) {
+                    validCategory=selectedCategory
+                } else {
+                    validCategory=categories.find(cat => uuidRegex.test(cat.id))?.id
+                    if(validCategory) setSelectedCategory(validCategory)
+                }
+                if(validCategory) {
+                    input.categoryId=validCategory
+                }
+            }
             console.log('[AddTransaction] Input data:',JSON.stringify(input,null,2))
-
-            // Adiciona categoryId apenas se não for transferência
-            if(type_id!==3&&selectedCategory) {
-                input.categoryId=selectedCategory
+            if(input.categoryId) {
+                console.log('[AddTransaction] categoryId:',input.categoryId)
+            } else {
+                console.log('[AddTransaction] Nenhuma categoria enviada')
             }
 
             // Adiciona destinationAccountId apenas se for transferência
@@ -161,7 +176,11 @@ const AddTransaction=() => {
                             selectedValue={type_id}
                             onValueChange={(itemValue) => {
                                 setTypeId(itemValue)
-                                setSelectedCategory("") // Limpa categoria ao mudar tipo
+                                // Ao trocar tipo, define a primeira categoria disponível
+                                setSelectedCategory("")
+                                if(categories.length>0) {
+                                    setSelectedCategory(categories[0].id)
+                                }
                             }}
                         >
                             {TRANSACTION_TYPES.map((type) => (
