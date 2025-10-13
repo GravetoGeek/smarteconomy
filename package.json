@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "nodemailer": "^7.0.9"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^7.0.2",
+    "typescript": "^5.9.3"
+  }
+}
