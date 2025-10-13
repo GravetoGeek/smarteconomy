@@ -1,24 +1,24 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { JwtTokenService } from './jwt-token.service';
+import {ConfigService} from '@nestjs/config'
+import {JwtService} from '@nestjs/jwt'
+import {Test,TestingModule} from '@nestjs/testing'
+import {JwtTokenService} from './jwt-token.service'
 
-describe('JwtTokenService', () => {
-    let service: JwtTokenService;
-    let jwtService: jest.Mocked<JwtService>;
-    let configService: jest.Mocked<ConfigService>;
+describe('JwtTokenService',() => {
+    let service: JwtTokenService
+    let jwtService: jest.Mocked<JwtService>
+    let configService: jest.Mocked<ConfigService>
 
-    const mockUser = {
+    const mockUser={
         id: 'user-123',
         email: 'test@example.com',
         name: 'Test',
         lastname: 'User',
         role: 'USER',
         status: 'ACTIVE'
-    };
+    }
 
     beforeEach(async () => {
-        const module: TestingModule = await Test.createTestingModule({
+        const module: TestingModule=await Test.createTestingModule({
             providers: [
                 JwtTokenService,
                 {
@@ -38,13 +38,13 @@ describe('JwtTokenService', () => {
             ]
         }).compile()
 
-        service = module.get<JwtTokenService>(JwtTokenService)
-        jwtService = module.get(JwtService)
-        configService = module.get(ConfigService)
+        service=module.get<JwtTokenService>(JwtTokenService)
+        jwtService=module.get(JwtService)
+        configService=module.get(ConfigService)
 
         // Default config mock returns
         configService.get.mockImplementation((key: string) => {
-            const config = {
+            const config: {[key: string]: string}={
                 JWT_SECRET: 'test-secret-key',
                 JWT_EXPIRATION: '1h',
                 JWT_REFRESH_SECRET: 'test-refresh-secret',
@@ -58,14 +58,14 @@ describe('JwtTokenService', () => {
         jest.clearAllMocks()
     })
 
-    describe('generateAccessToken', () => {
-        it('should generate access token with correct payload and options', async () => {
+    describe('generateAccessToken',() => {
+        it('should generate access token with correct payload and options',async () => {
             // Arrange
-            const expectedToken = 'generated.access.token'
+            const expectedToken='generated.access.token'
             jwtService.sign.mockReturnValue(expectedToken)
 
             // Act
-            const result = await service.generateAccessToken(mockUser)
+            const result=await service.generateAccessToken(mockUser)
 
             // Assert
             expect(result).toBe(expectedToken)
@@ -85,9 +85,9 @@ describe('JwtTokenService', () => {
             )
         })
 
-        it('should handle user with minimal data', async () => {
+        it('should handle user with minimal data',async () => {
             // Arrange
-            const minimalUser = {
+            const minimalUser={
                 id: 'user-456',
                 email: 'minimal@example.com',
                 name: 'Min',
@@ -95,11 +95,11 @@ describe('JwtTokenService', () => {
                 role: 'USER',
                 status: 'ACTIVE'
             }
-            const expectedToken = 'minimal.access.token'
+            const expectedToken='minimal.access.token'
             jwtService.sign.mockReturnValue(expectedToken)
 
             // Act
-            const result = await service.generateAccessToken(minimalUser)
+            const result=await service.generateAccessToken(minimalUser)
 
             // Assert
             expect(result).toBe(expectedToken)
@@ -116,7 +116,7 @@ describe('JwtTokenService', () => {
             )
         })
 
-        it('should handle JWT service errors during access token generation', async () => {
+        it('should handle JWT service errors during access token generation',async () => {
             // Arrange
             jwtService.sign.mockImplementation(() => {
                 throw new Error('JWT service error')
@@ -126,11 +126,11 @@ describe('JwtTokenService', () => {
             await expect(service.generateAccessToken(mockUser)).rejects.toThrow('JWT service error')
         })
 
-        it('should use correct expiration from config', async () => {
+        it('should use correct expiration from config',async () => {
             // Arrange
             configService.get.mockImplementation((key: string) => {
-                if (key === 'JWT_EXPIRATION') return '2h'
-                if (key === 'JWT_SECRET') return 'test-secret'
+                if(key==='JWT_EXPIRATION') return '2h'
+                if(key==='JWT_SECRET') return 'test-secret'
                 return null
             })
             jwtService.sign.mockReturnValue('token')
@@ -148,14 +148,14 @@ describe('JwtTokenService', () => {
         })
     })
 
-    describe('generateRefreshToken', () => {
-        it('should generate refresh token with correct payload and options', async () => {
+    describe('generateRefreshToken',() => {
+        it('should generate refresh token with correct payload and options',async () => {
             // Arrange
-            const expectedToken = 'generated.refresh.token'
+            const expectedToken='generated.refresh.token'
             jwtService.sign.mockReturnValue(expectedToken)
 
             // Act
-            const result = await service.generateRefreshToken(mockUser)
+            const result=await service.generateRefreshToken(mockUser)
 
             // Assert
             expect(result).toBe(expectedToken)
@@ -172,7 +172,7 @@ describe('JwtTokenService', () => {
             )
         })
 
-        it('should include refresh token type in payload', async () => {
+        it('should include refresh token type in payload',async () => {
             // Arrange
             jwtService.sign.mockReturnValue('refresh.token')
 
@@ -188,11 +188,11 @@ describe('JwtTokenService', () => {
             )
         })
 
-        it('should use refresh token secret from config', async () => {
+        it('should use refresh token secret from config',async () => {
             // Arrange
             configService.get.mockImplementation((key: string) => {
-                if (key === 'JWT_REFRESH_SECRET') return 'custom-refresh-secret'
-                if (key === 'JWT_REFRESH_EXPIRATION') return '14d'
+                if(key==='JWT_REFRESH_SECRET') return 'custom-refresh-secret'
+                if(key==='JWT_REFRESH_EXPIRATION') return '14d'
                 return null
             })
             jwtService.sign.mockReturnValue('token')
@@ -210,7 +210,7 @@ describe('JwtTokenService', () => {
             )
         })
 
-        it('should handle JWT service errors during refresh token generation', async () => {
+        it('should handle JWT service errors during refresh token generation',async () => {
             // Arrange
             jwtService.sign.mockImplementation(() => {
                 throw new Error('Refresh token generation failed')
@@ -221,35 +221,35 @@ describe('JwtTokenService', () => {
         })
     })
 
-    describe('verifyAccessToken', () => {
-        it('should verify valid access token and return payload', async () => {
+    describe('verifyAccessToken',() => {
+        it('should verify valid access token and return payload',async () => {
             // Arrange
-            const token = 'valid.access.token'
-            const expectedPayload = {
+            const token='valid.access.token'
+            const expectedPayload={
                 sub: mockUser.id,
                 email: mockUser.email,
                 name: mockUser.name,
                 lastname: mockUser.lastname,
                 role: mockUser.role,
                 status: mockUser.status,
-                iat: Math.floor(Date.now() / 1000),
-                exp: Math.floor(Date.now() / 1000) + 3600
+                iat: Math.floor(Date.now()/1000),
+                exp: Math.floor(Date.now()/1000)+3600
             }
             jwtService.verify.mockReturnValue(expectedPayload)
 
             // Act
-            const result = await service.verifyAccessToken(token)
+            const result=await service.verifyAccessToken(token)
 
             // Assert
             expect(result).toEqual(expectedPayload)
-            expect(jwtService.verify).toHaveBeenCalledWith(token, {
+            expect(jwtService.verify).toHaveBeenCalledWith(token,{
                 secret: 'test-secret-key'
             })
         })
 
-        it('should throw error for invalid access token', async () => {
+        it('should throw error for invalid access token',async () => {
             // Arrange
-            const invalidToken = 'invalid.access.token'
+            const invalidToken='invalid.access.token'
             jwtService.verify.mockImplementation(() => {
                 throw new Error('Invalid token')
             })
@@ -258,9 +258,9 @@ describe('JwtTokenService', () => {
             await expect(service.verifyAccessToken(invalidToken)).rejects.toThrow('Invalid token')
         })
 
-        it('should throw error for expired access token', async () => {
+        it('should throw error for expired access token',async () => {
             // Arrange
-            const expiredToken = 'expired.access.token'
+            const expiredToken='expired.access.token'
             jwtService.verify.mockImplementation(() => {
                 throw new Error('Token expired')
             })
@@ -269,52 +269,52 @@ describe('JwtTokenService', () => {
             await expect(service.verifyAccessToken(expiredToken)).rejects.toThrow('Token expired')
         })
 
-        it('should use correct secret for access token verification', async () => {
+        it('should use correct secret for access token verification',async () => {
             // Arrange
             configService.get.mockImplementation((key: string) => {
-                if (key === 'JWT_SECRET') return 'custom-access-secret'
+                if(key==='JWT_SECRET') return 'custom-access-secret'
                 return null
             })
-            const token = 'test.token'
-            jwtService.verify.mockReturnValue({ sub: 'user-123' })
+            const token='test.token'
+            jwtService.verify.mockReturnValue({sub: 'user-123'})
 
             // Act
             await service.verifyAccessToken(token)
 
             // Assert
-            expect(jwtService.verify).toHaveBeenCalledWith(token, {
+            expect(jwtService.verify).toHaveBeenCalledWith(token,{
                 secret: 'custom-access-secret'
             })
         })
     })
 
-    describe('verifyRefreshToken', () => {
-        it('should verify valid refresh token and return payload', async () => {
+    describe('verifyRefreshToken',() => {
+        it('should verify valid refresh token and return payload',async () => {
             // Arrange
-            const token = 'valid.refresh.token'
-            const expectedPayload = {
+            const token='valid.refresh.token'
+            const expectedPayload={
                 sub: mockUser.id,
                 email: mockUser.email,
                 type: 'refresh',
-                iat: Math.floor(Date.now() / 1000),
-                exp: Math.floor(Date.now() / 1000) + (7 * 24 * 3600)
+                iat: Math.floor(Date.now()/1000),
+                exp: Math.floor(Date.now()/1000)+(7*24*3600)
             }
             jwtService.verify.mockReturnValue(expectedPayload)
 
             // Act
-            const result = await service.verifyRefreshToken(token)
+            const result=await service.verifyRefreshToken(token)
 
             // Assert
             expect(result).toEqual(expectedPayload)
-            expect(jwtService.verify).toHaveBeenCalledWith(token, {
+            expect(jwtService.verify).toHaveBeenCalledWith(token,{
                 secret: 'test-refresh-secret'
             })
         })
 
-        it('should validate refresh token type in payload', async () => {
+        it('should validate refresh token type in payload',async () => {
             // Arrange
-            const token = 'refresh.token'
-            const payload = {
+            const token='refresh.token'
+            const payload={
                 sub: mockUser.id,
                 email: mockUser.email,
                 type: 'refresh'
@@ -322,15 +322,15 @@ describe('JwtTokenService', () => {
             jwtService.verify.mockReturnValue(payload)
 
             // Act
-            const result = await service.verifyRefreshToken(token)
+            const result=await service.verifyRefreshToken(token)
 
             // Assert
             expect(result.type).toBe('refresh')
         })
 
-        it('should throw error for invalid refresh token', async () => {
+        it('should throw error for invalid refresh token',async () => {
             // Arrange
-            const invalidToken = 'invalid.refresh.token'
+            const invalidToken='invalid.refresh.token'
             jwtService.verify.mockImplementation(() => {
                 throw new Error('Invalid refresh token')
             })
@@ -339,10 +339,10 @@ describe('JwtTokenService', () => {
             await expect(service.verifyRefreshToken(invalidToken)).rejects.toThrow('Invalid refresh token')
         })
 
-        it('should throw error for access token used as refresh token', async () => {
+        it('should throw error for access token used as refresh token',async () => {
             // Arrange
-            const accessTokenAsRefresh = 'access.token.used.as.refresh'
-            const payload = {
+            const accessTokenAsRefresh='access.token.used.as.refresh'
+            const payload={
                 sub: mockUser.id,
                 email: mockUser.email,
                 // Missing 'type: refresh'
@@ -350,83 +350,83 @@ describe('JwtTokenService', () => {
             jwtService.verify.mockReturnValue(payload)
 
             // Act
-            const result = await service.verifyRefreshToken(accessTokenAsRefresh)
+            const result=await service.verifyRefreshToken(accessTokenAsRefresh)
 
             // Assert
             // Should still work if service doesn't validate type
             expect(result).toEqual(payload)
         })
 
-        it('should use correct secret for refresh token verification', async () => {
+        it('should use correct secret for refresh token verification',async () => {
             // Arrange
             configService.get.mockImplementation((key: string) => {
-                if (key === 'JWT_REFRESH_SECRET') return 'custom-refresh-secret'
+                if(key==='JWT_REFRESH_SECRET') return 'custom-refresh-secret'
                 return null
             })
-            const token = 'test.refresh.token'
-            jwtService.verify.mockReturnValue({ sub: 'user-123', type: 'refresh' })
+            const token='test.refresh.token'
+            jwtService.verify.mockReturnValue({sub: 'user-123',type: 'refresh'})
 
             // Act
             await service.verifyRefreshToken(token)
 
             // Assert
-            expect(jwtService.verify).toHaveBeenCalledWith(token, {
+            expect(jwtService.verify).toHaveBeenCalledWith(token,{
                 secret: 'custom-refresh-secret'
             })
         })
     })
 
-    describe('decodeToken', () => {
-        it('should decode token without verification', () => {
+    describe('decodeToken',() => {
+        it('should decode token without verification',() => {
             // Arrange
-            const token = 'some.jwt.token'
-            const expectedPayload = {
+            const token='some.jwt.token'
+            const expectedPayload={
                 sub: mockUser.id,
                 email: mockUser.email,
-                iat: Math.floor(Date.now() / 1000),
-                exp: Math.floor(Date.now() / 1000) + 3600
+                iat: Math.floor(Date.now()/1000),
+                exp: Math.floor(Date.now()/1000)+3600
             }
             jwtService.decode.mockReturnValue(expectedPayload)
 
             // Act
-            const result = service.decodeToken(token)
+            const result=service.decodeToken(token)
 
             // Assert
             expect(result).toEqual(expectedPayload)
             expect(jwtService.decode).toHaveBeenCalledWith(token)
         })
 
-        it('should return null for malformed token', () => {
+        it('should return null for malformed token',() => {
             // Arrange
-            const malformedToken = 'not.a.jwt'
+            const malformedToken='not.a.jwt'
             jwtService.decode.mockReturnValue(null)
 
             // Act
-            const result = service.decodeToken(malformedToken)
+            const result=service.decodeToken(malformedToken)
 
             // Assert
             expect(result).toBeNull()
         })
 
-        it('should handle empty token', () => {
+        it('should handle empty token',() => {
             // Arrange
-            const emptyToken = ''
+            const emptyToken=''
             jwtService.decode.mockReturnValue(null)
 
             // Act
-            const result = service.decodeToken(emptyToken)
+            const result=service.decodeToken(emptyToken)
 
             // Assert
             expect(result).toBeNull()
         })
     })
 
-    describe('getTokenExpiration', () => {
-        it('should return expiration date from valid token', () => {
+    describe('getTokenExpiration',() => {
+        it('should return expiration date from valid token',() => {
             // Arrange
-            const token = 'valid.token'
-            const exp = Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
-            const payload = {
+            const token='valid.token'
+            const exp=Math.floor(Date.now()/1000)+3600 // 1 hour from now
+            const payload={
                 sub: mockUser.id,
                 email: mockUser.email,
                 exp
@@ -434,16 +434,16 @@ describe('JwtTokenService', () => {
             jwtService.decode.mockReturnValue(payload)
 
             // Act
-            const result = service.getTokenExpiration(token)
+            const result=service.getTokenExpiration(token)
 
             // Assert
-            expect(result).toEqual(new Date(exp * 1000))
+            expect(result).toEqual(new Date(exp*1000))
         })
 
-        it('should return null for token without expiration', () => {
+        it('should return null for token without expiration',() => {
             // Arrange
-            const token = 'token.without.exp'
-            const payload = {
+            const token='token.without.exp'
+            const payload={
                 sub: mockUser.id,
                 email: mockUser.email
                 // Missing exp
@@ -451,98 +451,98 @@ describe('JwtTokenService', () => {
             jwtService.decode.mockReturnValue(payload)
 
             // Act
-            const result = service.getTokenExpiration(token)
+            const result=service.getTokenExpiration(token)
 
             // Assert
             expect(result).toBeNull()
         })
 
-        it('should return null for invalid token', () => {
+        it('should return null for invalid token',() => {
             // Arrange
-            const invalidToken = 'invalid.token'
+            const invalidToken='invalid.token'
             jwtService.decode.mockReturnValue(null)
 
             // Act
-            const result = service.getTokenExpiration(invalidToken)
+            const result=service.getTokenExpiration(invalidToken)
 
             // Assert
             expect(result).toBeNull()
         })
     })
 
-    describe('isTokenExpired', () => {
-        it('should return false for valid non-expired token', () => {
+    describe('isTokenExpired',() => {
+        it('should return false for valid non-expired token',() => {
             // Arrange
-            const token = 'valid.token'
-            const exp = Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
-            const payload = { sub: mockUser.id, exp }
+            const token='valid.token'
+            const exp=Math.floor(Date.now()/1000)+3600 // 1 hour from now
+            const payload={sub: mockUser.id,exp}
             jwtService.decode.mockReturnValue(payload)
 
             // Act
-            const result = service.isTokenExpired(token)
+            const result=service.isTokenExpired(token)
 
             // Assert
             expect(result).toBe(false)
         })
 
-        it('should return true for expired token', () => {
+        it('should return true for expired token',() => {
             // Arrange
-            const token = 'expired.token'
-            const exp = Math.floor(Date.now() / 1000) - 3600 // 1 hour ago
-            const payload = { sub: mockUser.id, exp }
+            const token='expired.token'
+            const exp=Math.floor(Date.now()/1000)-3600 // 1 hour ago
+            const payload={sub: mockUser.id,exp}
             jwtService.decode.mockReturnValue(payload)
 
             // Act
-            const result = service.isTokenExpired(token)
+            const result=service.isTokenExpired(token)
 
             // Assert
             expect(result).toBe(true)
         })
 
-        it('should return true for token without expiration', () => {
+        it('should return true for token without expiration',() => {
             // Arrange
-            const token = 'token.without.exp'
-            const payload = { sub: mockUser.id }
+            const token='token.without.exp'
+            const payload={sub: mockUser.id}
             jwtService.decode.mockReturnValue(payload)
 
             // Act
-            const result = service.isTokenExpired(token)
+            const result=service.isTokenExpired(token)
 
             // Assert
             expect(result).toBe(true)
         })
 
-        it('should return true for invalid token', () => {
+        it('should return true for invalid token',() => {
             // Arrange
-            const invalidToken = 'invalid.token'
+            const invalidToken='invalid.token'
             jwtService.decode.mockReturnValue(null)
 
             // Act
-            const result = service.isTokenExpired(invalidToken)
+            const result=service.isTokenExpired(invalidToken)
 
             // Assert
             expect(result).toBe(true)
         })
     })
 
-    describe('extractPayload', () => {
-        it('should extract user payload from valid token', () => {
+    describe('extractPayload',() => {
+        it('should extract user payload from valid token',() => {
             // Arrange
-            const token = 'valid.token'
-            const payload = {
+            const token='valid.token'
+            const payload={
                 sub: mockUser.id,
                 email: mockUser.email,
                 name: mockUser.name,
                 lastname: mockUser.lastname,
                 role: mockUser.role,
                 status: mockUser.status,
-                iat: Math.floor(Date.now() / 1000),
-                exp: Math.floor(Date.now() / 1000) + 3600
+                iat: Math.floor(Date.now()/1000),
+                exp: Math.floor(Date.now()/1000)+3600
             }
             jwtService.decode.mockReturnValue(payload)
 
             // Act
-            const result = service.extractPayload(token)
+            const result=service.extractPayload(token)
 
             // Assert
             expect(result).toEqual({
@@ -555,22 +555,22 @@ describe('JwtTokenService', () => {
             })
         })
 
-        it('should return null for invalid token', () => {
+        it('should return null for invalid token',() => {
             // Arrange
-            const invalidToken = 'invalid.token'
+            const invalidToken='invalid.token'
             jwtService.decode.mockReturnValue(null)
 
             // Act
-            const result = service.extractPayload(invalidToken)
+            const result=service.extractPayload(invalidToken)
 
             // Assert
             expect(result).toBeNull()
         })
 
-        it('should handle token with partial payload', () => {
+        it('should handle token with partial payload',() => {
             // Arrange
-            const token = 'partial.token'
-            const payload = {
+            const token='partial.token'
+            const payload={
                 sub: mockUser.id,
                 email: mockUser.email
                 // Missing other fields
@@ -578,7 +578,7 @@ describe('JwtTokenService', () => {
             jwtService.decode.mockReturnValue(payload)
 
             // Act
-            const result = service.extractPayload(token)
+            const result=service.extractPayload(token)
 
             // Assert
             expect(result).toEqual({
@@ -592,11 +592,11 @@ describe('JwtTokenService', () => {
         })
     })
 
-    describe('configuration edge cases', () => {
-        it('should handle missing JWT secret configuration', async () => {
+    describe('configuration edge cases',() => {
+        it('should handle missing JWT secret configuration',async () => {
             // Arrange
             configService.get.mockImplementation((key: string) => {
-                if (key === 'JWT_SECRET') return undefined
+                if(key==='JWT_SECRET') return undefined
                 return 'default-value'
             })
 
@@ -605,11 +605,11 @@ describe('JwtTokenService', () => {
             await expect(service.generateAccessToken(mockUser)).rejects.toThrow()
         })
 
-        it('should handle missing expiration configuration', async () => {
+        it('should handle missing expiration configuration',async () => {
             // Arrange
             configService.get.mockImplementation((key: string) => {
-                if (key === 'JWT_EXPIRATION') return undefined
-                if (key === 'JWT_SECRET') return 'secret'
+                if(key==='JWT_EXPIRATION') return undefined
+                if(key==='JWT_SECRET') return 'secret'
                 return null
             })
             jwtService.sign.mockReturnValue('token')
