@@ -1,17 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '../../database/prisma/prisma.service'
-import { LoggerService } from '../../shared/services/logger.service'
-import { ConfigModule } from '@nestjs/config'
-import { UserRole } from '../../users/domain/user.entity'
-import { AccountType } from '../../accounts/domain/account.entity'
-import { GenderType } from '../../gender/domain/entities/gender'
+import {ConfigModule} from '@nestjs/config'
+import {Test,TestingModule} from '@nestjs/testing'
+import {AccountType} from '../../accounts/domain/account.entity'
+import {PrismaService} from '../../database/prisma/prisma.service'
+import {GenderType} from '../../gender/domain/entities/gender'
+import {LoggerService} from '../../shared/services/logger.service'
+import {UserRole} from '../../users/domain/user.entity'
 
 /**
  * Test Data Factories
  * Utility functions to create test data objects
  */
 export class TestDataFactory {
-    static createUserData(overrides: Partial<any> = {}) {
+    static createUserData(overrides: Partial<any>={}) {
         return {
             email: `user${Math.random().toString(36).substring(7)}@test.com`,
             name: 'Test',
@@ -25,7 +25,7 @@ export class TestDataFactory {
         }
     }
 
-    static createUserModel(overrides: Partial<any> = {}) {
+    static createUserModel(overrides: Partial<any>={}) {
         return {
             id: `user-${Math.random().toString(36).substring(7)}`,
             email: `user${Math.random().toString(36).substring(7)}@test.com`,
@@ -42,31 +42,31 @@ export class TestDataFactory {
         }
     }
 
-    static createAccountData(overrides: Partial<any> = {}) {
+    static createAccountData(overrides: Partial<any>={}) {
         return {
             name: 'Test Account',
             type: AccountType.CHECKING,
-            balance: 1000.00,
+            balance: overrides.balance??1000.00,
             userId: 'user-id-123',
             ...overrides
         }
     }
 
-    static createGenderData(overrides: Partial<any> = {}) {
+    static createGenderData(overrides: Partial<any>={}) {
         return {
             gender: GenderType.MALE,
             ...overrides
         }
     }
 
-    static createProfessionData(overrides: Partial<any> = {}) {
+    static createProfessionData(overrides: Partial<any>={}) {
         return {
             profession: 'Desenvolvedor de Software',
             ...overrides
         }
     }
 
-    static createCategoryData(overrides: Partial<any> = {}) {
+    static createCategoryData(overrides: Partial<any>={}) {
         return {
             category: 'Tecnologia',
             ...overrides
@@ -161,7 +161,7 @@ export class MockProviders {
         }
     }
 
-    static createMockRepository<T = any>() {
+    static createMockRepository<T=any>() {
         return {
             save: jest.fn(),
             findById: jest.fn(),
@@ -181,7 +181,7 @@ export class MockProviders {
             findByProfession: jest.fn(),
             findByCategory: jest.fn(),
             findAllByUser: jest.fn(),
-            sortableFields: ['id', 'name', 'createdAt', 'updatedAt']
+            sortableFields: ['id','name','createdAt','updatedAt']
         } as unknown as jest.Mocked<T>
     }
 }
@@ -191,7 +191,7 @@ export class MockProviders {
  * Utility to create consistent test modules
  */
 export class TestModuleBuilder {
-    static async createTestingModule(providers: any[] = [], imports: any[] = []) {
+    static async createTestingModule(providers: any[]=[],imports: any[]=[]) {
         return await Test.createTestingModule({
             imports: [
                 ConfigModule.forRoot({
@@ -214,7 +214,7 @@ export class TestModuleBuilder {
         }).compile()
     }
 
-    static async createIntegrationTestingModule(providers: any[] = [], imports: any[] = []) {
+    static async createIntegrationTestingModule(providers: any[]=[],imports: any[]=[]) {
         return await Test.createTestingModule({
             imports: [
                 ConfigModule.forRoot({
@@ -248,7 +248,7 @@ export class TestDatabaseUtils {
 
     static async seedTestData(prisma: any) {
         // Create test genders
-        const genders = await Promise.all([
+        const genders=await Promise.all([
             prisma.gender.create({
                 data: {
                     id: '550e8400-e29b-41d4-a716-446655440001',
@@ -264,7 +264,7 @@ export class TestDatabaseUtils {
         ])
 
         // Create test professions
-        const professions = await Promise.all([
+        const professions=await Promise.all([
             prisma.profession.create({
                 data: {
                     id: '660e8400-e29b-41d4-a716-446655440001',
@@ -280,7 +280,7 @@ export class TestDatabaseUtils {
         ])
 
         // Create test categories
-        const categories = await Promise.all([
+        const categories=await Promise.all([
             prisma.postCategory.create({
                 data: {
                     id: '770e8400-e29b-41d4-a716-446655440001',
@@ -295,7 +295,7 @@ export class TestDatabaseUtils {
             })
         ])
 
-        return { genders, professions, categories }
+        return {genders,professions,categories}
     }
 }
 
@@ -305,7 +305,7 @@ export class TestDatabaseUtils {
  */
 export class TestAssertions {
     static expectValidUUID(value: string) {
-        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+        const uuidRegex=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
         expect(value).toMatch(uuidRegex)
     }
 
@@ -314,13 +314,13 @@ export class TestAssertions {
         expect(date.getTime()).not.toBeNaN()
     }
 
-    static expectEntityStructure(entity: any, expectedProperties: string[]) {
+    static expectEntityStructure(entity: any,expectedProperties: string[]) {
         expectedProperties.forEach(property => {
             expect(entity).toHaveProperty(property)
         })
     }
 
-    static expectRepositoryMethodsCalled(mockRepository: any, methods: string[]) {
+    static expectRepositoryMethodsCalled(mockRepository: any,methods: string[]) {
         methods.forEach(method => {
             expect(mockRepository[method]).toHaveBeenCalled()
         })
@@ -333,9 +333,9 @@ export class TestAssertions {
  */
 export class TestEnvironment {
     static setupTestEnvironment() {
-        process.env.NODE_ENV = 'test'
-        process.env.DATABASE_URL = 'postgresql://test:test@localhost:5433/smarteconomy_test'
-        process.env.JWT_SECRET = 'test-secret'
+        process.env.NODE_ENV='test'
+        process.env.DATABASE_URL='postgresql://test:test@localhost:5433/smarteconomy_test'
+        process.env.JWT_SECRET='test-secret'
     }
 
     static cleanupTestEnvironment() {
