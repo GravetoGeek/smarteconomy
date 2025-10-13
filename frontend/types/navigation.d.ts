@@ -29,6 +29,8 @@ export type RootStackParamList={
         account?: any
         category?: any
     }
+    RequestPasswordReset: undefined
+    ResetPassword: undefined
 }
 
 declare global {
