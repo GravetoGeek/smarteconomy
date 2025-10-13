@@ -15,6 +15,13 @@ export class UsersPrismaRepository implements UserRepositoryPort {
         private readonly loggerService: LoggerService
     ) {}
 
+    async updatePassword(userId: string,hashedPassword: string): Promise<void> {
+        await this.prisma.user.update({
+            where: {id: userId},
+            data: {password: hashedPassword}
+        })
+    }
+
     async save(user: User): Promise<User> {
         try {
             this.loggerService.logDatabase('SAVE_USER_START',{id: user.id,email: user.email},null,'UsersPrismaRepository')

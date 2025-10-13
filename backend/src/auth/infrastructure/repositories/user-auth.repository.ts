@@ -96,4 +96,11 @@ export class UserAuthRepository implements UserRepositoryPort {
             status: user.status
         }
     }
+
+    async updatePassword(userId: string,hashedPassword: string): Promise<void> {
+        await this.prisma.user.update({
+            where: {id: userId},
+            data: {password: hashedPassword,updatedAt: new Date()}
+        })
+    }
 }

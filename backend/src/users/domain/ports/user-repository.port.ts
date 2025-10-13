@@ -34,4 +34,5 @@ export interface UserRepositoryPort {
     // Business operations
     existsByEmail(email: string): Promise<boolean>
     existsById(id: string): Promise<boolean>
+    updatePassword(userId: string,hashedPassword: string): Promise<void>
 }
