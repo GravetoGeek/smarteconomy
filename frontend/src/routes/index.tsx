@@ -13,6 +13,8 @@ import Login from '../screens/login'
 import ManageProfile from '../screens/manageProfile'
 import ManageTransaction from '../screens/manageTransaction'
 import Register from '../screens/register'
+import RequestPasswordResetScreen from '../screens/RequestPasswordReset'
+import ResetPasswordScreen from '../screens/ResetPassword'
 
 const Stack=createNativeStackNavigator<RootStackParamList>()
 
@@ -33,6 +35,10 @@ export default function Routes() {
                 <Stack.Screen name="ListTransactionByCategory" component={ListTransactionByCategory} options={{headerShown: false}} />
                 <Stack.Screen name="ListTransactions" component={ListTransactions} options={{headerShown: false}} />
                 <Stack.Screen name="ManageTransaction" component={ManageTransaction} options={{headerShown: false}} />
+
+                <Stack.Screen name="RequestPasswordReset" component={RequestPasswordResetScreen} options={{headerShown: false}} />
+
+                <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} options={{headerShown: false}} />
 
 
 
