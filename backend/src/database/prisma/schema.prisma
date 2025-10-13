@@ -1,3 +1,13 @@
+/// 🔑 Token de recuperação de senha
+model PasswordResetToken {
+    id        String   @id @default(uuid())
+    userId    String
+    token     String   @unique
+    expiresAt DateTime
+    used      Boolean  @default(false)
+    createdAt DateTime @default(now())
+    user      User     @relation(fields: [userId], references: [id])
+}
 // 🗃️ SmartEconomy Database Schema
 // Sistema de Gestão Financeira Pessoal
 // Arquitetura: Domain-Driven Design com Prisma ORM
@@ -44,6 +54,8 @@ model User {
     profile      Profile?
     profession   Profession?   @relation(fields: [professionId], references: [id])
     professionId String
+    /// Tokens de recuperação de senha
+    passwordResetTokens PasswordResetToken[]
     /// Status da conta (ACTIVE, INACTIVE, SUSPENDED)
     status       AccountStatus @default(ACTIVE)
 }

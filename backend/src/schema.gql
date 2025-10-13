@@ -42,6 +42,11 @@ type ValidateTokenResponse {
   user: AuthUser
 }
 
+type PasswordResetResponse {
+  success: Boolean!
+  message: String!
+}
+
 type Category {
   id: String!
   category: String!
@@ -220,6 +225,8 @@ type Mutation {
   signup(input: SignupInput!): AuthResponse!
   refreshToken(input: RefreshTokenInput!): AuthResponse!
   logout(input: LogoutInput!): LogoutResponse!
+  requestPasswordReset(input: RequestPasswordResetInput!): PasswordResetResponse!
+  resetPassword(input: ResetPasswordInput!): Boolean!
   createCategory(input: CreateCategoryInput!): Category!
 }
 
@@ -298,6 +305,15 @@ input RefreshTokenInput {
 
 input LogoutInput {
   accessToken: String!
+}
+
+input RequestPasswordResetInput {
+  email: String!
+}
+
+input ResetPasswordInput {
+  token: String!
+  newPassword: String!
 }
 
 input CreateCategoryInput {
