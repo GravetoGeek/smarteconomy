@@ -15,6 +15,16 @@ export class GraphQLExceptionFilter implements ExceptionFilter {
         const gqlHost=GqlArgumentsHost.create(host)
         const context=gqlHost.getContext()
 
+        // Verificar se é uma requisição GraphQL válida
+        const httpContext=host.switchToHttp()
+        const request=httpContext.getRequest()
+
+        // Se não for uma requisição GraphQL, não processar
+        if(request&&!request.body?.query&&!request.body?.operationName) {
+            // Requisição HTTP comum (não GraphQL), apenas lançar a exceção original
+            throw exception
+        }
+
         // Se for uma exceção de usuário não encontrado, retornar null
         if(exception instanceof UserNotFoundException) {
             // Para GraphQL, retornar null em vez de lançar erro
