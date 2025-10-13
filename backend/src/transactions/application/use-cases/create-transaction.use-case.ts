@@ -5,18 +5,18 @@
  * os princípios da Clean Architecture.
  */
 
-import { Injectable } from '@nestjs/common'
+import {Injectable} from '@nestjs/common'
 import {
+    AccountBalance,
     Transaction,
-    TransactionRepositoryPort,
     TransactionDomainService,
-    AccountBalance
+    TransactionRepositoryPort
 } from '../../domain'
 
 export interface CreateTransactionUseCaseInput {
     description: string
     amount: number
-    type: 'INCOME' | 'EXPENSE' | 'TRANSFER'
+    type: 'INCOME'|'EXPENSE'|'TRANSFER'
     accountId: string
     categoryId?: string
     destinationAccountId?: string
@@ -35,11 +35,11 @@ export class CreateTransactionUseCase {
         private readonly transactionRepository: TransactionRepositoryPort,
         private readonly transactionDomainService: TransactionDomainService,
         private readonly accountService: any // Será injetado o serviço de contas
-    ) { }
+    ) {}
 
     async execute(input: CreateTransactionUseCaseInput): Promise<CreateTransactionUseCaseOutput> {
         // 1. Criar a entidade de transação
-        const transaction = new Transaction({
+        const transaction=new Transaction({
             description: input.description,
             amount: input.amount,
             type: input.type as any,
@@ -50,28 +50,28 @@ export class CreateTransactionUseCase {
         })
 
         // 2. Obter saldos das contas
-        const accountBalance = await this.getAccountBalance(input.accountId)
-        let destinationBalance: AccountBalance | undefined
+        const accountBalance=await this.getAccountBalance(input.accountId)
+        let destinationBalance: AccountBalance|undefined
 
-        if (input.destinationAccountId) {
-            destinationBalance = await this.getAccountBalance(input.destinationAccountId)
+        if(input.destinationAccountId) {
+            destinationBalance=await this.getAccountBalance(input.destinationAccountId)
         }
 
         // 3. Processar a transação através do domain service
-        const result = await this.transactionDomainService.processTransaction(
+        const result=await this.transactionDomainService.processTransaction(
             transaction,
             accountBalance,
             destinationBalance
         )
 
         // 4. Salvar a transação
-        const savedTransaction = await this.transactionRepository.save(result.transaction)
+        const savedTransaction=await this.transactionRepository.save(result.transaction)
 
         // 5. Atualizar saldos das contas
         await this.updateAccountBalances(result.updatedBalances)
 
         // 6. Detectar atividade suspeita
-        const suspiciousActivity = await this.transactionDomainService.detectSuspiciousActivity(
+        const suspiciousActivity=await this.transactionDomainService.detectSuspiciousActivity(
             input.accountId,
             savedTransaction
         )
@@ -79,27 +79,19 @@ export class CreateTransactionUseCase {
         return {
             transaction: savedTransaction,
             updatedBalances: result.updatedBalances,
-            warnings: suspiciousActivity.isSuspicious ? suspiciousActivity.reasons : []
+            warnings: suspiciousActivity.isSuspicious? suspiciousActivity.reasons:[]
         }
     }
 
     private async getAccountBalance(accountId: string): Promise<AccountBalance> {
-        // Implementação delegada para o serviço de contas
-        const account = await this.accountService.findById(accountId)
-        if (!account) {
-            throw new Error(`Conta não encontrada: ${accountId}`)
-        }
-
-        return {
-            accountId: account.id,
-            balance: account.balance
-        }
+        // Implementação delegada para o serviço de integração
+        return await this.accountService.getAccountBalance(accountId)
     }
 
     private async updateAccountBalances(balances: AccountBalance[]): Promise<void> {
         // Implementação delegada para o serviço de contas
-        for (const balance of balances) {
-            await this.accountService.updateBalance(balance.accountId, balance.balance)
+        for(const balance of balances) {
+            await this.accountService.updateBalance(balance.accountId,balance.balance)
         }
     }
 }
