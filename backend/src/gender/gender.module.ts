@@ -12,10 +12,8 @@ import {FindAllGendersUseCase} from './application/use-cases/find-all-genders.us
 import {FindGenderByIdUseCase} from './application/use-cases/find-gender-by-id.use-case'
 
 // Infrastructure
+import {GenderResolver} from './infrastructure/graphql/resolvers/gender.resolver'
 import {GenderPrismaRepository} from './infrastructure/repositories/gender-prisma.repository'
-
-// Interfaces
-import {GenderResolver} from './interfaces/graphql/resolvers/gender.resolver'
 
 // Tokens para injeção de dependência
 import {GENDER_REPOSITORY} from './domain/tokens'
@@ -37,7 +35,7 @@ import {GENDER_REPOSITORY} from './domain/tokens'
         // Application Services (dependem dos use cases)
         GenderApplicationService,
 
-        // Interface Adapters (dependem dos services)
+        // GraphQL Resolvers (dependem dos services)
         GenderResolver
     ],
     exports: [
