@@ -10,15 +10,15 @@ import {ResetPasswordUseCase} from './application/use-cases/reset-password.use-c
 import {SignupUseCase} from './application/use-cases/signup.use-case'
 import {ValidateTokenUseCase} from './application/use-cases/validate-token.use-case'
 import {AUTH_REPOSITORY,HASH_SERVICE,JWT_SERVICE,PASSWORD_RESET_TOKEN_REPOSITORY,USER_REPOSITORY} from './domain/tokens'
+import {AuthResolver} from './infrastructure/graphql/resolvers/auth.resolver'
+import {PasswordResetResolver} from './infrastructure/graphql/resolvers/password-reset.resolver'
+import {ResetPasswordResolver} from './infrastructure/graphql/resolvers/reset-password.resolver'
 import {JwtGuard} from './infrastructure/guards/jwt.guard'
 import {AuthMemoryRepository} from './infrastructure/repositories/auth-memory.repository'
 import {PasswordResetTokenRepository} from './infrastructure/repositories/password-reset-token.repository'
 import {UserAuthRepository} from './infrastructure/repositories/user-auth.repository'
 import {HashBcryptService} from './infrastructure/services/hash-bcrypt.service'
 import {JwtCryptoService} from './infrastructure/services/jwt-crypto.service'
-import {AuthResolver} from './interfaces/graphql/resolvers/auth.resolver'
-import {PasswordResetResolver} from './interfaces/graphql/resolvers/password-reset.resolver'
-import {ResetPasswordResolver} from './interfaces/graphql/resolvers/reset-password.resolver'
 @Module({
     imports: [DatabaseModule,SharedModule],
     providers: [

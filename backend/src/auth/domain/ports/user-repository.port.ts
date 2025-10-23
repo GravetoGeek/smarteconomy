@@ -1,11 +1,9 @@
-import type {AccountStatus,Role} from '@prisma/client'
-
 export interface UserAuthData {
     id: string
     email: string
     password: string
-    role: Role
-    status: AccountStatus
+    role: 'USER'|'ADMIN'
+    status: 'ACTIVE'|'INACTIVE'|'SUSPENDED'
 }
 
 export interface CreateUserData {
@@ -16,7 +14,7 @@ export interface CreateUserData {
     password: string
     genderId: string
     professionId: string
-    role?: Role
+    role?: 'USER'|'ADMIN'
 }
 
 export interface UserRepositoryPort {
