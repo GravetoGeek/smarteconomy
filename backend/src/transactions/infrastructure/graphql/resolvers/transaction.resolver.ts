@@ -7,46 +7,37 @@
 
 import {Injectable,UseGuards} from '@nestjs/common'
 import {Args,Mutation,Query,Resolver} from '@nestjs/graphql'
-import {JwtGuard} from '../../../auth/infrastructure/guards/jwt.guard'
-import {
-    CreateTransactionUseCase,
-    GetTransactionSummaryUseCase,
-    ReverseTransactionUseCase,
-    SearchTransactionsUseCase,
-    UpdateTransactionUseCase
-} from '../../application'
+import {JwtGuard} from '../../../../auth/infrastructure/guards/jwt.guard'
+import {TransactionsApplicationService} from '../../../application/services/transactions-application.service'
 
 // GraphQL Models and Inputs
 import {
-    CreateTransactionResponse,
-    Transaction,
-    TransactionSearchResult,
-    TransactionSummary
-} from './models/transaction.model'
+    CreateTransactionResponseModel,
+    TransactionModel,
+    TransactionSearchResultModel,
+    TransactionSummaryModel
+} from '../../dtos/models/transaction.model'
 
 import {
     CreateTransactionInput,
     SearchTransactionsInput,
     UpdateTransactionInput
-} from './inputs/transaction.input'
+} from '../../dtos/inputs/transaction.input'
+import {TransactionGraphQLMapper} from '../mappers/transaction-graphql.mapper'
 
-@Resolver(() => Transaction)
+@Resolver(() => TransactionModel)
 @Injectable()
 export class TransactionResolver {
     constructor(
-        private readonly createTransactionUseCase: CreateTransactionUseCase,
-        private readonly searchTransactionsUseCase: SearchTransactionsUseCase,
-        private readonly getTransactionSummaryUseCase: GetTransactionSummaryUseCase,
-        private readonly updateTransactionUseCase: UpdateTransactionUseCase,
-        private readonly reverseTransactionUseCase: ReverseTransactionUseCase
+        private readonly transactionsApplicationService: TransactionsApplicationService
     ) {}
 
-    @Mutation(() => CreateTransactionResponse)
+    @Mutation(() => CreateTransactionResponseModel)
     @UseGuards(JwtGuard)
     async createTransaction(
         @Args('input') input: CreateTransactionInput
-    ): Promise<CreateTransactionResponse> {
-        const result=await this.createTransactionUseCase.execute({
+    ): Promise<CreateTransactionResponseModel> {
+        const result=await this.transactionsApplicationService.createTransaction({
             description: input.description,
             amount: input.amount,
             type: input.type,
@@ -55,20 +46,17 @@ export class TransactionResolver {
             destinationAccountId: input.destinationAccountId,
             date: input.date
         })
-
-        return {
-            transaction: result.transaction as any,
-            warnings: result.warnings
-        }
+        return TransactionGraphQLMapper.toCreateResponseModel(result.transaction,result.warnings)
     }
 
-    @Query(() => TransactionSearchResult)
+    @Query(() => TransactionSearchResultModel)
     @UseGuards(JwtGuard)
     async searchTransactions(
         @Args('userId') userId: string,
         @Args('input',{nullable: true}) input?: SearchTransactionsInput
-    ): Promise<TransactionSearchResult> {
-        const result=await this.searchTransactionsUseCase.execute({
+    ): Promise<TransactionSearchResultModel> {
+        const limit=input?.limit||10
+        const result=await this.transactionsApplicationService.searchTransactions({
             filters: input?.filters? {
                 accountId: input.filters.accountId,
                 categoryId: input.filters.categoryId,
@@ -81,64 +69,54 @@ export class TransactionResolver {
                 searchTerm: input.filters.searchTerm
             }:undefined,
             page: input?.page||1,
-            limit: input?.limit||10,
+            limit,
             sortBy: input?.sortBy as any,
             sortOrder: input?.sortOrder as any
         })
-
-        // Map domain result to GraphQL schema
-        return {
-            transactions: (result.items||[]) as any,
-            total: result.total||0,
-            page: result.currentPage||1,
-            limit: input?.limit||10,
-            totalPages: result.totalPages||0
-        }
+        return TransactionGraphQLMapper.toSearchResultModel(result,limit)
     }
 
-    @Query(() => TransactionSummary)
+    @Query(() => TransactionSummaryModel)
     @UseGuards(JwtGuard)
     async transactionSummary(
         @Args('accountId') accountId: string,
         @Args('dateFrom') dateFrom: Date,
         @Args('dateTo') dateTo: Date
-    ): Promise<TransactionSummary> {
-        const result=await this.getTransactionSummaryUseCase.execute({
+    ): Promise<TransactionSummaryModel> {
+        const result=await this.transactionsApplicationService.getTransactionSummary({
             accountId,
             dateFrom,
             dateTo
         })
-
-        return result as any
+        return TransactionGraphQLMapper.toSummaryModel(result)
     }
 
-    @Mutation(() => Transaction)
+    @Mutation(() => TransactionModel)
     @UseGuards(JwtGuard)
     async updateTransaction(
         @Args('id') id: string,
         @Args('input') input: UpdateTransactionInput
-    ): Promise<Transaction> {
-        const result=await this.updateTransactionUseCase.execute({
+    ): Promise<TransactionModel> {
+        const result=await this.transactionsApplicationService.updateTransaction({
             id,
             description: input.description,
-            status: input.status as any
+            status: input.status
         })
-
-        return result as any
+        return TransactionGraphQLMapper.toModel(result)
     }
 
-    @Mutation(() => Transaction)
+    @Mutation(() => TransactionModel)
     @UseGuards(JwtGuard)
     async reverseTransaction(
         @Args('transactionId') transactionId: string,
         @Args('reason') reason: string,
         @Args('requestedBy') requestedBy: string
-    ): Promise<Transaction> {
-        const result=await this.reverseTransactionUseCase.execute({
+    ): Promise<TransactionModel> {
+        const result=await this.transactionsApplicationService.reverseTransaction({
             transactionId,
             reason,
             requestedBy
         })
-        return result.reversalTransaction as any
+        return TransactionGraphQLMapper.toModel(result.reversalTransaction)
     }
 }

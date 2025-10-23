@@ -19,7 +19,6 @@ export enum TransactionStatusEnum {
     FAILED='FAILED'
 }
 
-// Registrar enums no GraphQL
 registerEnumType(TransactionTypeEnum,{
     name: 'TransactionType',
     description: 'Tipo da transação'
@@ -31,7 +30,7 @@ registerEnumType(TransactionStatusEnum,{
 })
 
 @ObjectType()
-export class Transaction {
+export class TransactionModel {
     @Field(() => ID)
     id: string
 
@@ -50,11 +49,11 @@ export class Transaction {
     @Field()
     accountId: string
 
-    @Field()
-    categoryId: string
+    @Field(() => String,{nullable: true})
+    categoryId?: string|null
 
-    @Field({nullable: true})
-    destinationAccountId?: string
+    @Field(() => String,{nullable: true})
+    destinationAccountId?: string|null
 
     @Field()
     date: Date
@@ -67,9 +66,9 @@ export class Transaction {
 }
 
 @ObjectType()
-export class TransactionSearchResult {
-    @Field(() => [Transaction],{defaultValue: []})
-    transactions: Transaction[]
+export class TransactionSearchResultModel {
+    @Field(() => [TransactionModel],{defaultValue: []})
+    transactions: TransactionModel[]
 
     @Field({defaultValue: 0})
     total: number
@@ -85,7 +84,7 @@ export class TransactionSearchResult {
 }
 
 @ObjectType()
-export class TransactionSummary {
+export class TransactionSummaryModel {
     @Field(() => Float)
     totalIncome: number
 
@@ -103,9 +102,9 @@ export class TransactionSummary {
 }
 
 @ObjectType()
-export class CreateTransactionResponse {
-    @Field(() => Transaction)
-    transaction: Transaction
+export class CreateTransactionResponseModel {
+    @Field(() => TransactionModel)
+    transaction: TransactionModel
 
     @Field(() => [String])
     warnings: string[]

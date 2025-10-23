@@ -4,13 +4,13 @@
  * Inputs GraphQL para operações de transações
  */
 
-import {Field,Float,InputType} from '@nestjs/graphql'
+import {Field,Float,GraphQLISODateTime,InputType,Int} from '@nestjs/graphql'
 import {IsEnum,IsNotEmpty,IsNumber,IsOptional,IsString,IsUUID,MaxLength,Min} from 'class-validator'
 import {TransactionStatusEnum,TransactionTypeEnum} from '../models/transaction.model'
 
 @InputType()
 export class CreateTransactionInput {
-    @Field()
+    @Field(() => String)
     @IsNotEmpty({message: 'Descrição é obrigatória'})
     @IsString()
     @MaxLength(255,{message: 'Descrição deve ter no máximo 255 caracteres'})
@@ -27,29 +27,29 @@ export class CreateTransactionInput {
     @IsEnum(TransactionTypeEnum,{message: 'Tipo inválido'})
     type: TransactionTypeEnum
 
-    @Field()
+    @Field(() => String)
     @IsNotEmpty({message: 'ID da conta é obrigatório'})
     @IsUUID('4',{message: 'ID da conta inválido'})
     accountId: string
 
-    @Field({nullable: true})
+    @Field(() => String,{nullable: true})
     @IsOptional()
     @IsUUID('4',{message: 'ID da categoria inválido'})
     categoryId?: string
 
-    @Field({nullable: true})
+    @Field(() => String,{nullable: true})
     @IsOptional()
     @IsUUID('4',{message: 'ID da conta destino inválido'})
     destinationAccountId?: string
 
-    @Field({nullable: true})
+    @Field(() => GraphQLISODateTime,{nullable: true})
     @IsOptional()
     date?: Date
 }
 
 @InputType()
 export class UpdateTransactionInput {
-    @Field({nullable: true})
+    @Field(() => String,{nullable: true})
     @IsOptional()
     @IsString()
     @MaxLength(255)
@@ -63,12 +63,12 @@ export class UpdateTransactionInput {
 
 @InputType()
 export class TransactionFiltersInput {
-    @Field({nullable: true})
+    @Field(() => String,{nullable: true})
     @IsOptional()
     @IsUUID('4')
     accountId?: string
 
-    @Field({nullable: true})
+    @Field(() => String,{nullable: true})
     @IsOptional()
     @IsUUID('4')
     categoryId?: string
@@ -83,11 +83,11 @@ export class TransactionFiltersInput {
     @IsEnum(TransactionStatusEnum)
     status?: TransactionStatusEnum
 
-    @Field({nullable: true})
+    @Field(() => GraphQLISODateTime,{nullable: true})
     @IsOptional()
     dateFrom?: Date
 
-    @Field({nullable: true})
+    @Field(() => GraphQLISODateTime,{nullable: true})
     @IsOptional()
     dateTo?: Date
 
@@ -101,7 +101,7 @@ export class TransactionFiltersInput {
     @IsNumber()
     maxAmount?: number
 
-    @Field({nullable: true})
+    @Field(() => String,{nullable: true})
     @IsOptional()
     @IsString()
     searchTerm?: string
@@ -113,24 +113,24 @@ export class SearchTransactionsInput {
     @IsOptional()
     filters?: TransactionFiltersInput
 
-    @Field({nullable: true})
+    @Field(() => Int,{nullable: true})
     @IsOptional()
     @IsNumber()
     @Min(1)
     page?: number
 
-    @Field({nullable: true})
+    @Field(() => Int,{nullable: true})
     @IsOptional()
     @IsNumber()
     @Min(1)
     limit?: number
 
-    @Field({nullable: true})
+    @Field(() => String,{nullable: true})
     @IsOptional()
     @IsString()
     sortBy?: string
 
-    @Field({nullable: true})
+    @Field(() => String,{nullable: true})
     @IsOptional()
     @IsString()
     sortOrder?: string
