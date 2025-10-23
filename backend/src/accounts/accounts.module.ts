@@ -14,10 +14,8 @@ import {FindAccountsByUserUseCase} from './application/use-cases/find-accounts-b
 import {SearchAccountsUseCase} from './application/use-cases/search-accounts.use-case'
 
 // Infrastructure
+import {AccountsResolver} from './infrastructure/graphql/resolvers/accounts.resolver'
 import {AccountsPrismaRepository} from './infrastructure/repositories/accounts-prisma.repository'
-
-// Interfaces
-import {AccountsResolver} from './interfaces/graphql/resolvers/accounts.resolver'
 
 // Tokens para injeção de dependência
 import {ACCOUNT_REPOSITORY} from './domain/tokens'
@@ -41,7 +39,7 @@ import {ACCOUNT_REPOSITORY} from './domain/tokens'
         AccountsApplicationService,
         AccountBalanceService,
 
-        // Interface Adapters (dependem dos services)
+        // GraphQL Resolvers (dependem dos services)
         AccountsResolver
     ],
     exports: [

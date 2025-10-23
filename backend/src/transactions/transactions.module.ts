@@ -25,11 +25,10 @@ import {
 } from './application'
 
 // Infrastructure
+import {TransactionsApplicationService} from './application/services/transactions-application.service'
 import {PrismaTransactionRepository} from './infrastructure'
+import {TransactionResolver} from './infrastructure/graphql/resolvers/transaction.resolver'
 import {AccountIntegrationServiceImpl} from './infrastructure/services/account-integration.service'
-
-// Interfaces
-import {TransactionResolver} from './interfaces/graphql/transaction.resolver'
 
 // Ports
 import {TransactionRepositoryPort} from './domain'
@@ -46,9 +45,6 @@ import {TransactionRepositoryPort} from './domain'
         })
     ],
     providers: [
-        // Domain Services
-        TransactionDomainService,
-
         // Integration Services
         AccountIntegrationServiceImpl,
 
@@ -56,6 +52,14 @@ import {TransactionRepositoryPort} from './domain'
         {
             provide: 'TransactionRepositoryPort',
             useClass: PrismaTransactionRepository
+        },
+
+        // Domain Services
+        {
+            provide: TransactionDomainService,
+            useFactory: (transactionRepository: TransactionRepositoryPort) =>
+                new TransactionDomainService(transactionRepository),
+            inject: ['TransactionRepositoryPort']
         },
 
         // Use Cases
@@ -107,6 +111,9 @@ import {TransactionRepositoryPort} from './domain'
             inject: ['TransactionRepositoryPort',TransactionDomainService]
         },
 
+        // Application Service
+        TransactionsApplicationService,
+
         // GraphQL Resolver
         TransactionResolver
     ],
@@ -117,7 +124,8 @@ import {TransactionRepositoryPort} from './domain'
         SearchTransactionsUseCase,
         GetTransactionSummaryUseCase,
         UpdateTransactionUseCase,
-        ReverseTransactionUseCase
+        ReverseTransactionUseCase,
+        TransactionsApplicationService
     ]
 })
 export class TransactionsModule {}

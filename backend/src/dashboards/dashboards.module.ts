@@ -16,8 +16,8 @@ import {
     GetFinancialTrendsUseCase
 } from './application'
 
-// Interfaces
-import {DashboardResolver} from './interfaces/dashboard.resolver'
+// Infrastructure
+import {DashboardResolver} from './infrastructure/graphql/dashboard.resolver'
 
 @Module({
     imports: [

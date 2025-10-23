@@ -2,7 +2,7 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Account {
+type AccountModel {
   id: ID!
   name: String!
   type: String!
@@ -47,21 +47,21 @@ type PasswordResetResponse {
   message: String!
 }
 
-type Category {
+type CategoryModel {
   id: String!
   category: String!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
 
-type Transaction {
+type TransactionModel {
   id: ID!
   description: String!
   amount: Float!
   type: TransactionType!
   status: TransactionStatus!
   accountId: String!
-  categoryId: String!
+  categoryId: String
   destinationAccountId: String
   date: DateTime!
   createdAt: DateTime!
@@ -83,15 +83,15 @@ enum TransactionStatus {
   FAILED
 }
 
-type TransactionSearchResult {
-  transactions: [Transaction!]!
+type TransactionSearchResultModel {
+  transactions: [TransactionModel!]!
   total: Float!
   page: Float!
   limit: Float!
   totalPages: Float!
 }
 
-type TransactionSummary {
+type TransactionSummaryModel {
   totalIncome: Float!
   totalExpense: Float!
   totalTransfer: Float!
@@ -99,8 +99,8 @@ type TransactionSummary {
   period: String!
 }
 
-type CreateTransactionResponse {
-  transaction: Transaction!
+type CreateTransactionResponseModel {
+  transaction: TransactionModel!
   warnings: [String!]!
 }
 
@@ -118,12 +118,12 @@ type ProfessionModel {
   updatedAt: DateTime!
 }
 
-type DeleteUserResponse {
+type DeleteUserResponseModel {
   success: Boolean!
   message: String!
 }
 
-type User {
+type UserModel {
   id: ID!
   email: String!
   name: String!
@@ -138,8 +138,14 @@ type User {
   updatedAt: DateTime!
 }
 
-type SearchResult {
-  items: [User!]!
+type UpdateUserResponseModel {
+  success: Boolean!
+  user: UserModel
+  message: String!
+}
+
+type UserSearchResultModel {
+  items: [UserModel!]!
   total: Int!
   currentPage: Int!
   limit: Int!
@@ -147,30 +153,24 @@ type SearchResult {
   lastPage: Int!
 }
 
-type UpdateUserResponse {
-  success: Boolean!
-  user: User
-  message: String!
-}
-
 type Query {
   hello: String!
-  users: [User!]!
-  userById(id: String!): User
-  userByEmail(email: String!): User
-  searchUsers(input: SearchUsersInput!): SearchResult!
-  accountsByUser(userId: String!): [Account!]!
-  accountById(id: String!): Account
+  users: [UserModel!]!
+  userById(id: String!): UserModel
+  userByEmail(email: String!): UserModel
+  searchUsers(input: SearchUsersInput!): UserSearchResultModel!
+  accountsByUser(userId: String!): [AccountModel!]!
+  accountById(id: String!): AccountModel
   genders: [GenderModel!]!
   gender(id: String!): GenderModel!
   professions: [ProfessionModel!]!
   profession(id: String!): ProfessionModel!
-  searchTransactions(userId: String!, input: SearchTransactionsInput): TransactionSearchResult!
-  transactionSummary(accountId: String!, dateFrom: DateTime!, dateTo: DateTime!): TransactionSummary!
+  searchTransactions(userId: String!, input: SearchTransactionsInput): TransactionSearchResultModel!
+  transactionSummary(accountId: String!, dateFrom: DateTime!, dateTo: DateTime!): TransactionSummaryModel!
   validateToken(input: ValidateTokenInput!): ValidateTokenResponse!
-  categories: [Category!]!
-  categoriesByType(type: String!): [Category!]!
-  category(id: String!): Category!
+  categories: [CategoryModel!]!
+  categoriesByType(type: String!): [CategoryModel!]!
+  category(id: String!): CategoryModel!
   dashboardMetrics(userId: String!, period: String, dateFrom: String, dateTo: String, accountIds: [String!], categoryIds: [String!]): String!
   financialTrends(userId: String!, months: Float): String!
   accountsSummary(userId: String!): String!
@@ -189,8 +189,8 @@ input SearchUsersInput {
 
 input SearchTransactionsInput {
   filters: TransactionFiltersInput
-  page: Float
-  limit: Float
+  page: Int
+  limit: Int
   sortBy: String
   sortOrder: String
 }
@@ -212,22 +212,22 @@ input ValidateTokenInput {
 }
 
 type Mutation {
-  createUser(input: CreateUserInput!): User!
-  updateUser(id: String!, input: UpdateUserInput!): UpdateUserResponse!
-  deleteUser(id: String!): DeleteUserResponse!
-  createAccount(input: CreateAccountInput!): Account!
+  createUser(input: CreateUserInput!): UserModel!
+  updateUser(id: String!, input: UpdateUserInput!): UpdateUserResponseModel!
+  deleteUser(id: String!): DeleteUserResponseModel!
+  createAccount(input: CreateAccountInput!): AccountModel!
   createGender(input: CreateGenderInput!): GenderModel!
   createProfession(input: CreateProfessionInput!): ProfessionModel!
-  createTransaction(input: CreateTransactionInput!): CreateTransactionResponse!
-  updateTransaction(id: String!, input: UpdateTransactionInput!): Transaction!
-  reverseTransaction(transactionId: String!, reason: String!, requestedBy: String!): Transaction!
+  createTransaction(input: CreateTransactionInput!): CreateTransactionResponseModel!
+  updateTransaction(id: String!, input: UpdateTransactionInput!): TransactionModel!
+  reverseTransaction(transactionId: String!, reason: String!, requestedBy: String!): TransactionModel!
   login(input: LoginInput!): AuthResponse!
   signup(input: SignupInput!): AuthResponse!
   refreshToken(input: RefreshTokenInput!): AuthResponse!
   logout(input: LogoutInput!): LogoutResponse!
   requestPasswordReset(input: RequestPasswordResetInput!): PasswordResetResponse!
   resetPassword(input: ResetPasswordInput!): Boolean!
-  createCategory(input: CreateCategoryInput!): Category!
+  createCategory(input: CreateCategoryInput!): CategoryModel!
 }
 
 input CreateUserInput {
