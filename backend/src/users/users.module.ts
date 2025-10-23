@@ -19,11 +19,11 @@ import {UpdateUserUseCase} from './application/use-cases/update-user.use-case'
 import {UsersPrismaRepository} from './infrastructure/repositories/users-prisma.repository'
 import {HashPrismaService} from './infrastructure/services/hash-prisma.service'
 
-// Interfaces
-import {UsersResolver} from './interfaces/graphql/resolvers/users.resolver'
+// Interface Adapters
+import {UsersResolver} from './infrastructure/graphql/resolvers/users.resolver'
 
 // Tokens para injeção de dependência
-import {USER_REPOSITORY, HASH_SERVICE} from './domain/tokens'
+import {HASH_SERVICE,USER_REPOSITORY} from './domain/tokens'
 
 @Module({
     imports: [SharedModule,DatabaseModule],
