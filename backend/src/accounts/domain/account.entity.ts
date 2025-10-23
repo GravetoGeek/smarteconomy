@@ -1,3 +1,5 @@
+import {randomUUID} from 'crypto'
+
 export enum AccountType {
     CHECKING='CHECKING',
     SAVINGS='SAVINGS'
@@ -44,9 +46,8 @@ export class Account {
     }
 
     private generateId(): string {
-        // Gera um UUID v4 real
-        const {v4: uuidv4}=require('uuid')
-        return uuidv4()
+        // Gera um UUID v4 com prefixo de contexto para facilitar rastreio
+        return `acc_${randomUUID()}`
     }
 
     get id() {return this._id}
