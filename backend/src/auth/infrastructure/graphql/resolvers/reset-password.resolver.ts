@@ -1,6 +1,6 @@
 import {Args,Mutation,Resolver} from '@nestjs/graphql'
 import {ResetPasswordUseCase} from '../../../application/use-cases/reset-password.use-case'
-import {ResetPasswordInput} from '../inputs/reset-password.input'
+import {ResetPasswordInput} from '../../dtos/inputs/reset-password.input'
 
 @Resolver()
 export class ResetPasswordResolver {

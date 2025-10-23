@@ -77,10 +77,16 @@ export class JwtCryptoService implements JwtServicePort {
     }
 
     private createSignature(data: string): string {
-        // Usando crypto.createHmac do Node.js (nativo)
+        // Usa HMAC com hash simples como camada adicional para estabilidade
         const hmac=crypto.createHmac('sha256',this.secret)
-        hmac.update(data)
+        hmac.update(this.simpleHash(data))
         return hmac.digest('base64')
+    }
+
+    private simpleHash(input: string): string {
+        const hash=crypto.createHash('sha256')
+        hash.update(`${input}:${this.secret}`)
+        return hash.digest('hex')
     }
 
     private base64UrlEncode(str: string): string {
