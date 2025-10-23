@@ -1,7 +1,7 @@
-import { ObjectType, Field, ID, Float } from '@nestjs/graphql'
+import {Field,Float,ID,ObjectType} from '@nestjs/graphql'
 
 @ObjectType()
-export class Account {
+export class AccountModel {
     @Field(() => ID)
     id: string
 
