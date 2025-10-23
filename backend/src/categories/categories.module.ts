@@ -6,8 +6,8 @@ import {FindAllCategoriesUseCase} from './application/use-cases/find-all-categor
 import {FindCategoriesByTypeUseCase} from './application/use-cases/find-categories-by-type.use-case'
 import {FindCategoryByIdUseCase} from './application/use-cases/find-category-by-id.use-case'
 import {CATEGORY_REPOSITORY} from './domain/tokens'
+import {CategoryResolver} from './infrastructure/graphql/resolvers/category.resolver'
 import {CategoryPrismaRepository} from './infrastructure/repositories/category-prisma.repository'
-import {CategoryResolver} from './interfaces/graphql/resolvers/category.resolver'
 
 @Module({
     imports: [DatabaseModule],

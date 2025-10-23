@@ -5,10 +5,12 @@
  * relacionada a transações que envolve múltiplas entidades.
  */
 
-import {Inject,Injectable} from '@nestjs/common'
 import {
     DuplicateTransactionException,
-    InsufficientBalanceException,
+    MissingDestinationAccountException,
+    MissingDestinationBalanceException,
+    MissingTransactionCategoryException,
+    TransactionNotFoundException,
     TransactionStatusException
 } from '../exceptions/transaction-domain.exception'
 import {TransactionRepositoryPort} from '../ports/transaction-repository.port'
@@ -62,12 +64,8 @@ export interface TransactionDomainServicePort {
     }>
 }
 
-@Injectable()
 export class TransactionDomainService implements TransactionDomainServicePort {
-    constructor(
-        @Inject('TransactionRepositoryPort')
-        private readonly transactionRepository: TransactionRepositoryPort
-    ) {}
+    constructor(private readonly transactionRepository: TransactionRepositoryPort) {}
 
     async processTransaction(
         transaction: Transaction,
@@ -118,17 +116,17 @@ export class TransactionDomainService implements TransactionDomainServicePort {
 
         // Validar categoria obrigatória (exceto transferências)
         if(!transaction.isTransfer&&!transaction.categoryId) {
-            throw new Error('Toda transação deve ter uma categoria')
+            throw new MissingTransactionCategoryException()
         }
 
         // Validar conta de destino para transferências
         if(transaction.isTransfer) {
             if(!destinationBalance) {
-                throw new Error('Saldo da conta de destino é obrigatório para transferências')
+                throw new MissingDestinationBalanceException()
             }
 
             if(!transaction.destinationAccountId) {
-                throw new Error('Conta de destino é obrigatória para transferências')
+                throw new MissingDestinationAccountException()
             }
         }
     }
@@ -140,7 +138,7 @@ export class TransactionDomainService implements TransactionDomainServicePort {
         const transaction=await this.transactionRepository.findById(transactionId)
 
         if(!transaction) {
-            throw new Error(`Transação não encontrada: ${transactionId}`)
+            throw new TransactionNotFoundException(transactionId)
         }
 
         if(!transaction.canBeReversed()) {
