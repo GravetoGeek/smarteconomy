@@ -26,10 +26,7 @@ export class GraphQLErrorInterceptor implements NestInterceptor {
                         extensions: {
                             code: 'INTERNAL_SERVER_ERROR',
                             statusCode: 500,
-                            // ✅ Usar configuração de ambiente para stacktrace
-                            ...(environmentConfig.includeStacktrace&&{
-                                stacktrace: error.stack
-                            })
+                            stacktrace: error.stack
                         }
                     }
                 )
