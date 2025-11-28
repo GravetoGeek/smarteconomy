@@ -1,3 +1,5 @@
+import {randomUUID} from 'crypto'
+import {UserInvalidNameException} from './exceptions/user-domain.exception'
 import {Birthdate} from './value-objects/birthdate.vo'
 import {Email} from './value-objects/email.vo'
 import {Password} from './value-objects/password.vo'
@@ -39,6 +41,7 @@ export class User {
         professionId: string
         profileId?: string|null // Aceita null do Prisma
         password: string
+        passwordIsHashed?: boolean
         status?: AccountStatus
         createdAt?: Date
         updatedAt?: Date
@@ -52,7 +55,9 @@ export class User {
         this._genderId=props.genderId
         this._professionId=props.professionId
         this._profileId=props.profileId
-        this._password=new Password(props.password)
+        this._password=props.passwordIsHashed
+            ? Password.fromHash(props.password)
+            :new Password(props.password)
         this._status=props.status||AccountStatus.ACTIVE
         this._createdAt=props.createdAt||new Date()
         this._updatedAt=props.updatedAt||new Date()
@@ -60,32 +65,58 @@ export class User {
 
     private validateName(name: string): string {
         if(!name||name.trim().length<2) {
-            throw new Error('Name must be at least 2 characters long')
+            throw new UserInvalidNameException('Name must be at least 2 characters long')
         }
         if(name.trim().length>50) {
-            throw new Error('Name cannot exceed 50 characters')
+            throw new UserInvalidNameException('Name cannot exceed 50 characters')
         }
         return name.trim()
     }
 
     private generateId(): string {
-        return `user_${Date.now()}_${Math.random().toString(36).substr(2,9)}`
+        return randomUUID()
     }
 
     // Getters
-    get id(): string {return this._id}
-    get email(): string {return this._email.getValue()}
-    get name(): string {return this._name}
-    get lastname(): string {return this._lastname}
-    get birthdate(): Date {return this._birthdate.getValue()}
-    get role(): UserRole {return this._role}
-    get genderId(): string {return this._genderId}
-    get professionId(): string {return this._professionId}
-    get profileId(): string|undefined|null {return this._profileId}
-    get password(): string {return this._password.getValue()}
-    get status(): AccountStatus {return this._status}
-    get createdAt(): Date {return this._createdAt}
-    get updatedAt(): Date {return this._updatedAt}
+    get id(): string {
+        return this._id
+    }
+    get email(): string {
+        return this._email.getValue()
+    }
+    get name(): string {
+        return this._name
+    }
+    get lastname(): string {
+        return this._lastname
+    }
+    get birthdate(): Date {
+        return this._birthdate.getValue()
+    }
+    get role(): UserRole {
+        return this._role
+    }
+    get genderId(): string {
+        return this._genderId
+    }
+    get professionId(): string {
+        return this._professionId
+    }
+    get profileId(): string|undefined|null {
+        return this._profileId
+    }
+    get password(): string {
+        return this._password.getValue()
+    }
+    get status(): AccountStatus {
+        return this._status
+    }
+    get createdAt(): Date {
+        return this._createdAt
+    }
+    get updatedAt(): Date {
+        return this._updatedAt
+    }
 
     // Computed properties
     get fullName(): string {
@@ -161,7 +192,8 @@ export class User {
     }): User {
         return new User({
             ...props,
-            status: AccountStatus.ACTIVE
+            status: AccountStatus.ACTIVE,
+            passwordIsHashed: false
         })
     }
 
@@ -183,8 +215,9 @@ export class User {
     }): User {
         return new User({
             ...props,
-            role: typeof props.role==='string'? props.role as UserRole:props.role,
-            status: typeof props.status==='string'? props.status as AccountStatus:props.status
+            role: typeof props.role==='string'? (props.role as UserRole):props.role,
+            status: typeof props.status==='string'? (props.status as AccountStatus):props.status,
+            passwordIsHashed: true
         })
     }
 }
