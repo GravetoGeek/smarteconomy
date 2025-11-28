@@ -1,8 +1,8 @@
 import {Test,TestingModule} from '@nestjs/testing'
 import {FindUserByIdUseCase} from '../application/use-cases/find-user-by-id.use-case'
 import {UserRepositoryPort} from '../domain/ports/user-repository.port'
-import {User,UserRole} from '../domain/user.entity'
 import {USER_REPOSITORY} from '../domain/tokens'
+import {User,UserRole} from '../domain/user.entity'
 
 describe('FindUserByIdUseCase',() => {
     let useCase: FindUserByIdUseCase
@@ -10,7 +10,8 @@ describe('FindUserByIdUseCase',() => {
 
     beforeEach(async () => {
         const mockUserRepositoryImpl={
-            save: jest.fn(),
+            create: jest.fn(),
+            update: jest.fn(),
             findById: jest.fn(),
             findByIdOrFail: jest.fn(),
             findByEmail: jest.fn(),
@@ -55,7 +56,7 @@ describe('FindUserByIdUseCase',() => {
                 role: UserRole.USER,
                 genderId: 'gender-id',
                 professionId: 'profession-id',
-                password: 'SecurePass123'
+                password: 'SecurePass123!'
             })
 
             mockUserRepository.findById.mockResolvedValue(expectedUser)
