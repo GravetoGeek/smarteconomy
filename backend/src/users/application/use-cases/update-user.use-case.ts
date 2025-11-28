@@ -57,7 +57,7 @@ export class UpdateUserUseCase {
         }
 
         // Save updated user
-        const updatedUser=await this.userRepository.save(existingUser)
+        const updatedUser=await this.userRepository.update(existingUser)
 
         return {user: updatedUser,success: true}
     }
