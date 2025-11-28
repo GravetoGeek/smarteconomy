@@ -1,0 +1,13 @@
+{
+    # Substitua pelo seu domínio real em produção
+    # ex: smarteconomy.app
+    # Por enquanto, localhost para teste local com HTTPS auto-assinado
+    localhost
+
+    encode gzip
+
+    reverse_proxy backend:3000 {
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+    }
+}
