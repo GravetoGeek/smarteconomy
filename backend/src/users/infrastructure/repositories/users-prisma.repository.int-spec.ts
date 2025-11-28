@@ -1,17 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '../../../database/prisma/prisma.service'
-import { UsersPrismaRepository } from './users-prisma.repository'
-import { User, UserRole, AccountStatus } from '../../domain/user.entity'
-import { LoggerService } from '../../../shared/services/logger.service'
-import { TestDatabaseUtils, TestDataFactory } from '../../../__tests__/utils/test-helpers'
+import {Test,TestingModule} from '@nestjs/testing'
+import {TestDatabaseUtils,TestDataFactory} from '../../../__tests__/utils/test-helpers'
+import {PrismaService} from '../../../database/prisma/prisma.service'
+import {LoggerService} from '../../../shared/services/logger.service'
+import {AccountStatus,User,UserRole} from '../../domain/user.entity'
+import {UsersPrismaRepository} from './users-prisma.repository'
 
-describe('UsersPrismaRepository Integration', () => {
+describe('UsersPrismaRepository Integration',() => {
     let repository: UsersPrismaRepository
     let prisma: PrismaService
     let loggerService: LoggerService
 
     beforeAll(async () => {
-        const module: TestingModule = await Test.createTestingModule({
+        const module: TestingModule=await Test.createTestingModule({
             providers: [
                 UsersPrismaRepository,
                 PrismaService,
@@ -19,9 +19,9 @@ describe('UsersPrismaRepository Integration', () => {
             ]
         }).compile()
 
-        repository = module.get<UsersPrismaRepository>(UsersPrismaRepository)
-        prisma = module.get<PrismaService>(PrismaService)
-        loggerService = module.get<LoggerService>(LoggerService)
+        repository=module.get<UsersPrismaRepository>(UsersPrismaRepository)
+        prisma=module.get<PrismaService>(PrismaService)
+        loggerService=module.get<LoggerService>(LoggerService)
 
         await prisma.$connect()
     })
@@ -32,21 +32,21 @@ describe('UsersPrismaRepository Integration', () => {
 
     beforeEach(async () => {
         await TestDatabaseUtils.clearDatabase(prisma)
-        const seedData = await TestDatabaseUtils.seedTestData(prisma)
+        const seedData=await TestDatabaseUtils.seedTestData(prisma)
     })
 
-    describe('save', () => {
-        it('should save new user successfully', async () => {
+    describe('create',() => {
+        it('should create new user successfully',async () => {
             // Arrange
-            const userData = TestDataFactory.createUserData({
+            const userData=TestDataFactory.createUserData({
                 email: 'integration@test.com',
                 genderId: '550e8400-e29b-41d4-a716-446655440001',
                 professionId: '660e8400-e29b-41d4-a716-446655440001'
             })
-            const user = User.create(userData)
+            const user=User.create(userData)
 
             // Act
-            const savedUser = await repository.save(user)
+            const savedUser=await repository.create(user)
 
             // Assert
             expect(savedUser).toBeDefined()
@@ -57,22 +57,24 @@ describe('UsersPrismaRepository Integration', () => {
             expect(savedUser.role).toBe(UserRole.USER)
             expect(savedUser.status).toBe(AccountStatus.ACTIVE)
         })
+    })
 
-        it('should update existing user', async () => {
+    describe('update',() => {
+        it('should update existing user',async () => {
             // Arrange
-            const userData = TestDataFactory.createUserData({
+            const userData=TestDataFactory.createUserData({
                 email: 'update@test.com',
                 genderId: '550e8400-e29b-41d4-a716-446655440001',
                 professionId: '660e8400-e29b-41d4-a716-446655440001'
             })
-            const user = User.create(userData)
-            await repository.save(user)
+            const user=User.create(userData)
+            await repository.create(user)
 
             // Modify user
-            user.updateProfile('UpdatedName', 'UpdatedLastname')
+            user.updateProfile('UpdatedName','UpdatedLastname')
 
             // Act
-            const updatedUser = await repository.save(user)
+            const updatedUser=await repository.update(user)
 
             // Assert
             expect(updatedUser.id).toBe(user.id)
@@ -80,17 +82,19 @@ describe('UsersPrismaRepository Integration', () => {
             expect(updatedUser.lastname).toBe('UpdatedLastname')
             expect(updatedUser.updatedAt.getTime()).toBeGreaterThan(user.createdAt.getTime())
         })
+    })
 
-        it('should handle different user roles', async () => {
+    describe('role handling',() => {
+        it('should handle different user roles',async () => {
             // Arrange
-            const adminUser = User.create({
+            const adminUser=User.create({
                 ...TestDataFactory.createUserData(),
                 email: 'admin@test.com',
                 role: UserRole.ADMIN,
                 genderId: '550e8400-e29b-41d4-a716-446655440001',
                 professionId: '660e8400-e29b-41d4-a716-446655440001'
             })
-            const regularUser = User.create({
+            const regularUser=User.create({
                 ...TestDataFactory.createUserData(),
                 email: 'user@test.com',
                 role: UserRole.USER,
@@ -99,8 +103,8 @@ describe('UsersPrismaRepository Integration', () => {
             })
 
             // Act
-            const savedAdmin = await repository.save(adminUser)
-            const savedUser = await repository.save(regularUser)
+            const savedAdmin=await repository.create(adminUser)
+            const savedUser=await repository.create(regularUser)
 
             // Assert
             expect(savedAdmin.role).toBe(UserRole.ADMIN)
@@ -110,19 +114,19 @@ describe('UsersPrismaRepository Integration', () => {
         })
     })
 
-    describe('findById', () => {
-        it('should find user by id', async () => {
+    describe('findById',() => {
+        it('should find user by id',async () => {
             // Arrange
-            const user = User.create({
+            const user=User.create({
                 ...TestDataFactory.createUserData(),
                 email: 'findbyid@test.com',
                 genderId: '550e8400-e29b-41d4-a716-446655440001',
                 professionId: '660e8400-e29b-41d4-a716-446655440001'
             })
-            const savedUser = await repository.save(user)
+            const savedUser=await repository.create(user)
 
             // Act
-            const foundUser = await repository.findById(savedUser.id)
+            const foundUser=await repository.findById(savedUser.id)
 
             // Assert
             expect(foundUser).toBeDefined()
@@ -132,17 +136,17 @@ describe('UsersPrismaRepository Integration', () => {
             expect(foundUser?.lastname).toBe(savedUser.lastname)
         })
 
-        it('should return null for non-existent user', async () => {
+        it('should return null for non-existent user',async () => {
             // Act
-            const result = await repository.findById('non-existent-id')
+            const result=await repository.findById('non-existent-id')
 
             // Assert
             expect(result).toBeNull()
         })
 
-        it('should reconstitute user correctly with all properties', async () => {
+        it('should reconstitute user correctly with all properties',async () => {
             // Arrange
-            const originalUser = User.create({
+            const originalUser=User.create({
                 email: 'reconstitute@test.com',
                 name: 'Test',
                 lastname: 'User',
@@ -150,12 +154,12 @@ describe('UsersPrismaRepository Integration', () => {
                 role: UserRole.ADMIN,
                 genderId: '550e8400-e29b-41d4-a716-446655440001',
                 professionId: '660e8400-e29b-41d4-a716-446655440001',
-                password: 'hashedPassword123'
+                password: 'HashedPass123!'
             })
-            await repository.save(originalUser)
+            await repository.create(originalUser)
 
             // Act
-            const foundUser = await repository.findById(originalUser.id)
+            const foundUser=await repository.findById(originalUser.id)
 
             // Assert
             expect(foundUser).toBeInstanceOf(User)
@@ -169,20 +173,20 @@ describe('UsersPrismaRepository Integration', () => {
         })
     })
 
-    describe('findByEmail', () => {
-        it('should find user by email', async () => {
+    describe('findByEmail',() => {
+        it('should find user by email',async () => {
             // Arrange
-            const email = 'findbyemail@test.com'
-            const user = User.create({
+            const email='findbyemail@test.com'
+            const user=User.create({
                 ...TestDataFactory.createUserData(),
                 email,
                 genderId: '550e8400-e29b-41d4-a716-446655440001',
                 professionId: '660e8400-e29b-41d4-a716-446655440001'
             })
-            await repository.save(user)
+            await repository.create(user)
 
             // Act
-            const foundUser = await repository.findByEmail(email)
+            const foundUser=await repository.findByEmail(email)
 
             // Assert
             expect(foundUser).toBeDefined()
@@ -190,27 +194,27 @@ describe('UsersPrismaRepository Integration', () => {
             expect(foundUser?.id).toBe(user.id)
         })
 
-        it('should return null for non-existent email', async () => {
+        it('should return null for non-existent email',async () => {
             // Act
-            const result = await repository.findByEmail('nonexistent@test.com')
+            const result=await repository.findByEmail('nonexistent@test.com')
 
             // Assert
             expect(result).toBeNull()
         })
 
-        it('should handle case sensitivity correctly', async () => {
+        it('should handle case sensitivity correctly',async () => {
             // Arrange
-            const email = 'CaseSensitive@Test.com'
-            const user = User.create({
+            const email='CaseSensitive@Test.com'
+            const user=User.create({
                 ...TestDataFactory.createUserData(),
                 email,
                 genderId: '550e8400-e29b-41d4-a716-446655440001',
                 professionId: '660e8400-e29b-41d4-a716-446655440001'
             })
-            await repository.save(user)
+            await repository.create(user)
 
             // Act
-            const foundUser = await repository.findByEmail(email.toLowerCase())
+            const foundUser=await repository.findByEmail(email.toLowerCase())
 
             // Assert - Depending on database collation, this might find the user or not
             // Most databases are case-insensitive for email searches
@@ -218,90 +222,90 @@ describe('UsersPrismaRepository Integration', () => {
         })
     })
 
-    describe('existsByEmail', () => {
-        it('should return true for existing email', async () => {
+    describe('existsByEmail',() => {
+        it('should return true for existing email',async () => {
             // Arrange
-            const email = 'exists@test.com'
-            const user = User.create({
+            const email='exists@test.com'
+            const user=User.create({
                 ...TestDataFactory.createUserData(),
                 email,
                 genderId: '550e8400-e29b-41d4-a716-446655440001',
                 professionId: '660e8400-e29b-41d4-a716-446655440001'
             })
-            await repository.save(user)
+            await repository.create(user)
 
             // Act
-            const exists = await repository.existsByEmail(email)
+            const exists=await repository.existsByEmail(email)
 
             // Assert
             expect(exists).toBe(true)
         })
 
-        it('should return false for non-existent email', async () => {
+        it('should return false for non-existent email',async () => {
             // Act
-            const exists = await repository.existsByEmail('doesnotexist@test.com')
+            const exists=await repository.existsByEmail('doesnotexist@test.com')
 
             // Assert
             expect(exists).toBe(false)
         })
     })
 
-    describe('existsById', () => {
-        it('should return true for existing user id', async () => {
+    describe('existsById',() => {
+        it('should return true for existing user id',async () => {
             // Arrange
-            const user = User.create({
+            const user=User.create({
                 ...TestDataFactory.createUserData(),
                 email: 'existsbyid@test.com',
                 genderId: '550e8400-e29b-41d4-a716-446655440001',
                 professionId: '660e8400-e29b-41d4-a716-446655440001'
             })
-            const savedUser = await repository.save(user)
+            const savedUser=await repository.create(user)
 
             // Act
-            const exists = await repository.existsById(savedUser.id)
+            const exists=await repository.existsById(savedUser.id)
 
             // Assert
             expect(exists).toBe(true)
         })
 
-        it('should return false for non-existent user id', async () => {
+        it('should return false for non-existent user id',async () => {
             // Act
-            const exists = await repository.existsById('non-existent-id')
+            const exists=await repository.existsById('non-existent-id')
 
             // Assert
             expect(exists).toBe(false)
         })
     })
 
-    describe('delete', () => {
-        it('should delete user successfully', async () => {
+    describe('delete',() => {
+        it('should delete user successfully',async () => {
             // Arrange
-            const user = User.create({
+            const user=User.create({
                 ...TestDataFactory.createUserData(),
                 email: 'delete@test.com',
                 genderId: '550e8400-e29b-41d4-a716-446655440001',
                 professionId: '660e8400-e29b-41d4-a716-446655440001'
             })
-            const savedUser = await repository.save(user)
+            const savedUser=await repository.create(user)
 
             // Act
             await repository.delete(savedUser.id)
 
             // Assert
-            const deletedUser = await repository.findById(savedUser.id)
+            const deletedUser=await repository.findById(savedUser.id)
             expect(deletedUser).toBeNull()
         })
 
-        it('should handle deletion of non-existent user', async () => {
+        it('should handle deletion of non-existent user',async () => {
             // Act & Assert
             await expect(repository.delete('non-existent-id')).rejects.toThrow()
         })
     })
 
-    describe('search', () => {
+    describe('search',() => {
         beforeEach(async () => {
             // Setup test data for search
-            const users = [
+            const users=[
                 User.create({
                     email: 'alice@search.com',
                     name: 'Alice',
@@ -310,7 +314,7 @@ describe('UsersPrismaRepository Integration', () => {
                     role: UserRole.USER,
                     genderId: '550e8400-e29b-41d4-a716-446655440001',
                     professionId: '660e8400-e29b-41d4-a716-446655440001',
-                    password: 'password123'
+                    password: 'StrongPass123!'
                 }),
                 User.create({
                     email: 'bob@search.com',
@@ -320,7 +324,7 @@ describe('UsersPrismaRepository Integration', () => {
                     role: UserRole.ADMIN,
                     genderId: '550e8400-e29b-41d4-a716-446655440002',
                     professionId: '660e8400-e29b-41d4-a716-446655440002',
-                    password: 'password456'
+                    password: 'StrongPass456!'
                 }),
                 User.create({
                     email: 'charlie@search.com',
@@ -330,18 +334,18 @@ describe('UsersPrismaRepository Integration', () => {
                     role: UserRole.USER,
                     genderId: '550e8400-e29b-41d4-a716-446655440001',
                     professionId: '660e8400-e29b-41d4-a716-446655440001',
-                    password: 'password789'
+                    password: 'StrongPass789!'
                 })
             ]
 
-            for (const user of users) {
-                await repository.save(user)
+            for(const user of users) {
+                await repository.create(user)
             }
         })
 
-        it('should search users with pagination', async () => {
+        it('should search users with pagination',async () => {
             // Act
-            const result = await repository.search({
+            const result=await repository.search({
                 page: 1,
                 limit: 2
             })
@@ -354,9 +358,9 @@ describe('UsersPrismaRepository Integration', () => {
             expect(result.totalPages).toBe(2)
         })
 
-        it('should filter users by name', async () => {
+        it('should filter users by name',async () => {
             // Act
-            const result = await repository.search({
+            const result=await repository.search({
                 page: 1,
                 limit: 10,
                 filter: 'Alice'
@@ -367,9 +371,9 @@ describe('UsersPrismaRepository Integration', () => {
             expect(result.items[0].name).toBe('Alice')
         })
 
-        it('should sort users by specified field', async () => {
+        it('should sort users by specified field',async () => {
             // Act
-            const result = await repository.search({
+            const result=await repository.search({
                 page: 1,
                 limit: 10,
                 sort: 'name',
@@ -382,9 +386,9 @@ describe('UsersPrismaRepository Integration', () => {
             expect(result.items[2].name).toBe('Charlie')
         })
 
-        it('should handle case insensitive search', async () => {
+        it('should handle case insensitive search',async () => {
             // Act
-            const result = await repository.search({
+            const result=await repository.search({
                 page: 1,
                 limit: 10,
                 filter: 'alice'
@@ -395,9 +399,9 @@ describe('UsersPrismaRepository Integration', () => {
             expect(result.items[0].name).toBe('Alice')
         })
 
-        it('should return empty result for non-matching filter', async () => {
+        it('should return empty result for non-matching filter',async () => {
             // Act
-            const result = await repository.search({
+            const result=await repository.search({
                 page: 1,
                 limit: 10,
                 filter: 'NonExistentUser'
@@ -409,10 +413,10 @@ describe('UsersPrismaRepository Integration', () => {
         })
     })
 
-    describe('findAll', () => {
-        it('should return all users', async () => {
+    describe('findAll',() => {
+        it('should return all users',async () => {
             // Arrange
-            const users = [
+            const users=[
                 User.create({
                     ...TestDataFactory.createUserData(),
                     email: 'user1@findall.com',
@@ -427,33 +431,37 @@ describe('UsersPrismaRepository Integration', () => {
                 })
             ]
 
-            for (const user of users) {
-                await repository.save(user)
+            for(const user of users) {
+                await repository.create(user)
             }
 
             // Act
-            const allUsers = await repository.findAll()
+            const allUsers=await repository.findAll()
 
             // Assert
             expect(allUsers).toHaveLength(2)
             expect(allUsers.every(user => user instanceof User)).toBe(true)
         })
 
-        it('should return empty array when no users exist', async () => {
+        it('should return empty array when no users exist',async () => {
             // Act
-            const allUsers = await repository.findAll()
+            const allUsers=await repository.findAll()
 
             // Assert
             expect(allUsers).toEqual([])
         })
     })
 
-    describe('error handling', () => {
-        it('should handle database connection errors gracefully', async () => {
+    describe('error handling',() => {
+        it('should handle database connection errors gracefully',async () => {
             // Arrange
-            const disconnectedPrisma = new PrismaService()
-            const disconnectedRepository = new UsersPrismaRepository(disconnectedPrisma, loggerService)
-            const user = User.create({
+            const disconnectedPrisma=new PrismaService()
+            // Mock the user.create method to throw
+            // We need to cast to any because user property is dynamically generated
+            jest.spyOn((disconnectedPrisma as any).user,'create').mockRejectedValue(new Error('Connection failed'))
+
+            const disconnectedRepository=new UsersPrismaRepository(disconnectedPrisma,loggerService)
+            const user=User.create({
                 ...TestDataFactory.createUserData(),
                 email: 'error@test.com',
                 genderId: '550e8400-e29b-41d4-a716-446655440001',
@@ -461,36 +469,36 @@ describe('UsersPrismaRepository Integration', () => {
             })
 
             // Act & Assert
-            await expect(disconnectedRepository.save(user)).rejects.toThrow()
+            await expect(disconnectedRepository.create(user)).rejects.toThrow()
         })
 
-        it('should handle constraint violations appropriately', async () => {
+        it('should handle constraint violations appropriately',async () => {
             // Arrange
-            const email = 'duplicate@test.com'
-            const user1 = User.create({
+            const email='duplicate@test.com'
+            const user1=User.create({
                 ...TestDataFactory.createUserData(),
                 email,
                 genderId: '550e8400-e29b-41d4-a716-446655440001',
                 professionId: '660e8400-e29b-41d4-a716-446655440001'
             })
-            const user2 = User.create({
+            const user2=User.create({
                 ...TestDataFactory.createUserData(),
                 email,
                 genderId: '550e8400-e29b-41d4-a716-446655440002',
                 professionId: '660e8400-e29b-41d4-a716-446655440002'
             })
 
-            await repository.save(user1)
+            await repository.create(user1)
 
             // Act & Assert
-            await expect(repository.save(user2)).rejects.toThrow()
+            await expect(repository.create(user2)).rejects.toThrow()
         })
     })
 
-    describe('data integrity', () => {
-        it('should maintain data consistency across operations', async () => {
+    describe('data integrity',() => {
+        it('should maintain data consistency across operations',async () => {
             // Arrange
-            const userData = {
+            const userData={
                 email: 'consistency@test.com',
                 name: 'Consistency',
                 lastname: 'Test',
@@ -498,16 +506,16 @@ describe('UsersPrismaRepository Integration', () => {
                 role: UserRole.USER,
                 genderId: '550e8400-e29b-41d4-a716-446655440001',
                 professionId: '660e8400-e29b-41d4-a716-446655440001',
-                password: 'consistencyPassword123'
+                password: 'ConsistencyPass123!'
             }
-            const user = User.create(userData)
+            const user=User.create(userData)
 
             // Act
-            const saved = await repository.save(user)
-            const foundById = await repository.findById(saved.id)
-            const foundByEmail = await repository.findByEmail(saved.email)
-            const existsById = await repository.existsById(saved.id)
-            const existsByEmail = await repository.existsByEmail(saved.email)
+            const saved=await repository.create(user)
+            const foundById=await repository.findById(saved.id)
+            const foundByEmail=await repository.findByEmail(saved.email)
+            const existsById=await repository.existsById(saved.id)
+            const existsByEmail=await repository.existsByEmail(saved.email)
 
             // Assert
             expect(foundById?.id).toBe(saved.id)
@@ -517,24 +525,24 @@ describe('UsersPrismaRepository Integration', () => {
             expect(existsByEmail).toBe(true)
         })
 
-        it('should handle user state changes correctly', async () => {
+        it('should handle user state changes correctly',async () => {
             // Arrange
-            const user = User.create({
+            const user=User.create({
                 ...TestDataFactory.createUserData(),
                 email: 'statechange@test.com',
                 role: UserRole.USER,
                 genderId: '550e8400-e29b-41d4-a716-446655440001',
                 professionId: '660e8400-e29b-41d4-a716-446655440001'
             })
-            await repository.save(user)
+            await repository.create(user)
 
             // Act - Change user state
             user.promoteToAdmin()
             user.suspend()
-            user.updateProfile('NewName', 'NewLastname')
+            user.updateProfile('NewName','NewLastname')
 
-            const updatedUser = await repository.save(user)
-            const retrievedUser = await repository.findById(updatedUser.id)
+            const updatedUser=await repository.update(user)
+            const retrievedUser=await repository.findById(updatedUser.id)
 
             // Assert
             expect(retrievedUser?.isAdmin()).toBe(true)
