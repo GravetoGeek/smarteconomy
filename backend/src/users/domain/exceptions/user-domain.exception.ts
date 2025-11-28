@@ -15,7 +15,7 @@ export class UserEmailAlreadyExistsException extends UserDomainException {
 
 export class UserInvalidAgeException extends UserDomainException {
     constructor() {
-        super('User must be at least 18 years old')
+        super('User must be at least 13 years old')
         this.name='UserInvalidAgeException'
     }
 }
@@ -31,5 +31,12 @@ export class UserInvalidPasswordException extends UserDomainException {
     constructor() {
         super('Password must be at least 8 characters long and contain uppercase, lowercase, and number')
         this.name='UserInvalidPasswordException'
+    }
+}
+
+export class UserInvalidNameException extends UserDomainException {
+    constructor(message: string) {
+        super(message)
+        this.name='UserInvalidNameException'
     }
 }
