@@ -1,8 +1,9 @@
 import {PrismaService} from '@/database/prisma/prisma.service'
 import {Injectable} from '@nestjs/common'
+import {Prisma} from '@prisma/client'
 import {LoggerService} from '../../../shared/services/logger.service'
 import {SearchParams,SearchResult,UserRepositoryPort} from '../../domain/ports/user-repository.port'
-import {AccountStatus,User,UserRole} from '../../domain/user.entity'
+import {User} from '../../domain/user.entity'
 
 @Injectable()
 export class UsersPrismaRepository implements UserRepositoryPort {
@@ -22,58 +23,74 @@ export class UsersPrismaRepository implements UserRepositoryPort {
         })
     }
 
-    async save(user: User): Promise<User> {
+    async create(user: User): Promise<User> {
         try {
-            this.loggerService.logDatabase('SAVE_USER_START',{id: user.id,email: user.email},null,'UsersPrismaRepository')
+            this.loggerService.logDatabase('CREATE_USER_START',{id: user.id,email: user.email},null,'UsersPrismaRepository')
 
-            const userData: any={
+            const userData: Prisma.UserCreateInput={
+                id: user.id,
                 email: user.email,
                 name: user.name,
                 lastname: user.lastname,
                 birthdate: user.birthdate,
                 role: user.role,
-                genderId: user.genderId,
-                professionId: user.professionId,
-                profileId: user.profileId,
+                gender: {connect: {id: user.genderId}},
+                profession: {connect: {id: user.professionId}},
+                profile: user.profileId? {connect: {id: user.profileId}}:undefined,
                 password: user.password,
                 status: user.status,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt
             }
 
-            // Validações de integridade referencial: checar se gender/profession existem
-            if(user.genderId) {
-                const gender=await this.prisma.gender.findUnique({where: {id: user.genderId}})
-                if(!gender) {
-                    const err=new Error(`Gender with id ${user.genderId} not found`)
-                    this.loggerService.logError('SAVE_USER_ERROR',err,'UsersPrismaRepository')
-                    throw err
-                }
-            }
-
-            if(user.professionId) {
-                const profession=await this.prisma.profession.findUnique({where: {id: user.professionId}})
-                if(!profession) {
-                    const err=new Error(`Profession with id ${user.professionId} not found`)
-                    this.loggerService.logError('SAVE_USER_ERROR',err,'UsersPrismaRepository')
-                    throw err
-                }
-            }
-
-            const savedUser=await this.prisma.user.upsert({
-                where: {id: user.id},
-                update: userData,
-                create: {
-                    id: user.id,
-                    ...userData
-                }
+            const savedUser=await this.prisma.user.create({
+                data: userData
             })
 
-            this.loggerService.logDatabase('SAVE_USER_SUCCESS',null,{id: savedUser.id,email: savedUser.email},'UsersPrismaRepository')
+            this.loggerService.logDatabase('CREATE_USER_SUCCESS',null,{id: savedUser.id,email: savedUser.email},'UsersPrismaRepository')
+
+            return User.reconstitute(savedUser)
+        } catch(error: any) {
+            if(error.code==='P2003') {
+                const fieldName=error.meta?.field_name||'unknown field'
+                const err=new Error(`Foreign key constraint failed on field: ${fieldName}`)
+                this.loggerService.logError('CREATE_USER_FK_ERROR',err,'UsersPrismaRepository')
+                throw err
+            }
+            this.loggerService.logError('CREATE_USER_ERROR',error,'UsersPrismaRepository')
+            throw error
+        }
+    }
+
+    async update(user: User): Promise<User> {
+        try {
+            this.loggerService.logDatabase('UPDATE_USER_START',{id: user.id,email: user.email},null,'UsersPrismaRepository')
+
+            const userData: Prisma.UserUpdateInput={
+                email: user.email,
+                name: user.name,
+                lastname: user.lastname,
+                birthdate: user.birthdate,
+                role: user.role,
+                gender: {connect: {id: user.genderId}},
+                profession: {connect: {id: user.professionId}},
+                profile: user.profileId? {connect: {id: user.profileId}}:undefined,
+                password: user.password,
+                status: user.status,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt
+            }
+
+            const savedUser=await this.prisma.user.update({
+                where: {id: user.id},
+                data: userData
+            })
+
+            this.loggerService.logDatabase('UPDATE_USER_SUCCESS',null,{id: savedUser.id,email: savedUser.email},'UsersPrismaRepository')
 
             return User.reconstitute(savedUser)
         } catch(error) {
-            this.loggerService.logError('SAVE_USER_ERROR',error,'UsersPrismaRepository')
+            this.loggerService.logError('UPDATE_USER_ERROR',error,'UsersPrismaRepository')
             throw error
         }
     }
@@ -145,17 +162,17 @@ export class UsersPrismaRepository implements UserRepositoryPort {
     async search(search: SearchParams): Promise<SearchResult> {
         try {
             const skip=(search.page-1)*search.limit
-            const where=search.filter? {
+            const where: Prisma.UserWhereInput=search.filter? {
                 OR: [
-                    {name: {contains: search.filter,mode: 'insensitive' as any}},
-                    {lastname: {contains: search.filter,mode: 'insensitive' as any}},
-                    {email: {contains: search.filter,mode: 'insensitive' as any}}
+                    {name: {contains: search.filter,mode: 'insensitive'}},
+                    {lastname: {contains: search.filter,mode: 'insensitive'}},
+                    {email: {contains: search.filter,mode: 'insensitive'}}
                 ]
             }:{}
 
-            const orderBy=search.sort&&this.sortableFields.includes(search.sort)
+            const orderBy: Prisma.UserOrderByWithRelationInput=search.sort&&this.sortableFields.includes(search.sort)
                 ? {[search.sort]: search.sortDirection||'asc'}
-                :{createdAt: 'desc' as any}
+                :{createdAt: 'desc'}
 
             const [users,total]=await Promise.all([
                 this.prisma.user.findMany({
