@@ -1,5 +1,6 @@
 import {ValidationPipe} from '@nestjs/common'
 import {NestFactory} from '@nestjs/core'
+import 'dotenv/config'
 import {AppModule} from './app.module'
 import {environmentConfig} from './config/environment.config'
 import {GraphQLExceptionFilter} from './shared/filters/graphql-exception.filter'
@@ -20,6 +21,6 @@ async function bootstrap() {
     // ✅ Aplicar filtro de exceção global para tratamento correto de erros
     app.useGlobalFilters(new GraphQLExceptionFilter())
 
-    await app.listen(process.env.BACKEND_PORT||3000)
+    await app.listen(environmentConfig.backendPort||3000)
 }
 bootstrap()
