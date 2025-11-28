@@ -1,3 +1,5 @@
+import {randomUUID} from 'node:crypto'
+
 export enum GenderType {
     MALE='MALE',
     FEMALE='FEMALE',
@@ -116,16 +118,6 @@ export class Gender {
 
     // Método para gerar ID único
     private static generateId(): string {
-        // Fallback para versões mais antigas do Node.js
-        if(typeof crypto!=='undefined'&&crypto.randomUUID) {
-            return crypto.randomUUID()
-        }
-
-        // Fallback alternativo
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c) {
-            const r=Math.random()*16|0
-            const v=c==='x'? r:(r&0x3|0x8)
-            return v.toString(16)
-        })
+        return randomUUID()
     }
 }
