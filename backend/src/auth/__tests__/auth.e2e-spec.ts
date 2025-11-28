@@ -1,21 +1,21 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { INestApplication } from '@nestjs/common'
+import {INestApplication} from '@nestjs/common'
+import {Test,TestingModule} from '@nestjs/testing'
 import request from 'supertest'
-import { AppModule } from '../../app.module'
-import { PrismaService } from '../../database/prisma/prisma.service'
-import { TestDatabaseUtils } from '../../__tests__/utils/test-helpers'
+import {TestDatabaseUtils} from '../../__tests__/utils/test-helpers'
+import {AppModule} from '../../app.module'
+import {PrismaService} from '../../database/prisma/prisma.service'
 
-describe('Auth E2E', () => {
+describe('Auth E2E',() => {
     let app: INestApplication
     let prisma: PrismaService
 
     beforeAll(async () => {
-        const moduleFixture: TestingModule = await Test.createTestingModule({
+        const moduleFixture: TestingModule=await Test.createTestingModule({
             imports: [AppModule]
         }).compile()
 
-        app = moduleFixture.createNestApplication()
-        prisma = moduleFixture.get<PrismaService>(PrismaService)
+        app=moduleFixture.createNestApplication()
+        prisma=moduleFixture.get<PrismaService>(PrismaService)
 
         await app.init()
     })
@@ -29,10 +29,10 @@ describe('Auth E2E', () => {
         await app.close()
     })
 
-    describe('Login', () => {
-        it('should return error for invalid email format', async () => {
+    describe('Login',() => {
+        it('should return error for invalid email format',async () => {
             // Arrange
-            const loginMutation = `
+            const loginMutation=`
         mutation Login($input: LoginInput!) {
           login(input: $input) {
             accessToken
@@ -41,7 +41,7 @@ describe('Auth E2E', () => {
       `
 
             // Act
-            const response = await request(app.getHttpServer())
+            const response=await request(app.getHttpServer())
                 .post('/graphql')
                 .send({
                     query: loginMutation,
@@ -59,9 +59,9 @@ describe('Auth E2E', () => {
             expect(response.body.errors[0].message).toContain('Invalid email format')
         })
 
-        it('should validate password length', async () => {
+        it('should validate password length',async () => {
             // Arrange
-            const loginMutation = `
+            const loginMutation=`
         mutation Login($input: LoginInput!) {
           login(input: $input) {
             accessToken
@@ -70,7 +70,7 @@ describe('Auth E2E', () => {
       `
 
             // Act
-            const response = await request(app.getHttpServer())
+            const response=await request(app.getHttpServer())
                 .post('/graphql')
                 .send({
                     query: loginMutation,
@@ -89,15 +89,15 @@ describe('Auth E2E', () => {
         })
     })
 
-    describe('Security Tests', () => {
-        it('should prevent SQL injection in login', async () => {
+    describe('Security Tests',() => {
+        it('should prevent SQL injection in login',async () => {
             // Arrange
-            const maliciousInput = {
+            const maliciousInput={
                 email: "admin'; DROP TABLE users; --",
                 password: 'password'
             }
 
-            const loginMutation = `
+            const loginMutation=`
         mutation Login($input: LoginInput!) {
           login(input: $input) {
             accessToken
@@ -106,7 +106,7 @@ describe('Auth E2E', () => {
       `
 
             // Act
-            const response = await request(app.getHttpServer())
+            const response=await request(app.getHttpServer())
                 .post('/graphql')
                 .send({
                     query: loginMutation,
@@ -121,14 +121,14 @@ describe('Auth E2E', () => {
             expect(response.body.errors[0].message).toContain('Invalid email format')
         })
 
-        it('should handle very long passwords', async () => {
+        it('should handle very long passwords',async () => {
             // Arrange
-            const longPasswordInput = {
+            const longPasswordInput={
                 email: 'test@example.com',
                 password: 'a'.repeat(1000)
             }
 
-            const loginMutation = `
+            const loginMutation=`
         mutation Login($input: LoginInput!) {
           login(input: $input) {
             accessToken
@@ -137,7 +137,7 @@ describe('Auth E2E', () => {
       `
 
             // Act
-            const response = await request(app.getHttpServer())
+            const response=await request(app.getHttpServer())
                 .post('/graphql')
                 .send({
                     query: loginMutation,
@@ -149,7 +149,7 @@ describe('Auth E2E', () => {
             // Assert
             expect(response.status).toBe(200)
             // Should either validate input or handle gracefully
-            expect(response.body.errors || response.body.data).toBeDefined()
+            expect(response.body.errors||response.body.data).toBeDefined()
         })
     })
 })
