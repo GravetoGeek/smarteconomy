@@ -1,0 +1,64 @@
+services:
+    backend:
+        container_name: smarteconomy-backend
+        build:
+            context: .
+            dockerfile: ./docker/Dockerfile.prod
+        restart: always
+        env_file:
+            - .env
+        depends_on:
+            - db
+            - migration
+        networks:
+            - internal_net
+
+    db:
+        image: postgres:16-alpine
+        container_name: smarteconomy-db
+        restart: always
+        env_file:
+            - .env
+        volumes:
+            - db_data:/var/lib/postgresql/data
+        networks:
+            - internal_net
+        # Porta 5432 NÃO é exposta para o host, apenas na rede interna
+
+    migration:
+        container_name: smarteconomy-migration
+        build:
+            context: .
+            dockerfile: ./docker/Dockerfile.migration
+        env_file:
+            - .env
+        depends_on:
+            - db
+        networks:
+            - internal_net
+        command: sh -c 'until nc -z db 5432; do echo waiting for db; sleep 1; done; npx prisma migrate deploy'
+
+    caddy:
+        image: caddy:alpine
+        container_name: smarteconomy-caddy
+        restart: always
+        ports:
+            - '80:80'
+            - '443:443'
+        volumes:
+            - ./Caddyfile:/etc/caddy/Caddyfile
+            - caddy_data:/data
+            - caddy_config:/config
+        depends_on:
+            - backend
+        networks:
+            - internal_net
+
+volumes:
+    db_data:
+    caddy_data:
+    caddy_config:
+
+networks:
+    internal_net:
+        driver: bridge
