@@ -21,7 +21,8 @@ export interface UserRepositoryPort {
     readonly sortableFields: string[]
 
     // Core CRUD operations
-    save(user: User): Promise<User>
+    create(user: User): Promise<User>
+    update(user: User): Promise<User>
     findById(id: string): Promise<User|null>
     findByIdOrFail(id: string): Promise<User>
     findByEmail(email: string): Promise<User|null>
