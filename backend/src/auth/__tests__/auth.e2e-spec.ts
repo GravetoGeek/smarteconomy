@@ -85,7 +85,7 @@ describe('Auth E2E', () => {
             // Assert
             expect(response.status).toBe(200)
             expect(response.body.errors).toBeDefined()
-            expect(response.body.errors[0].message).toContain('Password must be at least 6 characters long')
+            expect(response.body.errors[0].message).toContain('Password must be at least 8 characters long')
         })
     })
 

@@ -1,23 +1,41 @@
+const DISPOSABLE_DOMAINS=new Set([
+    'mailinator.com',
+    'tempmail.com',
+    '10minutemail.com',
+    'guerrillamail.com',
+    'yopmail.com',
+    'discard.email',
+    'trashmail.com',
+    'getnada.com'
+])
+
 export class Email {
     private readonly value: string
 
     constructor(email: string) {
         this.validate(email)
-        this.value = email.toLowerCase().trim()
+        this.value=email.toLowerCase().trim()
     }
 
     private validate(email: string): void {
-        if (!email || email.trim().length === 0) {
+        if(!email||email.trim().length===0) {
             throw new Error('Email is required')
         }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if (!emailRegex.test(email)) {
+        const normalized=email.toLowerCase().trim()
+
+        const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if(!emailRegex.test(normalized)) {
             throw new Error('Invalid email format')
         }
 
-        if (email.length > 255) {
+        if(normalized.length>255) {
             throw new Error('Email is too long')
+        }
+
+        const domain=normalized.split('@')[1]
+        if(DISPOSABLE_DOMAINS.has(domain)) {
+            throw new Error('Disposable email domains are not allowed')
         }
     }
 
@@ -26,7 +44,7 @@ export class Email {
     }
 
     equals(other: Email): boolean {
-        return this.value === other.value
+        return this.value===other.value
     }
 
     toString(): string {
