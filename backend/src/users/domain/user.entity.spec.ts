@@ -1,14 +1,14 @@
-import { User, UserRole, AccountStatus } from './user.entity'
-import { TestDataFactory, TestAssertions } from '../../__tests__/utils/test-helpers'
+import {TestAssertions,TestDataFactory} from '../../__tests__/utils/test-helpers'
+import {AccountStatus,User,UserRole} from './user.entity'
 
-describe('User Entity', () => {
-    describe('create method', () => {
-        it('should create a new user with valid data', () => {
+describe('User Entity',() => {
+    describe('create method',() => {
+        it('should create a new user with valid data',() => {
             // Arrange
-            const userData = TestDataFactory.createUserData()
+            const userData=TestDataFactory.createUserData()
 
             // Act
-            const user = User.create(userData)
+            const user=User.create(userData)
 
             // Assert
             expect(user).toBeDefined()
@@ -21,38 +21,38 @@ describe('User Entity', () => {
             TestAssertions.expectValidDate(user.updatedAt)
         })
 
-        it('should create user with admin role', () => {
+        it('should create user with admin role',() => {
             // Arrange
-            const userData = TestDataFactory.createUserData({ role: UserRole.ADMIN })
+            const userData=TestDataFactory.createUserData({role: UserRole.ADMIN})
 
             // Act
-            const user = User.create(userData)
+            const user=User.create(userData)
 
             // Assert
             expect(user.role).toBe(UserRole.ADMIN)
             expect(user.isAdmin()).toBe(true)
         })
 
-        it('should generate unique ID for each user', () => {
+        it('should generate unique ID for each user',() => {
             // Arrange
-            const userData = TestDataFactory.createUserData()
+            const userData=TestDataFactory.createUserData()
 
             // Act
-            const user1 = User.create(userData)
-            const user2 = User.create(userData)
+            const user1=User.create(userData)
+            const user2=User.create(userData)
 
             // Assert
             expect(user1.id).not.toBe(user2.id)
-            expect(user1.id).toContain('user_')
-            expect(user2.id).toContain('user_')
+            expect(user1.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
+            expect(user2.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
         })
 
-        it('should set default status to ACTIVE', () => {
+        it('should set default status to ACTIVE',() => {
             // Arrange
-            const userData = TestDataFactory.createUserData()
+            const userData=TestDataFactory.createUserData()
 
             // Act
-            const user = User.create(userData)
+            const user=User.create(userData)
 
             // Assert
             expect(user.status).toBe(AccountStatus.ACTIVE)
@@ -60,10 +60,10 @@ describe('User Entity', () => {
         })
     })
 
-    describe('reconstitute method', () => {
-        it('should reconstitute user from persistent data', () => {
+    describe('reconstitute method',() => {
+        it('should reconstitute user from persistent data',() => {
             // Arrange
-            const persistentData = {
+            const persistentData={
                 id: 'user_123',
                 email: 'test@example.com',
                 name: 'John',
@@ -79,7 +79,7 @@ describe('User Entity', () => {
             }
 
             // Act
-            const user = User.reconstitute(persistentData)
+            const user=User.reconstitute(persistentData)
 
             // Assert
             expect(user.id).toBe(persistentData.id)
@@ -90,9 +90,9 @@ describe('User Entity', () => {
             expect(user.status).toBe(AccountStatus.ACTIVE)
         })
 
-        it('should handle string enum values for role and status', () => {
+        it('should handle string enum values for role and status',() => {
             // Arrange
-            const persistentData = {
+            const persistentData={
                 id: 'user_123',
                 email: 'admin@example.com',
                 name: 'Admin',
@@ -108,7 +108,7 @@ describe('User Entity', () => {
             }
 
             // Act
-            const user = User.reconstitute(persistentData)
+            const user=User.reconstitute(persistentData)
 
             // Assert
             expect(user.role).toBe(UserRole.ADMIN)
@@ -118,26 +118,26 @@ describe('User Entity', () => {
         })
     })
 
-    describe('validation', () => {
-        it('should throw error for invalid email', () => {
+    describe('validation',() => {
+        it('should throw error for invalid email',() => {
             // Arrange
-            const userData = TestDataFactory.createUserData({ email: 'invalid-email' })
+            const userData=TestDataFactory.createUserData({email: 'invalid-email'})
 
             // Act & Assert
             expect(() => User.create(userData)).toThrow()
         })
 
-        it('should throw error for name too short', () => {
+        it('should throw error for name too short',() => {
             // Arrange
-            const userData = TestDataFactory.createUserData({ name: 'a' })
+            const userData=TestDataFactory.createUserData({name: 'a'})
 
             // Act & Assert
             expect(() => User.create(userData)).toThrow('Name must be at least 2 characters long')
         })
 
-        it('should throw error for name too long', () => {
+        it('should throw error for name too long',() => {
             // Arrange
-            const userData = TestDataFactory.createUserData({
+            const userData=TestDataFactory.createUserData({
                 name: 'a'.repeat(51)
             })
 
@@ -145,23 +145,23 @@ describe('User Entity', () => {
             expect(() => User.create(userData)).toThrow('Name cannot exceed 50 characters')
         })
 
-        it('should throw error for lastname too short', () => {
+        it('should throw error for lastname too short',() => {
             // Arrange
-            const userData = TestDataFactory.createUserData({ lastname: '' })
+            const userData=TestDataFactory.createUserData({lastname: ''})
 
             // Act & Assert
             expect(() => User.create(userData)).toThrow('Name must be at least 2 characters long')
         })
 
-        it('should trim whitespace from names', () => {
+        it('should trim whitespace from names',() => {
             // Arrange
-            const userData = TestDataFactory.createUserData({
+            const userData=TestDataFactory.createUserData({
                 name: '  John  ',
                 lastname: '  Doe  '
             })
 
             // Act
-            const user = User.create(userData)
+            const user=User.create(userData)
 
             // Assert
             expect(user.name).toBe('John')
@@ -169,30 +169,30 @@ describe('User Entity', () => {
         })
     })
 
-    describe('computed properties', () => {
-        it('should return correct full name', () => {
+    describe('computed properties',() => {
+        it('should return correct full name',() => {
             // Arrange
-            const userData = TestDataFactory.createUserData({
+            const userData=TestDataFactory.createUserData({
                 name: 'John',
                 lastname: 'Doe'
             })
 
             // Act
-            const user = User.create(userData)
+            const user=User.create(userData)
 
             // Assert
             expect(user.fullName).toBe('John Doe')
         })
 
-        it('should calculate correct age', () => {
+        it('should calculate correct age',() => {
             // Arrange
-            const birthYear = new Date().getFullYear() - 30
-            const userData = TestDataFactory.createUserData({
+            const birthYear=new Date().getFullYear()-30
+            const userData=TestDataFactory.createUserData({
                 birthdate: `${birthYear}-01-01`
             })
 
             // Act
-            const user = User.create(userData)
+            const user=User.create(userData)
 
             // Assert
             expect(user.age).toBeGreaterThanOrEqual(29)
@@ -200,17 +200,17 @@ describe('User Entity', () => {
         })
     })
 
-    describe('business logic methods', () => {
+    describe('business logic methods',() => {
         let user: User
 
         beforeEach(() => {
-            user = User.create(TestDataFactory.createUserData())
+            user=User.create(TestDataFactory.createUserData())
         })
 
-        describe('role management', () => {
-            it('should promote user to admin', () => {
+        describe('role management',() => {
+            it('should promote user to admin',() => {
                 // Arrange
-                const originalUpdatedAt = user.updatedAt
+                const originalUpdatedAt=user.updatedAt
 
                 // Act
                 user.promoteToAdmin()
@@ -221,10 +221,10 @@ describe('User Entity', () => {
                 expect(user.updatedAt.getTime()).toBeGreaterThanOrEqual(originalUpdatedAt.getTime())
             })
 
-            it('should demote admin to user', () => {
+            it('should demote admin to user',() => {
                 // Arrange
                 user.promoteToAdmin()
-                const originalUpdatedAt = user.updatedAt
+                const originalUpdatedAt=user.updatedAt
 
                 // Act
                 user.demoteToUser()
@@ -236,11 +236,11 @@ describe('User Entity', () => {
             })
         })
 
-        describe('status management', () => {
-            it('should activate user', () => {
+        describe('status management',() => {
+            it('should activate user',() => {
                 // Arrange
                 user.suspend()
-                const originalUpdatedAt = user.updatedAt
+                const originalUpdatedAt=user.updatedAt
 
                 // Act
                 user.activate()
@@ -252,9 +252,9 @@ describe('User Entity', () => {
                 expect(user.updatedAt.getTime()).toBeGreaterThanOrEqual(originalUpdatedAt.getTime())
             })
 
-            it('should deactivate user', () => {
+            it('should deactivate user',() => {
                 // Arrange
-                const originalUpdatedAt = user.updatedAt
+                const originalUpdatedAt=user.updatedAt
 
                 // Act
                 user.deactivate()
@@ -265,9 +265,9 @@ describe('User Entity', () => {
                 expect(user.updatedAt.getTime()).toBeGreaterThanOrEqual(originalUpdatedAt.getTime())
             })
 
-            it('should suspend user', () => {
+            it('should suspend user',() => {
                 // Arrange
-                const originalUpdatedAt = user.updatedAt
+                const originalUpdatedAt=user.updatedAt
 
                 // Act
                 user.suspend()
@@ -280,15 +280,15 @@ describe('User Entity', () => {
             })
         })
 
-        describe('profile management', () => {
-            it('should update profile successfully', () => {
+        describe('profile management',() => {
+            it('should update profile successfully',() => {
                 // Arrange
-                const newName = 'Jane'
-                const newLastname = 'Smith'
-                const originalUpdatedAt = user.updatedAt
+                const newName='Jane'
+                const newLastname='Smith'
+                const originalUpdatedAt=user.updatedAt
 
                 // Act
-                user.updateProfile(newName, newLastname)
+                user.updateProfile(newName,newLastname)
 
                 // Assert
                 expect(user.name).toBe(newName)
@@ -297,15 +297,15 @@ describe('User Entity', () => {
                 expect(user.updatedAt.getTime()).toBeGreaterThanOrEqual(originalUpdatedAt.getTime())
             })
 
-            it('should validate name when updating profile', () => {
+            it('should validate name when updating profile',() => {
                 // Act & Assert
-                expect(() => user.updateProfile('a', 'ValidLastname')).toThrow('Name must be at least 2 characters long')
-                expect(() => user.updateProfile('ValidName', '')).toThrow('Name must be at least 2 characters long')
+                expect(() => user.updateProfile('a','ValidLastname')).toThrow('Name must be at least 2 characters long')
+                expect(() => user.updateProfile('ValidName','')).toThrow('Name must be at least 2 characters long')
             })
 
-            it('should trim whitespace when updating profile', () => {
+            it('should trim whitespace when updating profile',() => {
                 // Act
-                user.updateProfile('  Jane  ', '  Smith  ')
+                user.updateProfile('  Jane  ','  Smith  ')
 
                 // Assert
                 expect(user.name).toBe('Jane')
@@ -314,20 +314,20 @@ describe('User Entity', () => {
         })
     })
 
-    describe('status checking methods', () => {
-        it('should correctly identify admin users', () => {
+    describe('status checking methods',() => {
+        it('should correctly identify admin users',() => {
             // Arrange
-            const adminUser = User.create(TestDataFactory.createUserData({ role: UserRole.ADMIN }))
-            const regularUser = User.create(TestDataFactory.createUserData({ role: UserRole.USER }))
+            const adminUser=User.create(TestDataFactory.createUserData({role: UserRole.ADMIN}))
+            const regularUser=User.create(TestDataFactory.createUserData({role: UserRole.USER}))
 
             // Assert
             expect(adminUser.isAdmin()).toBe(true)
             expect(regularUser.isAdmin()).toBe(false)
         })
 
-        it('should correctly identify active users', () => {
+        it('should correctly identify active users',() => {
             // Arrange
-            const user = User.create(TestDataFactory.createUserData())
+            const user=User.create(TestDataFactory.createUserData())
 
             // Assert
             expect(user.isActive()).toBe(true)
@@ -339,9 +339,9 @@ describe('User Entity', () => {
             expect(user.isActive()).toBe(false)
         })
 
-        it('should correctly identify suspended users', () => {
+        it('should correctly identify suspended users',() => {
             // Arrange
-            const user = User.create(TestDataFactory.createUserData())
+            const user=User.create(TestDataFactory.createUserData())
 
             // Assert
             expect(user.isSuspended()).toBe(false)
@@ -354,10 +354,10 @@ describe('User Entity', () => {
         })
     })
 
-    describe('immutability', () => {
-        it('should not allow direct modification of readonly properties', () => {
+    describe('immutability',() => {
+        it('should not allow direct modification of readonly properties',() => {
             // Arrange
-            const user = User.create(TestDataFactory.createUserData())
+            const user=User.create(TestDataFactory.createUserData())
 
             // Assert - These should be readonly and cause TypeScript errors if modified
             // user.id = 'new-id' // Should cause TS error
@@ -369,33 +369,33 @@ describe('User Entity', () => {
         })
     })
 
-    describe('value objects integration', () => {
-        it('should use Email value object for email validation', () => {
+    describe('value objects integration',() => {
+        it('should use Email value object for email validation',() => {
             // Arrange
-            const invalidEmailData = TestDataFactory.createUserData({ email: 'invalid-email' })
+            const invalidEmailData=TestDataFactory.createUserData({email: 'invalid-email'})
 
             // Act & Assert
             expect(() => User.create(invalidEmailData)).toThrow()
         })
 
-        it('should use Password value object for password handling', () => {
+        it('should use Password value object for password handling',() => {
             // Arrange
-            const userData = TestDataFactory.createUserData({ password: 'ValidPass123!' })
+            const userData=TestDataFactory.createUserData({password: 'ValidPass123!'})
 
             // Act
-            const user = User.create(userData)
+            const user=User.create(userData)
 
             // Assert
             expect(user.password).toBeDefined()
             expect(typeof user.password).toBe('string')
         })
 
-        it('should use Birthdate value object for birthdate validation', () => {
+        it('should use Birthdate value object for birthdate validation',() => {
             // Arrange
-            const userData = TestDataFactory.createUserData({ birthdate: '1990-01-01' })
+            const userData=TestDataFactory.createUserData({birthdate: '1990-01-01'})
 
             // Act
-            const user = User.create(userData)
+            const user=User.create(userData)
 
             // Assert
             expect(user.birthdate).toBeInstanceOf(Date)
