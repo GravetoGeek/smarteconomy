@@ -1,0 +1,53 @@
+# Estágio 1: Build
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Instalar dependências de build
+RUN apk add --no-cache openssl python3 make g++ git
+
+# Copiar arquivos de dependência
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Instalar todas as dependências (incluindo devDependencies para build)
+RUN npm ci
+
+# Gerar cliente Prisma
+RUN npx prisma generate
+
+# Copiar código fonte
+COPY . .
+
+# Build da aplicação
+RUN npm run build
+
+# Estágio 2: Produção
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+# Instalar dependências de runtime
+RUN apk add --no-cache openssl
+
+# Copiar arquivos de dependência
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Instalar apenas dependências de produção
+RUN npm ci --only=production
+
+# Gerar cliente Prisma (necessário também no runner)
+RUN npx prisma generate
+
+# Copiar build do estágio anterior
+COPY --from=builder /app/dist ./dist
+
+# Usuário não-root para segurança
+USER node
+
+# Expor porta
+EXPOSE 3000
+
+# Comando de inicialização
+CMD ["node", "dist/main"]
