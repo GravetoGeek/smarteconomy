@@ -1,3 +1,8 @@
+import {UserInvalidAgeException} from '../exceptions/user-domain.exception'
+
+const MIN_AGE=13
+const MAX_AGE=120
+
 export class Birthdate {
     private readonly value: Date
 
@@ -9,20 +14,34 @@ export class Birthdate {
 
     private validate(birthdate: Date): void {
         if(isNaN(birthdate.getTime())) {
-            throw new Error('Invalid birthdate')
+            throw new UserInvalidAgeException()
         }
 
         const today=new Date()
-        const age=today.getFullYear()-birthdate.getFullYear()
-        const monthDiff=today.getMonth()-birthdate.getMonth()
-
-        if(age<18||(age===18&&monthDiff<0)) {
-            throw new Error('User must be at least 18 years old')
-        }
-
         if(birthdate>today) {
-            throw new Error('Birthdate cannot be in the future')
+            throw new UserInvalidAgeException()
         }
+
+        const age=this.calculateAge(birthdate,today)
+
+        if(age<MIN_AGE) {
+            throw new UserInvalidAgeException()
+        }
+
+        if(age>MAX_AGE) {
+            throw new UserInvalidAgeException()
+        }
+    }
+
+    private calculateAge(birthdate: Date,reference: Date): number {
+        let age=reference.getFullYear()-birthdate.getFullYear()
+        const monthDiff=reference.getMonth()-birthdate.getMonth()
+
+        if(monthDiff<0||(monthDiff===0&&reference.getDate()<birthdate.getDate())) {
+            age-=1
+        }
+
+        return age
     }
 
     getValue(): Date {
@@ -30,15 +49,7 @@ export class Birthdate {
     }
 
     getAge(): number {
-        const today=new Date()
-        const age=today.getFullYear()-this.value.getFullYear()
-        const monthDiff=today.getMonth()-this.value.getMonth()
-
-        if(monthDiff<0||(monthDiff===0&&today.getDate()<this.value.getDate())) {
-            return age-1
-        }
-
-        return age
+        return this.calculateAge(this.value,new Date())
     }
 
     equals(other: Birthdate): boolean {
