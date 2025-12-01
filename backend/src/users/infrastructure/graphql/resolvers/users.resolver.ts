@@ -1,5 +1,6 @@
+import {ConnectionArgs} from '@/shared/infrastructure/graphql/inputs/connection.args'
 import {LoggerService} from '@/shared/services/logger.service'
-import {Args,Mutation,Query,Resolver} from '@nestjs/graphql'
+import {Args,Int,Mutation,Query,Resolver} from '@nestjs/graphql'
 import {UsersApplicationService} from '../../../application/services/users-application.service'
 import {UserRole} from '../../../domain/user.entity'
 import {CreateUserInput} from '../../dtos/inputs/create-user.input'
@@ -7,6 +8,7 @@ import {SearchUsersInput} from '../../dtos/inputs/search-users.input'
 import {UpdateUserInput} from '../../dtos/inputs/update-user.input'
 import {DeleteUserResponseModel} from '../../dtos/models/delete-user-response.model'
 import {UpdateUserResponseModel} from '../../dtos/models/update-user-response.model'
+import {UserConnection} from '../../dtos/models/user-connection.model'
 import {UserSearchResultModel} from '../../dtos/models/user-search-result.model'
 import {UserModel} from '../../dtos/models/user.model'
 import {UserGraphQLMapper} from '../mappers/user-graphql.mapper'
@@ -19,15 +21,54 @@ export class UsersResolver {
     ) {}
     // TODO: Aplicar AuthGuard e RBAC quando os guards JWT estiverem implementados no módulo auth
 
-    @Query(() => [UserModel])
-    async users(): Promise<UserModel[]> {
+    @Query(() => UserSearchResultModel)
+    async users(
+        @Args('page',{type: () => Int,nullable: true,defaultValue: 1}) page: number=1,
+        @Args('limit',{type: () => Int,nullable: true,defaultValue: 1000}) limit: number=1000
+    ): Promise<UserSearchResultModel> {
         try {
-            this.loggerService.logOperation('GRAPHQL_GET_ALL_USERS_START',null,'UsersResolver')
-            const result=await this.usersApplicationService.searchUsers({page: 1,limit: 100})
+            this.loggerService.logOperation('GRAPHQL_GET_ALL_USERS_START',{page,limit},'UsersResolver')
+            const result=await this.usersApplicationService.searchUsers({page,limit})
             this.loggerService.logOperation('GRAPHQL_GET_ALL_USERS_SUCCESS',{count: result.users.length},'UsersResolver')
-            return UserGraphQLMapper.toModelList(result.users)
+            return {
+                items: UserGraphQLMapper.toModelList(result.users),
+                total: result.total,
+                currentPage: result.currentPage,
+                limit: result.limit,
+                totalPages: result.totalPages,
+                lastPage: result.lastPage
+            }
         } catch(error) {
             this.loggerService.logError('GRAPHQL_GET_ALL_USERS_ERROR',error,'UsersResolver')
+            throw error
+        }
+    }
+
+    @Query(() => UserConnection)
+    async usersConnection(@Args() args: ConnectionArgs): Promise<UserConnection> {
+        try {
+            this.loggerService.logOperation('GRAPHQL_USERS_CONNECTION_START',args,'UsersResolver')
+            const result=await this.usersApplicationService.findUsersConnection(args)
+
+            const edges=result.items.map(user => ({
+                cursor: Buffer.from(user.id).toString('base64'),
+                node: UserGraphQLMapper.toModel(user)
+            }))
+
+            this.loggerService.logOperation('GRAPHQL_USERS_CONNECTION_SUCCESS',{count: edges.length},'UsersResolver')
+
+            return {
+                edges,
+                pageInfo: {
+                    hasNextPage: result.hasNextPage,
+                    hasPreviousPage: result.hasPreviousPage,
+                    startCursor: result.startCursor,
+                    endCursor: result.endCursor
+                },
+                totalCount: result.total
+            }
+        } catch(error) {
+            this.loggerService.logError('GRAPHQL_USERS_CONNECTION_ERROR',error,'UsersResolver')
             throw error
         }
     }

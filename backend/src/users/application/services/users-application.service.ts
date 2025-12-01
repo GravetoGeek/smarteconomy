@@ -1,4 +1,7 @@
-import {Injectable} from '@nestjs/common'
+import {ConnectionArgs} from '@/shared/infrastructure/graphql/inputs/connection.args'
+import {Inject,Injectable} from '@nestjs/common'
+import {UserRepositoryPort} from '../../domain/ports/user-repository.port'
+import {USER_REPOSITORY} from '../../domain/tokens'
 import {User,UserRole} from '../../domain/user.entity'
 import {CreateUserRequest,CreateUserUseCase} from '../use-cases/create-user.use-case'
 import {DeleteUserRequest,DeleteUserUseCase} from '../use-cases/delete-user.use-case'
@@ -43,7 +46,9 @@ export class UsersApplicationService {
         private readonly findUserByEmailUseCase: FindUserByEmailUseCase,
         private readonly updateUserUseCase: UpdateUserUseCase,
         private readonly deleteUserUseCase: DeleteUserUseCase,
-        private readonly searchUsersUseCase: SearchUsersUseCase
+        private readonly searchUsersUseCase: SearchUsersUseCase,
+        @Inject(USER_REPOSITORY)
+        private readonly userRepository: UserRepositoryPort
     ) {}
 
     async createUser(dto: CreateUserDto): Promise<User> {
@@ -75,7 +80,7 @@ export class UsersApplicationService {
         return response.user
     }
 
-    async updateUser(id: string, dto: UpdateUserDto): Promise<User|null> {
+    async updateUser(id: string,dto: UpdateUserDto): Promise<User|null> {
         const request: UpdateUserRequest={
             id,
             name: dto.name,
@@ -84,7 +89,7 @@ export class UsersApplicationService {
             password: dto.password
         }
         const response=await this.updateUserUseCase.execute(request)
-        return response.success ? response.user : null
+        return response.success? response.user:null
     }
 
     async deleteUser(id: string): Promise<boolean> {
@@ -110,5 +115,9 @@ export class UsersApplicationService {
         }
 
         return await this.searchUsersUseCase.execute(request)
+    }
+
+    async findUsersConnection(args: ConnectionArgs) {
+        return this.userRepository.findConnection(args)
     }
 }

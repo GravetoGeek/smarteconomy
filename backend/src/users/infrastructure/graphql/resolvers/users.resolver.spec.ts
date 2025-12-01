@@ -56,7 +56,8 @@ describe('UsersResolver',() => {
                         findUserByEmail: jest.fn(),
                         updateUser: jest.fn(),
                         deleteUser: jest.fn(),
-                        searchUsers: jest.fn()
+                        searchUsers: jest.fn(),
+                        findUsersConnection: jest.fn()
                     }
                 },
                 {
@@ -93,7 +94,7 @@ describe('UsersResolver',() => {
                 users: mockUsers,
                 total: 2,
                 currentPage: 1,
-                limit: 100,
+                limit: 1000,
                 totalPages: 1,
                 lastPage: 1
             }
@@ -103,11 +104,18 @@ describe('UsersResolver',() => {
             const result=await resolver.users()
 
             // Assert
-            expect(result).toEqual(UserGraphQLMapper.toModelList(mockUsers))
-            expect(usersApplicationService.searchUsers).toHaveBeenCalledWith({page: 1,limit: 100})
+            expect(result).toEqual({
+                items: UserGraphQLMapper.toModelList(mockUsers),
+                total: 2,
+                currentPage: 1,
+                limit: 1000,
+                totalPages: 1,
+                lastPage: 1
+            })
+            expect(usersApplicationService.searchUsers).toHaveBeenCalledWith({page: 1,limit: 1000})
             expect(loggerService.logOperation).toHaveBeenCalledWith(
                 'GRAPHQL_GET_ALL_USERS_START',
-                null,
+                {page: 1,limit: 1000},
                 'UsersResolver'
             )
         })
@@ -402,6 +410,46 @@ describe('UsersResolver',() => {
             // Act & Assert
             await expect(resolver.deleteUser(userId)).rejects.toThrow('Deletion failed')
             expect(loggerService.logError).toHaveBeenCalled()
+        })
+    })
+
+    describe('usersConnection',() => {
+        it('should return users connection successfully',async () => {
+            // Arrange
+            const connectionArgs={first: 10}
+            const mockUsers=[
+                createMockUser({id: '1',name: 'User 1'}),
+                createMockUser({id: '2',name: 'User 2'})
+            ]
+            const mockServiceResult={
+                items: mockUsers,
+                total: 2,
+                hasNextPage: false,
+                hasPreviousPage: false,
+                startCursor: Buffer.from(mockUsers[0].id).toString('base64'),
+                endCursor: Buffer.from(mockUsers[1].id).toString('base64')
+            }
+
+            usersApplicationService.findUsersConnection.mockResolvedValue(mockServiceResult)
+
+            // Act
+            const result=await resolver.usersConnection(connectionArgs)
+
+            // Assert
+            expect(result).toEqual({
+                edges: mockUsers.map(user => ({
+                    node: UserGraphQLMapper.toModel(user),
+                    cursor: Buffer.from(user.id).toString('base64')
+                })),
+                pageInfo: {
+                    hasNextPage: mockServiceResult.hasNextPage,
+                    hasPreviousPage: mockServiceResult.hasPreviousPage,
+                    startCursor: mockServiceResult.startCursor,
+                    endCursor: mockServiceResult.endCursor
+                },
+                totalCount: 2
+            })
+            expect(usersApplicationService.findUsersConnection).toHaveBeenCalledWith(connectionArgs)
         })
     })
 })
