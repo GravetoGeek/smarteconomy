@@ -20,4 +20,7 @@ export class UserSearchResultModel {
 
     @Field(() => Int)
     lastPage: number
+
+    @Field(() => Int)
+    itemsCount: number
 }
