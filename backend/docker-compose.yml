@@ -12,6 +12,7 @@ services:
         volumes:
             - .:/backend:delegated
             - /backend/node_modules # Corrige o volume de dependências
+        command: npm run start:dev
         depends_on:
             - db
             - migration
