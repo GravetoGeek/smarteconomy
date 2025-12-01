@@ -36,7 +36,8 @@ export class UsersResolver {
                 currentPage: result.currentPage,
                 limit: result.limit,
                 totalPages: result.totalPages,
-                lastPage: result.lastPage
+                lastPage: result.lastPage,
+                itemsCount: result.users.length
             }
         } catch(error) {
             this.loggerService.logError('GRAPHQL_GET_ALL_USERS_ERROR',error,'UsersResolver')
@@ -121,7 +122,8 @@ export class UsersResolver {
                 currentPage: result.currentPage,
                 limit: result.limit,
                 totalPages: result.totalPages,
-                lastPage: result.lastPage
+                lastPage: result.lastPage,
+                itemsCount: result.users.length
             }
         } catch(error) {
             this.loggerService.logError('GRAPHQL_SEARCH_USERS_ERROR',error,'UsersResolver')

@@ -110,7 +110,8 @@ describe('UsersResolver',() => {
                 currentPage: 1,
                 limit: 1000,
                 totalPages: 1,
-                lastPage: 1
+                lastPage: 1,
+                itemsCount: 2
             })
             expect(usersApplicationService.searchUsers).toHaveBeenCalledWith({page: 1,limit: 1000})
             expect(loggerService.logOperation).toHaveBeenCalledWith(
@@ -249,7 +250,8 @@ describe('UsersResolver',() => {
                 currentPage: 1,
                 limit: 10,
                 totalPages: 1,
-                lastPage: 1
+                lastPage: 1,
+                itemsCount: 2
             })
             expect(usersApplicationService.searchUsers).toHaveBeenCalledWith(searchInput)
         })
