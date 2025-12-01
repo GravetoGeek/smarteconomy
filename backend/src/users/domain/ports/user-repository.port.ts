@@ -31,6 +31,14 @@ export interface UserRepositoryPort {
 
     // Search operations
     search(search: SearchParams): Promise<SearchResult>
+    findConnection(params: {first?: number; after?: string; last?: number; before?: string; filter?: string}): Promise<{
+        items: User[]
+        total: number
+        hasNextPage: boolean
+        hasPreviousPage: boolean
+        startCursor?: string
+        endCursor?: string
+    }>
 
     // Business operations
     existsByEmail(email: string): Promise<boolean>

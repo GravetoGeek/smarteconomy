@@ -38,7 +38,7 @@ export class UsersPrismaRepository implements UserRepositoryPort {
                 profession: {connect: {id: user.professionId}},
                 profile: user.profileId? {connect: {id: user.profileId}}:undefined,
                 password: user.password,
-                status: user.status,
+                status: user.status as any,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt
             }
@@ -76,7 +76,7 @@ export class UsersPrismaRepository implements UserRepositoryPort {
                 profession: {connect: {id: user.professionId}},
                 profile: user.profileId? {connect: {id: user.profileId}}:undefined,
                 password: user.password,
-                status: user.status,
+                status: user.status as any,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt
             }
@@ -197,6 +197,91 @@ export class UsersPrismaRepository implements UserRepositoryPort {
             }
         } catch(error) {
             this.loggerService.logError('SEARCH_USERS_ERROR',error,'UsersPrismaRepository')
+            throw error
+        }
+    }
+
+    async findConnection(params: {first?: number; after?: string; last?: number; before?: string; filter?: string}): Promise<{
+        items: User[]
+        total: number
+        hasNextPage: boolean
+        hasPreviousPage: boolean
+        startCursor?: string
+        endCursor?: string
+    }> {
+        try {
+            const {first,after,last,before,filter}=params
+            const limit=first||last||10
+
+            const where: Prisma.UserWhereInput=filter? {
+                OR: [
+                    {name: {contains: filter,mode: 'insensitive'}},
+                    {lastname: {contains: filter,mode: 'insensitive'}},
+                    {email: {contains: filter,mode: 'insensitive'}}
+                ]
+            }:{}
+
+            let cursor=undefined
+            let skip=0
+
+            if(after) {
+                cursor={id: Buffer.from(after,'base64').toString('ascii')}
+                skip=1
+            } else if(before) {
+                cursor={id: Buffer.from(before,'base64').toString('ascii')}
+                skip=1
+            }
+
+            const users=await this.prisma.user.findMany({
+                where,
+                take: last? -(limit+1):(limit+1), // Fetch one extra to check for next page
+                skip,
+                cursor,
+                orderBy: {createdAt: 'desc'} // Default ordering
+            })
+
+            const total=await this.prisma.user.count({where})
+
+            let hasNextPage=false
+            let hasPreviousPage=false
+            let items=users
+
+            if(users.length>limit) {
+                if(last) {
+                    hasPreviousPage=true
+                    items=users.slice(1) // Remove the extra item from the beginning
+                } else {
+                    hasNextPage=true
+                    items=users.slice(0,limit) // Remove the extra item from the end
+                }
+            }
+
+            // If we are paginating with 'after', we might have a previous page
+            if(after) {
+                // This is a simplification. In a real relay implementation, checking for previous page when going forward is more complex or requires another query.
+                // For now, we assume if we have an 'after' cursor, there is likely a previous page.
+                hasPreviousPage=true
+            }
+
+            // If we are paginating with 'before', we might have a next page
+            if(before) {
+                hasNextPage=true
+            }
+
+            const startCursor=items.length>0? Buffer.from(items[0].id).toString('base64'):undefined
+            const endCursor=items.length>0? Buffer.from(items[items.length-1].id).toString('base64'):undefined
+
+            return {
+                items: items.map(u => User.reconstitute(u)),
+                total,
+                hasNextPage,
+                hasPreviousPage,
+                startCursor,
+                endCursor
+            }
+
+        } catch(error) {
+            this.loggerService.logError('FIND_CONNECTION_ERROR',error,'UsersPrismaRepository')
             throw error
         }
     }
