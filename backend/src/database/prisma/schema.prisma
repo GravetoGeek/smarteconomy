@@ -287,6 +287,8 @@ enum AccountStatus {
     ACTIVE
     /// Conta inativa (temporariamente)
     INACTIVE
+    /// Conta suspensa (por violação ou segurança)
+    SUSPENDED
 }
 
 /// 💰 Contas financeiras dos usuários

@@ -42,3 +42,10 @@ export class AccountInactiveException extends AccountDomainException {
         this.name='AccountInactiveException'
     }
 }
+
+export class InvalidAccountNameException extends AccountDomainException {
+    constructor(message: string) {
+        super(message)
+        this.name='InvalidAccountNameException'
+    }
+}

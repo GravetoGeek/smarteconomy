@@ -1,8 +1,12 @@
 import {randomUUID} from 'crypto'
+import {InsufficientBalanceException,InvalidAccountNameException,InvalidAmountException} from './exceptions/account-domain.exception'
 
 export enum AccountType {
     CHECKING='CHECKING',
-    SAVINGS='SAVINGS'
+    SAVINGS='SAVINGS',
+    CREDIT_CARD='CREDIT_CARD',
+    INVESTMENT='INVESTMENT',
+    CASH='CASH'
 }
 
 export enum AccountStatus {
@@ -41,23 +45,38 @@ export class Account {
     }
 
     private validateName(name: string): string {
-        if(!name||name.trim().length<2) throw new Error('Nome da conta inválido')
+        if(!name||name.trim().length<2) throw new InvalidAccountNameException('Nome da conta inválido')
         return name.trim()
     }
 
     private generateId(): string {
-        // Gera um UUID v4 com prefixo de contexto para facilitar rastreio
-        return `acc_${randomUUID()}`
+        return randomUUID()
     }
 
-    get id() {return this._id}
-    get name() {return this._name}
-    get type() {return this._type}
-    get balance() {return this._balance}
-    get userId() {return this._userId}
-    get status() {return this._status}
-    get createdAt() {return this._createdAt}
-    get updatedAt() {return this._updatedAt}
+    get id() {
+        return this._id
+    }
+    get name() {
+        return this._name
+    }
+    get type() {
+        return this._type
+    }
+    get balance() {
+        return this._balance
+    }
+    get userId() {
+        return this._userId
+    }
+    get status() {
+        return this._status
+    }
+    get createdAt() {
+        return this._createdAt
+    }
+    get updatedAt() {
+        return this._updatedAt
+    }
 
     static reconstitute(data: any): Account {
         return new Account({
@@ -86,14 +105,14 @@ export class Account {
     }
 
     credit(amount: number) {
-        if(amount<=0) throw new Error('Valor inválido')
+        if(amount<=0) throw new InvalidAmountException(amount)
         this._balance+=amount
         this._updatedAt=new Date()
     }
 
     debit(amount: number) {
-        if(amount<=0) throw new Error('Valor inválido')
-        if(this._balance<amount) throw new Error('Saldo insuficiente')
+        if(amount<=0) throw new InvalidAmountException(amount)
+        if(this._balance<amount) throw new InsufficientBalanceException(this.id,this.balance,amount)
         this._balance-=amount
         this._updatedAt=new Date()
     }

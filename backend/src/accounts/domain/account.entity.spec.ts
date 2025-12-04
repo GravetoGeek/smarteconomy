@@ -31,8 +31,8 @@ describe('Account Entity',() => {
 
             // Assert
             expect(account1.id).not.toBe(account2.id)
-            expect(account1.id).toContain('acc_')
-            expect(account2.id).toContain('acc_')
+            expect(account1.id).toBeDefined()
+            expect(account2.id).toBeDefined()
         })
 
         it('should set default balance to 0',() => {

@@ -1,17 +1,36 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { PrismaService } from '../../../database/prisma/prisma.service'
-import { AccountsPrismaRepository } from './accounts-prisma.repository'
-import { Account, AccountType, AccountStatus } from '../../domain/account.entity'
-import { LoggerService } from '../../../shared/services/logger.service'
-import { TestDatabaseUtils, TestDataFactory } from '../../../__tests__/utils/test-helpers'
+import {Test,TestingModule} from '@nestjs/testing'
+import {TestDatabaseUtils,TestDataFactory} from '../../../__tests__/utils/test-helpers'
+import {PrismaService} from '../../../database/prisma/prisma.service'
+import {LoggerService} from '../../../shared/services/logger.service'
+import {User,UserRole} from '../../../users/domain/user.entity'
+import {Account,AccountStatus,AccountType} from '../../domain/account.entity'
+import {AccountsPrismaRepository} from './accounts-prisma.repository'
 
-describe('AccountsPrismaRepository Integration', () => {
+describe('AccountsPrismaRepository Integration',() => {
     let repository: AccountsPrismaRepository
     let prisma: PrismaService
     let loggerService: LoggerService
+    let testUserId: string
+
+    const createTestUser=async (id: string,email: string) => {
+        await prisma.user.create({
+            data: {
+                id,
+                email,
+                name: 'Test',
+                lastname: 'User',
+                birthdate: new Date('1990-01-01'),
+                role: 'USER',
+                genderId: '550e8400-e29b-41d4-a716-446655440001',
+                professionId: '660e8400-e29b-41d4-a716-446655440001',
+                password: 'ValidPassw0rd!',
+                status: 'ACTIVE'
+            }
+        })
+    }
 
     beforeAll(async () => {
-        const module: TestingModule = await Test.createTestingModule({
+        const module: TestingModule=await Test.createTestingModule({
             providers: [
                 AccountsPrismaRepository,
                 PrismaService,
@@ -19,9 +38,9 @@ describe('AccountsPrismaRepository Integration', () => {
             ]
         }).compile()
 
-        repository = module.get<AccountsPrismaRepository>(AccountsPrismaRepository)
-        prisma = module.get<PrismaService>(PrismaService)
-        loggerService = module.get<LoggerService>(LoggerService)
+        repository=module.get<AccountsPrismaRepository>(AccountsPrismaRepository)
+        prisma=module.get<PrismaService>(PrismaService)
+        loggerService=module.get<LoggerService>(LoggerService)
 
         await prisma.$connect()
     })
@@ -33,18 +52,20 @@ describe('AccountsPrismaRepository Integration', () => {
     beforeEach(async () => {
         await TestDatabaseUtils.clearDatabase(prisma)
         await TestDatabaseUtils.seedTestData(prisma)
+        testUserId='test-user-123'
+        await createTestUser(testUserId,'default@test.com')
     })
 
-    describe('save', () => {
-        it('should save new account successfully', async () => {
+    describe('save',() => {
+        it('should save new account successfully',async () => {
             // Arrange
-            const accountData = TestDataFactory.createAccountData({
-                userId: 'test-user-123'
+            const accountData=TestDataFactory.createAccountData({
+                userId: testUserId
             })
-            const account = new Account(accountData)
+            const account=new Account(accountData)
 
             // Act
-            const savedAccount = await repository.save(account)
+            const savedAccount=await repository.save(account)
 
             // Assert
             expect(savedAccount).toBeDefined()
@@ -56,19 +77,19 @@ describe('AccountsPrismaRepository Integration', () => {
             expect(savedAccount.status).toBe(AccountStatus.ACTIVE)
         })
 
-        it('should update existing account', async () => {
+        it('should update existing account',async () => {
             // Arrange
-            const accountData = TestDataFactory.createAccountData({
-                userId: 'test-user-456'
+            const accountData=TestDataFactory.createAccountData({
+                userId: testUserId
             })
-            const account = new Account(accountData)
+            const account=new Account(accountData)
             await repository.save(account)
 
             // Modify account
             account.credit(500)
 
             // Act
-            const updatedAccount = await repository.save(account)
+            const updatedAccount=await repository.save(account)
 
             // Assert
             expect(updatedAccount.id).toBe(account.id)
@@ -76,22 +97,22 @@ describe('AccountsPrismaRepository Integration', () => {
             expect(updatedAccount.updatedAt.getTime()).toBeGreaterThan(account.createdAt.getTime())
         })
 
-        it('should handle different account types', async () => {
+        it('should handle different account types',async () => {
             // Arrange
-            const checkingAccount = new Account({
+            const checkingAccount=new Account({
                 ...TestDataFactory.createAccountData(),
                 type: AccountType.CHECKING,
-                userId: 'test-user-checking'
+                userId: testUserId
             })
-            const savingsAccount = new Account({
+            const savingsAccount=new Account({
                 ...TestDataFactory.createAccountData(),
                 type: AccountType.SAVINGS,
-                userId: 'test-user-savings'
+                userId: testUserId
             })
 
             // Act
-            const savedChecking = await repository.save(checkingAccount)
-            const savedSavings = await repository.save(savingsAccount)
+            const savedChecking=await repository.save(checkingAccount)
+            const savedSavings=await repository.save(savingsAccount)
 
             // Assert
             expect(savedChecking.type).toBe(AccountType.CHECKING)
@@ -99,17 +120,17 @@ describe('AccountsPrismaRepository Integration', () => {
         })
     })
 
-    describe('findById', () => {
-        it('should find account by id', async () => {
+    describe('findById',() => {
+        it('should find account by id',async () => {
             // Arrange
-            const account = new Account({
+            const account=new Account({
                 ...TestDataFactory.createAccountData(),
-                userId: 'test-user-find'
+                userId: testUserId
             })
-            const savedAccount = await repository.save(account)
+            const savedAccount=await repository.save(account)
 
             // Act
-            const foundAccount = await repository.findById(savedAccount.id)
+            const foundAccount=await repository.findById(savedAccount.id)
 
             // Assert
             expect(foundAccount).toBeDefined()
@@ -119,26 +140,26 @@ describe('AccountsPrismaRepository Integration', () => {
             expect(foundAccount?.balance).toBe(savedAccount.balance)
         })
 
-        it('should return null for non-existent account', async () => {
+        it('should return null for non-existent account',async () => {
             // Act
-            const result = await repository.findById('non-existent-id')
+            const result=await repository.findById('non-existent-id')
 
             // Assert
             expect(result).toBeNull()
         })
 
-        it('should reconstitute account correctly', async () => {
+        it('should reconstitute account correctly',async () => {
             // Arrange
-            const originalAccount = new Account({
+            const originalAccount=new Account({
                 name: 'Integration Test Account',
                 type: AccountType.SAVINGS,
                 balance: 1500.75,
-                userId: 'test-user-reconstitute'
+                userId: testUserId
             })
             await repository.save(originalAccount)
 
             // Act
-            const foundAccount = await repository.findById(originalAccount.id)
+            const foundAccount=await repository.findById(originalAccount.id)
 
             // Assert
             expect(foundAccount).toBeInstanceOf(Account)
@@ -149,17 +170,17 @@ describe('AccountsPrismaRepository Integration', () => {
         })
     })
 
-    describe('findAllByUser', () => {
-        it('should find all accounts for a user', async () => {
+    describe('findAllByUser',() => {
+        it('should find all accounts for a user',async () => {
             // Arrange
-            const userId = 'test-user-multiple'
-            const account1 = new Account({
+            const userId=testUserId
+            const account1=new Account({
                 name: 'Checking Account',
                 type: AccountType.CHECKING,
                 balance: 1000,
                 userId
             })
-            const account2 = new Account({
+            const account2=new Account({
                 name: 'Savings Account',
                 type: AccountType.SAVINGS,
                 balance: 5000,
@@ -170,25 +191,27 @@ describe('AccountsPrismaRepository Integration', () => {
             await repository.save(account2)
 
             // Act
-            const userAccounts = await repository.findAllByUser(userId)
+            const userAccounts=await repository.findAllByUser(userId)
 
             // Assert
             expect(userAccounts).toHaveLength(2)
-            expect(userAccounts.every(acc => acc.userId === userId)).toBe(true)
+            expect(userAccounts.every(acc => acc.userId===userId)).toBe(true)
         })
 
-        it('should return empty array for user with no accounts', async () => {
+        it('should return empty array for user with no accounts',async () => {
             // Act
-            const result = await repository.findAllByUser('user-with-no-accounts')
+            const result=await repository.findAllByUser('user-with-no-accounts')
 
             // Assert
             expect(result).toEqual([])
         })
 
-        it('should not return accounts from other users', async () => {
+        it('should not return accounts from other users',async () => {
             // Arrange
-            const user1 = 'user-1'
-            const user2 = 'user-2'
+            const user1='user-1'
+            const user2='user-2'
+            await createTestUser(user1,'user1@test.com')
+            await createTestUser(user2,'user2@test.com')
 
             await repository.save(new Account({
                 ...TestDataFactory.createAccountData(),
@@ -200,7 +223,7 @@ describe('AccountsPrismaRepository Integration', () => {
             }))
 
             // Act
-            const user1Accounts = await repository.findAllByUser(user1)
+            const user1Accounts=await repository.findAllByUser(user1)
 
             // Assert
             expect(user1Accounts).toHaveLength(1)
@@ -208,86 +231,86 @@ describe('AccountsPrismaRepository Integration', () => {
         })
     })
 
-    describe('delete', () => {
-        it('should delete account successfully', async () => {
+    describe('delete',() => {
+        it('should delete account successfully',async () => {
             // Arrange
-            const account = new Account({
+            const account=new Account({
                 ...TestDataFactory.createAccountData(),
-                userId: 'test-user-delete'
+                userId: testUserId
             })
-            const savedAccount = await repository.save(account)
+            const savedAccount=await repository.save(account)
 
             // Act
             await repository.delete(savedAccount.id)
 
             // Assert
-            const deletedAccount = await repository.findById(savedAccount.id)
+            const deletedAccount=await repository.findById(savedAccount.id)
             expect(deletedAccount).toBeNull()
         })
 
-        it('should handle deletion of non-existent account', async () => {
+        it('should handle deletion of non-existent account',async () => {
             // Act & Assert
             await expect(repository.delete('non-existent-id')).rejects.toThrow()
         })
     })
 
-    describe('existsById', () => {
-        it('should return true for existing account', async () => {
+    describe('existsById',() => {
+        it('should return true for existing account',async () => {
             // Arrange
-            const account = new Account({
+            const account=new Account({
                 ...TestDataFactory.createAccountData(),
-                userId: 'test-user-exists'
+                userId: testUserId
             })
-            const savedAccount = await repository.save(account)
+            const savedAccount=await repository.save(account)
 
             // Act
-            const exists = await repository.existsById(savedAccount.id)
+            const exists=await repository.existsById(savedAccount.id)
 
             // Assert
             expect(exists).toBe(true)
         })
 
-        it('should return false for non-existent account', async () => {
+        it('should return false for non-existent account',async () => {
             // Act
-            const exists = await repository.existsById('non-existent-id')
+            const exists=await repository.existsById('non-existent-id')
 
             // Assert
             expect(exists).toBe(false)
         })
     })
 
-    describe('search', () => {
+    describe('search',() => {
         beforeEach(async () => {
             // Setup test data for search
-            const accounts = [
+            const accounts=[
                 new Account({
                     name: 'Primary Checking',
                     type: AccountType.CHECKING,
                     balance: 1000,
-                    userId: 'search-user-1'
+                    userId: testUserId
                 }),
                 new Account({
                     name: 'Emergency Savings',
                     type: AccountType.SAVINGS,
                     balance: 5000,
-                    userId: 'search-user-1'
+                    userId: testUserId
                 }),
                 new Account({
                     name: 'Secondary Checking',
                     type: AccountType.CHECKING,
                     balance: 2000,
-                    userId: 'search-user-2'
+                    userId: testUserId
                 })
             ]
 
-            for (const account of accounts) {
+            for(const account of accounts) {
                 await repository.save(account)
             }
         })
 
-        it('should search accounts with pagination', async () => {
+        it('should search accounts with pagination',async () => {
             // Act
-            const result = await repository.search({
+            const result=await repository.search({
                 page: 1,
                 limit: 2
             })
@@ -300,9 +323,9 @@ describe('AccountsPrismaRepository Integration', () => {
             expect(result.totalPages).toBe(2)
         })
 
-        it('should filter accounts by name', async () => {
+        it('should filter accounts by name',async () => {
             // Act
-            const result = await repository.search({
+            const result=await repository.search({
                 page: 1,
                 limit: 10,
                 filter: 'Primary'
@@ -313,9 +336,9 @@ describe('AccountsPrismaRepository Integration', () => {
             expect(result.items[0].name).toContain('Primary')
         })
 
-        it('should sort accounts by specified field', async () => {
+        it('should sort accounts by specified field',async () => {
             // Act
-            const result = await repository.search({
+            const result=await repository.search({
                 page: 1,
                 limit: 10,
                 sort: 'balance',
@@ -326,9 +349,9 @@ describe('AccountsPrismaRepository Integration', () => {
             expect(result.items[0].balance).toBeLessThanOrEqual(result.items[1].balance)
         })
 
-        it('should handle case insensitive search', async () => {
+        it('should handle case insensitive search',async () => {
             // Act
-            const result = await repository.search({
+            const result=await repository.search({
                 page: 1,
                 limit: 10,
                 filter: 'primary'
@@ -339,9 +362,9 @@ describe('AccountsPrismaRepository Integration', () => {
             expect(result.items[0].name).toContain('Primary')
         })
 
-        it('should return empty result for non-matching filter', async () => {
+        it('should return empty result for non-matching filter',async () => {
             // Act
-            const result = await repository.search({
+            const result=await repository.search({
                 page: 1,
                 limit: 10,
                 filter: 'NonExistentAccount'
@@ -352,9 +375,9 @@ describe('AccountsPrismaRepository Integration', () => {
             expect(result.total).toBe(0)
         })
 
-        it('should handle pagination beyond available data', async () => {
+        it('should handle pagination beyond available data',async () => {
             // Act
-            const result = await repository.search({
+            const result=await repository.search({
                 page: 10,
                 limit: 10
             })
@@ -366,23 +389,24 @@ describe('AccountsPrismaRepository Integration', () => {
         })
     })
 
-    describe('error handling', () => {
-        it('should handle database connection errors gracefully', async () => {
+    describe('error handling',() => {
+        it('should handle database connection errors gracefully',async () => {
             // Arrange
-            const disconnectedPrisma = new PrismaService()
-            const disconnectedRepository = new AccountsPrismaRepository(disconnectedPrisma, loggerService)
-            const account = new Account({
+            const disconnectedPrisma=new PrismaService()
+            jest.spyOn((disconnectedPrisma as any).account,'upsert').mockRejectedValue(new Error('Connection failed'))
+            const disconnectedRepository=new AccountsPrismaRepository(disconnectedPrisma,loggerService)
+            const account=new Account({
                 ...TestDataFactory.createAccountData(),
-                userId: 'test-user-error'
+                userId: testUserId
             })
 
             // Act & Assert
             await expect(disconnectedRepository.save(account)).rejects.toThrow()
         })
 
-        it('should log errors appropriately', async () => {
+        it('should log errors appropriately',async () => {
             // Arrange
-            const mockLogger = {
+            const mockLogger={
                 logError: jest.fn(),
                 logInfo: jest.fn(),
                 logWarning: jest.fn(),
@@ -394,12 +418,12 @@ describe('AccountsPrismaRepository Integration', () => {
                 verbose: jest.fn()
             }
 
-            const repositoryWithMockLogger = new AccountsPrismaRepository(prisma, mockLogger as any)
+            const repositoryWithMockLogger=new AccountsPrismaRepository(prisma,mockLogger as any)
 
             // Act
             try {
                 await repositoryWithMockLogger.delete('non-existent-id')
-            } catch (error) {
+            } catch(error) {
                 // Expected to throw
             }
 
@@ -408,20 +432,20 @@ describe('AccountsPrismaRepository Integration', () => {
         })
     })
 
-    describe('data integrity', () => {
-        it('should maintain data consistency across operations', async () => {
+    describe('data integrity',() => {
+        it('should maintain data consistency across operations',async () => {
             // Arrange
-            const account = new Account({
+            const account=new Account({
                 name: 'Consistency Test Account',
                 type: AccountType.CHECKING,
                 balance: 1000,
-                userId: 'consistency-user'
+                userId: testUserId
             })
 
             // Act
-            const saved = await repository.save(account)
-            const found = await repository.findById(saved.id)
-            const exists = await repository.existsById(saved.id)
+            const saved=await repository.save(account)
+            const found=await repository.findById(saved.id)
+            const exists=await repository.existsById(saved.id)
 
             // Assert
             expect(found?.id).toBe(saved.id)
@@ -431,17 +455,17 @@ describe('AccountsPrismaRepository Integration', () => {
             expect(exists).toBe(true)
         })
 
-        it('should handle concurrent operations safely', async () => {
+        it('should handle concurrent operations safely',async () => {
             // Arrange
-            const account = new Account({
+            const account=new Account({
                 ...TestDataFactory.createAccountData(),
-                userId: 'concurrent-user'
+                userId: testUserId
             })
             await repository.save(account)
 
             // Act - Simulate concurrent reads
-            const promises = Array(5).fill(null).map(() => repository.findById(account.id))
-            const results = await Promise.all(promises)
+            const promises=Array(5).fill(null).map(() => repository.findById(account.id))
+            const results=await Promise.all(promises)
 
             // Assert
             results.forEach(result => {
