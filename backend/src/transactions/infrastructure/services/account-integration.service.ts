@@ -8,15 +8,10 @@
 import {Injectable} from '@nestjs/common'
 import {AccountBalanceService} from '../../../accounts/application/services/account-balance.service'
 import {AccountBalance} from '../../domain'
-
-export interface AccountIntegrationService {
-    getAccountBalance(accountId: string): Promise<AccountBalance>
-    updateAccountBalance(accountId: string,amount: number,operation: 'CREDIT'|'DEBIT'): Promise<void>
-    transfer(fromAccountId: string,toAccountId: string,amount: number): Promise<void>
-}
+import {AccountServicePort} from '../../domain/ports/account-service.port'
 
 @Injectable()
-export class AccountIntegrationServiceImpl implements AccountIntegrationService {
+export class AccountIntegrationServiceImpl implements AccountServicePort {
     constructor(
         private readonly accountBalanceService: AccountBalanceService
     ) {}

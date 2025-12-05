@@ -47,6 +47,10 @@ import {TransactionRepositoryPort} from './domain'
     providers: [
         // Integration Services
         AccountIntegrationServiceImpl,
+        {
+            provide: 'AccountServicePort',
+            useExisting: AccountIntegrationServiceImpl
+        },
 
         // Repository Implementation
         {
@@ -68,13 +72,13 @@ import {TransactionRepositoryPort} from './domain'
             useFactory: (
                 transactionRepository: TransactionRepositoryPort,
                 transactionDomainService: TransactionDomainService,
-                accountIntegrationService: AccountIntegrationServiceImpl
+                accountService: any
             ) => new CreateTransactionUseCase(
                 transactionRepository,
                 transactionDomainService,
-                accountIntegrationService // ✅ Injetar serviço de integração
+                accountService
             ),
-            inject: ['TransactionRepositoryPort',TransactionDomainService,AccountIntegrationServiceImpl]
+            inject: ['TransactionRepositoryPort',TransactionDomainService,'AccountServicePort']
         },
 
         {

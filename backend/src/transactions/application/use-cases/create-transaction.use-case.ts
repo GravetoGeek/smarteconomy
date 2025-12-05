@@ -5,13 +5,14 @@
  * os princípios da Clean Architecture.
  */
 
-import {Injectable} from '@nestjs/common'
+import {Inject,Injectable} from '@nestjs/common'
 import {
     AccountBalance,
     Transaction,
     TransactionDomainService,
     TransactionRepositoryPort
 } from '../../domain'
+import {AccountServicePort} from '../../domain/ports/account-service.port'
 
 export interface CreateTransactionUseCaseInput {
     description: string
@@ -34,7 +35,7 @@ export class CreateTransactionUseCase {
     constructor(
         private readonly transactionRepository: TransactionRepositoryPort,
         private readonly transactionDomainService: TransactionDomainService,
-        private readonly accountService: any // Será injetado o serviço de contas
+        @Inject('AccountServicePort') private readonly accountService: AccountServicePort
     ) {}
 
     async execute(input: CreateTransactionUseCaseInput): Promise<CreateTransactionUseCaseOutput> {
@@ -68,7 +69,7 @@ export class CreateTransactionUseCase {
         const savedTransaction=await this.transactionRepository.save(result.transaction)
 
         // 5. Atualizar saldos das contas
-        await this.updateAccountBalances(result.updatedBalances)
+        await this.applyBalanceUpdates(savedTransaction)
 
         // 6. Detectar atividade suspeita
         const suspiciousActivity=await this.transactionDomainService.detectSuspiciousActivity(
@@ -88,10 +89,15 @@ export class CreateTransactionUseCase {
         return await this.accountService.getAccountBalance(accountId)
     }
 
-    private async updateAccountBalances(balances: AccountBalance[]): Promise<void> {
-        // Implementação delegada para o serviço de contas
-        for(const balance of balances) {
-            await this.accountService.updateBalance(balance.accountId,balance.balance)
+    private async applyBalanceUpdates(transaction: Transaction): Promise<void> {
+        if(transaction.type==='INCOME') {
+            await this.accountService.updateAccountBalance(transaction.accountId,transaction.amount,'CREDIT')
+        } else if(transaction.type==='EXPENSE') {
+            await this.accountService.updateAccountBalance(transaction.accountId,transaction.amount,'DEBIT')
+        } else if(transaction.type==='TRANSFER') {
+            if(transaction.destinationAccountId) {
+                await this.accountService.transfer(transaction.accountId,transaction.destinationAccountId,transaction.amount)
+            }
         }
     }
 }
