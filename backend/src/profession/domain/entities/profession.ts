@@ -1,3 +1,5 @@
+import {randomUUID} from 'node:crypto'
+
 export enum ProfessionType {
     ENGINEER='ENGINEER',
     DOCTOR='DOCTOR',
@@ -111,12 +113,6 @@ export class Profession {
 
     // Utility methods
     private static generateId(): string {
-        // Fallback for environments where crypto.randomUUID() might not be available
-        if(typeof crypto!=='undefined'&&crypto.randomUUID) {
-            return crypto.randomUUID()
-        }
-
-        // Simple fallback ID generation
-        return 'prof_'+Date.now()+'_'+Math.random().toString(36).substr(2,9)
+        return randomUUID()
     }
 }
