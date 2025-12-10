@@ -29,7 +29,7 @@ export class UserInvalidEmailException extends UserDomainException {
 
 export class UserInvalidPasswordException extends UserDomainException {
     constructor() {
-        super('Password must be at least 8 characters long and contain uppercase, lowercase, and number')
+        super('Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character')
         this.name='UserInvalidPasswordException'
     }
 }
