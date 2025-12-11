@@ -4,10 +4,12 @@
  * Testa o fluxo completo de criação de transação e atualização de saldo
  */
 
+import {AccountsModule} from '@/accounts/accounts.module'
 import {AccountBalanceService} from '@/accounts/application/services/account-balance.service'
 import {CreateTransactionUseCase} from '@/transactions/application/use-cases/create-transaction.use-case'
 import {TransactionDomainService} from '@/transactions/domain/services/transaction-domain.service'
 import {AccountIntegrationServiceImpl} from '@/transactions/infrastructure/services/account-integration.service'
+import {TransactionsModule} from '@/transactions/transactions.module'
 import {Test,TestingModule} from '@nestjs/testing'
 
 import {PrismaService} from '../../database/prisma/prisma.service'
@@ -25,7 +27,10 @@ describe('Transaction → Account Integration',() => {
 
     beforeEach(async () => {
         // Cria módulo de teste real com PrismaService
-        const moduleRef=await TestModuleBuilder.createIntegrationTestingModule()
+        const moduleRef=await TestModuleBuilder.createIntegrationTestingModule(
+            [],
+            [TransactionsModule,AccountsModule]
+        )
         prisma=moduleRef.get(PrismaService)
 
         // Limpa e popula o banco

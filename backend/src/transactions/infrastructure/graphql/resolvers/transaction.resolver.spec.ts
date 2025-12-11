@@ -1,12 +1,6 @@
 import {Test,TestingModule} from '@nestjs/testing'
 import {JWT_SERVICE} from '../../../../auth/domain/tokens'
-import {
-    CreateTransactionUseCase,
-    GetTransactionSummaryUseCase,
-    ReverseTransactionUseCase,
-    SearchTransactionsUseCase,
-    UpdateTransactionUseCase
-} from '../../../application'
+import {TransactionsApplicationService} from '../../../application/services/transactions-application.service'
 import {
     Transaction,
     TransactionSearchResult as TransactionSearchResultDomain,
@@ -28,11 +22,7 @@ import {TransactionResolver} from './transaction.resolver'
 
 describe('TransactionResolver',() => {
     let resolver: TransactionResolver
-    let createTransactionUseCase: jest.Mocked<CreateTransactionUseCase>
-    let searchTransactionsUseCase: jest.Mocked<SearchTransactionsUseCase>
-    let getTransactionSummaryUseCase: jest.Mocked<GetTransactionSummaryUseCase>
-    let updateTransactionUseCase: jest.Mocked<UpdateTransactionUseCase>
-    let reverseTransactionUseCase: jest.Mocked<ReverseTransactionUseCase>
+    let transactionsApplicationService: jest.Mocked<TransactionsApplicationService>
 
     const createTransactionEntity=(overrides: Partial<{
         id: string
@@ -66,24 +56,14 @@ describe('TransactionResolver',() => {
             providers: [
                 TransactionResolver,
                 {
-                    provide: CreateTransactionUseCase,
-                    useValue: {execute: jest.fn()}
-                },
-                {
-                    provide: SearchTransactionsUseCase,
-                    useValue: {execute: jest.fn()}
-                },
-                {
-                    provide: GetTransactionSummaryUseCase,
-                    useValue: {execute: jest.fn()}
-                },
-                {
-                    provide: UpdateTransactionUseCase,
-                    useValue: {execute: jest.fn()}
-                },
-                {
-                    provide: ReverseTransactionUseCase,
-                    useValue: {execute: jest.fn()}
+                    provide: TransactionsApplicationService,
+                    useValue: {
+                        createTransaction: jest.fn(),
+                        searchTransactions: jest.fn(),
+                        getTransactionSummary: jest.fn(),
+                        updateTransaction: jest.fn(),
+                        reverseTransaction: jest.fn()
+                    }
                 },
                 {
                     provide: JWT_SERVICE,
@@ -95,11 +75,7 @@ describe('TransactionResolver',() => {
         }).compile()
 
         resolver=module.get<TransactionResolver>(TransactionResolver)
-        createTransactionUseCase=module.get(CreateTransactionUseCase)
-        searchTransactionsUseCase=module.get(SearchTransactionsUseCase)
-        getTransactionSummaryUseCase=module.get(GetTransactionSummaryUseCase)
-        updateTransactionUseCase=module.get(UpdateTransactionUseCase)
-        reverseTransactionUseCase=module.get(ReverseTransactionUseCase)
+        transactionsApplicationService=module.get(TransactionsApplicationService)
     })
 
     afterEach(() => {
@@ -124,7 +100,7 @@ describe('TransactionResolver',() => {
                 categoryId: input.categoryId
             })
             const warnings=['Check category mapping']
-            createTransactionUseCase.execute.mockResolvedValue({
+            transactionsApplicationService.createTransaction.mockResolvedValue({
                 transaction,
                 updatedBalances: [],
                 warnings
@@ -134,7 +110,7 @@ describe('TransactionResolver',() => {
 
             const expected: CreateTransactionResponseModel=TransactionGraphQLMapper.toCreateResponseModel(transaction,warnings)
             expect(result).toEqual(expected)
-            expect(createTransactionUseCase.execute).toHaveBeenCalledWith({
+            expect(transactionsApplicationService.createTransaction).toHaveBeenCalledWith({
                 description: input.description,
                 amount: input.amount,
                 type: input.type,
@@ -174,13 +150,13 @@ describe('TransactionResolver',() => {
                 hasNextPage: true,
                 hasPreviousPage: true
             }
-            searchTransactionsUseCase.execute.mockResolvedValue(searchResult)
+            transactionsApplicationService.searchTransactions.mockResolvedValue(searchResult)
 
             const result=await resolver.searchTransactions('user-1',input)
 
             const expected: TransactionSearchResultModel=TransactionGraphQLMapper.toSearchResultModel(searchResult,input.limit!)
             expect(result).toEqual(expected)
-            expect(searchTransactionsUseCase.execute).toHaveBeenCalledWith({
+            expect(transactionsApplicationService.searchTransactions).toHaveBeenCalledWith({
                 filters: {
                     accountId: input.filters?.accountId,
                     categoryId: input.filters?.categoryId,
@@ -213,7 +189,7 @@ describe('TransactionResolver',() => {
                     to: new Date('2023-01-31T23:59:59.000Z')
                 }
             }
-            getTransactionSummaryUseCase.execute.mockResolvedValue(summary)
+            transactionsApplicationService.getTransactionSummary.mockResolvedValue(summary)
 
             const dateFrom=new Date('2023-01-01T00:00:00.000Z')
             const dateTo=new Date('2023-01-31T00:00:00.000Z')
@@ -222,7 +198,7 @@ describe('TransactionResolver',() => {
 
             const expected: TransactionSummaryModel=TransactionGraphQLMapper.toSummaryModel(summary)
             expect(result).toEqual(expected)
-            expect(getTransactionSummaryUseCase.execute).toHaveBeenCalledWith({
+            expect(transactionsApplicationService.getTransactionSummary).toHaveBeenCalledWith({
                 accountId: 'acc-1',
                 dateFrom,
                 dateTo
@@ -233,7 +209,7 @@ describe('TransactionResolver',() => {
     describe('updateTransaction',() => {
         it('should map updated transaction to DTO',async () => {
             const transaction=createTransactionEntity({status: TransactionStatus.COMPLETED})
-            updateTransactionUseCase.execute.mockResolvedValue(transaction)
+            transactionsApplicationService.updateTransaction.mockResolvedValue(transaction)
 
             const input: UpdateTransactionInput={
                 description: 'Updated description',
@@ -244,7 +220,7 @@ describe('TransactionResolver',() => {
 
             const expected: TransactionModel=TransactionGraphQLMapper.toModel(transaction)
             expect(result).toEqual(expected)
-            expect(updateTransactionUseCase.execute).toHaveBeenCalledWith({
+            expect(transactionsApplicationService.updateTransaction).toHaveBeenCalledWith({
                 id: transaction.id,
                 description: input.description,
                 status: input.status
@@ -260,7 +236,7 @@ describe('TransactionResolver',() => {
                 status: TransactionStatus.COMPLETED,
                 destinationAccountId: 'acc-destination'
             })
-            reverseTransactionUseCase.execute.mockResolvedValue({
+            transactionsApplicationService.reverseTransaction.mockResolvedValue({
                 originalTransaction: createTransactionEntity({id: 'txn-original'}),
                 reversalTransaction,
                 success: true,
@@ -271,7 +247,7 @@ describe('TransactionResolver',() => {
 
             const expected: TransactionModel=TransactionGraphQLMapper.toModel(reversalTransaction)
             expect(result).toEqual(expected)
-            expect(reverseTransactionUseCase.execute).toHaveBeenCalledWith({
+            expect(transactionsApplicationService.reverseTransaction).toHaveBeenCalledWith({
                 transactionId: 'txn-original',
                 reason: 'Duplicate entry',
                 requestedBy: 'user-1'

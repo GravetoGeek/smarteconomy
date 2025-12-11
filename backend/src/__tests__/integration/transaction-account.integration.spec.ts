@@ -4,10 +4,12 @@
  * Testa o fluxo completo de criação de transação e atualização de saldo
  */
 
+import {AccountsModule} from '@/accounts/accounts.module'
 import {AccountBalanceService} from '@/accounts/application/services/account-balance.service'
 import {CreateTransactionUseCase} from '@/transactions/application/use-cases/create-transaction.use-case'
 import {TransactionDomainService} from '@/transactions/domain/services/transaction-domain.service'
 import {AccountIntegrationServiceImpl} from '@/transactions/infrastructure/services/account-integration.service'
+import {TransactionsModule} from '@/transactions/transactions.module'
 import {Test,TestingModule} from '@nestjs/testing'
 
 import {PrismaService} from '../../database/prisma/prisma.service'
@@ -25,7 +27,10 @@ describe('Transaction → Account Integration',() => {
 
     beforeEach(async () => {
         // Cria módulo de teste real com PrismaService
-        const moduleRef=await TestModuleBuilder.createIntegrationTestingModule()
+        const moduleRef=await TestModuleBuilder.createIntegrationTestingModule(
+            [], // providers
+            [AccountsModule,TransactionsModule] // imports
+        )
         prisma=moduleRef.get(PrismaService)
 
         // Limpa e popula o banco
@@ -44,7 +49,26 @@ describe('Transaction → Account Integration',() => {
         // Instancia casos de uso reais
         accountBalanceService=moduleRef.get(AccountBalanceService)
         createTransactionUseCase=moduleRef.get(CreateTransactionUseCase)
-        accountIntegrationService=moduleRef.get(AccountIntegrationServiceImpl)
+        // AccountIntegrationServiceImpl is not exported by TransactionsModule, so we might not be able to get it directly if it's not exported.
+        // But we can try to get it if it's provided in the module scope, although usually only exported providers are available from outside.
+        // However, for integration tests, we usually test the public API (Use Cases).
+        // If we really need it, we should export it from TransactionsModule or use moduleRef.resolve() if it's scoped (it's not).
+        // Let's try to get it, if it fails we'll see.
+        // Actually, looking at TransactionsModule, AccountIntegrationServiceImpl is NOT exported.
+        // So moduleRef.get(AccountIntegrationServiceImpl) will likely fail or return undefined if strict.
+        // But since we are importing the module into the TestModule, the TestModule "inherits" the providers? No, only exported ones.
+
+        // For now, I will comment out getting AccountIntegrationServiceImpl if it's not used in the test directly (it seems it is used in the setup but not in the test body shown).
+        // Wait, the test body uses `createTransactionUseCase`.
+
+        // Let's check if we really need `accountIntegrationService` and `transactionDomainService` variables in the test.
+        // They are assigned but not used in the visible test code (only `createTransactionUseCase` and `accountBalanceService` are used in the commented out code).
+        // The first test uses `createTransactionUseCase`.
+
+        // I'll try to get them, but if it fails I'll remove them.
+        // accountIntegrationService=moduleRef.get(AccountIntegrationServiceImpl)
+        // transactionDomainService=moduleRef.get(TransactionDomainService)
+
         transactionDomainService=moduleRef.get(TransactionDomainService)
     })
 

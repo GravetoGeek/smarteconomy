@@ -6,6 +6,7 @@
  * para movimentação financeira entre contas.
  */
 
+import {randomUUID} from 'node:crypto'
 import {
     InvalidTransferException,
     TransactionStatusException
@@ -88,7 +89,7 @@ export class Transaction {
     }
 
     private generateId(): string {
-        return 'txn_'+Date.now()+'_'+Math.random().toString(36).slice(2,11)
+        return randomUUID()
     }
 
     // Getters

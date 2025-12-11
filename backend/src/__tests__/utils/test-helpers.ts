@@ -16,11 +16,11 @@ export class TestDataFactory {
             email: `user${Math.random().toString(36).substring(7)}@test.com`,
             name: 'Test',
             lastname: 'User',
-            birthdate: '1990-01-01',
+            birthdate: new Date('1990-01-01T00:00:00Z'),
             role: UserRole.USER,
             genderId: '550e8400-e29b-41d4-a716-446655440001',
             professionId: '660e8400-e29b-41d4-a716-446655440001',
-            password: 'hashedPassword123',
+            password: 'ValidPassw0rd!',
             ...overrides
         }
     }
@@ -46,7 +46,7 @@ export class TestDataFactory {
         return {
             name: 'Test Account',
             type: AccountType.CHECKING,
-            balance: overrides.balance??1000.00,
+            balance: overrides.balance??1000.0,
             userId: 'user-id-123',
             ...overrides
         }
@@ -239,11 +239,13 @@ export class TestModuleBuilder {
 export class TestDatabaseUtils {
     static async clearDatabase(prisma: any) {
         // Delete in order to respect foreign key constraints
+        await prisma.transaction.deleteMany()
         await prisma.account.deleteMany()
         await prisma.user.deleteMany()
         await prisma.gender.deleteMany()
         await prisma.profession.deleteMany()
         await prisma.postCategory.deleteMany()
+        await prisma.category.deleteMany()
     }
 
     static async seedTestData(prisma: any) {
@@ -279,8 +281,8 @@ export class TestDatabaseUtils {
             })
         ])
 
-        // Create test categories
-        const categories=await Promise.all([
+        // Create test post categories
+        const postCategories=await Promise.all([
             prisma.postCategory.create({
                 data: {
                     id: '770e8400-e29b-41d4-a716-446655440001',
@@ -295,7 +297,27 @@ export class TestDatabaseUtils {
             })
         ])
 
-        return {genders,professions,categories}
+        // Create test financial categories
+        const categories=await Promise.all([
+            prisma.category.create({
+                data: {
+                    id: '880e8400-e29b-41d4-a716-446655440001',
+                    name: 'Salário',
+                    defaultType: 'INCOME',
+                    icon: 'money'
+                }
+            }),
+            prisma.category.create({
+                data: {
+                    id: '880e8400-e29b-41d4-a716-446655440002',
+                    name: 'Alimentação',
+                    defaultType: 'EXPENSE',
+                    icon: 'food'
+                }
+            })
+        ])
+
+        return {genders,professions,postCategories,categories}
     }
 }
 
@@ -315,13 +337,13 @@ export class TestAssertions {
     }
 
     static expectEntityStructure(entity: any,expectedProperties: string[]) {
-        expectedProperties.forEach(property => {
+        expectedProperties.forEach((property) => {
             expect(entity).toHaveProperty(property)
         })
     }
 
     static expectRepositoryMethodsCalled(mockRepository: any,methods: string[]) {
-        methods.forEach(method => {
+        methods.forEach((method) => {
             expect(mockRepository[method]).toHaveBeenCalled()
         })
     }
