@@ -144,6 +144,24 @@ type UpdateUserResponseModel {
   message: String!
 }
 
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type UserEdge {
+  cursor: String!
+  node: UserModel!
+}
+
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Float!
+}
+
 type UserSearchResultModel {
   items: [UserModel!]!
   total: Int!
@@ -151,11 +169,13 @@ type UserSearchResultModel {
   limit: Int!
   totalPages: Int!
   lastPage: Int!
+  itemsCount: Int!
 }
 
 type Query {
   hello: String!
-  users: [UserModel!]!
+  users(page: Int = 1, limit: Int = 1000): UserSearchResultModel!
+  usersConnection(first: Int, after: String, last: Int, before: String, filter: String): UserConnection!
   userById(id: String!): UserModel
   userByEmail(email: String!): UserModel
   searchUsers(input: SearchUsersInput!): UserSearchResultModel!
