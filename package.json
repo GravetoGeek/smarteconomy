@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "nodemailer": "^7.0.9"
+    "nodemailer": "^8.0.4"
   },
   "devDependencies": {
     "@types/nodemailer": "^7.0.2",
